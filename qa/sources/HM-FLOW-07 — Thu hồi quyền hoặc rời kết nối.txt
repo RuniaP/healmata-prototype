@@ -1,0 +1,415 @@
+HM FLOW 07 Thu hồi quyền hoặc rời kết nối
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu mô tả cách chủ dữ liệu giảm quyền hoặc ngừng chia sẻ, cách người nhận tự rời quyền đang nhận, và tác động lên truy cập server, màn hình, cache, thao tác chờ và thông báo. Flow 07 nối kết nối của Flow 05 với việc xem/nhập trong quyền ở Flow 06. Các màn nghiệp vụ thuốc và sức khỏe tiếp tục dùng quy tắc Flow 02–04.
+Thu hồi quyền không có nghĩa xóa dữ liệu gốc, đảo ngược mọi thao tác đã được chấp nhận hoặc xóa bản sao ngoài app. Phạm vi một chiều/hai chiều, thời điểm hiệu lực, phụ thuộc quyền và cơ chế làm sạch còn cần quyết định trong task. Sơ đồ và wireframe là bản nháp để review, chưa chứng minh app đã triển khai hoặc kiểm thử.
+I Phạm vi và kết quả cần đạt
+1 Vai trò và chiều chia sẻ
+A là chủ dữ liệu/người có thẩm quyền quyết định chia sẻ theo mô hình được duyệt; B đang nhận grant A → B. A được điều chỉnh grant của mình, B chỉ rời quyền của chính B theo policy. B không tự thu hồi quyền của C hoặc thay quyền người khác đã cấp. B → A nếu có là chiều riêng; không mặc định rời một chiều sẽ xóa cả hai.
+2 Màn hình và hành động
+HM-SCR-17 xem/điều chỉnh giảm quyền, ngừng chia sẻ hoặc rời theo vai trò; HM-POP-06 xem lại tác động và xác nhận. 06/05/16 cùng form/chi tiết đang mở nhận thay đổi. Popup/state nháp, phiên, quyền, conflict và network dùng chung. Không cấp mã mới cho các bước con của 17; không đưa tăng quyền vào cùng thao tác thu hồi.
+3 Thành công và trạng thái chưa rõ
+Thành công khi server commit đúng actor/chiều/scope/version và trả hiệu lực thật. Client phân biệt server đã thu hồi với thiết bị khác đã nhận/làm sạch. Hủy trước gửi giữ nguyên; timeout sau gửi chưa biết kết quả cần tra operation. Lệnh thu hồi đã có hiệu lực không phụ thuộc B mở app, đọc thông báo hoặc đồng ý lại trong phương án đề xuất.
+4 Ranh giới với các flow khác
+Flow 05 xử lý hủy invite pending, tạo lời mời và chia sẻ lại; Flow 06 phản ánh quyền trên từng API/màn. Flow 07 không xóa tài khoản, dừng lịch thuốc, xóa ghi nhận hoặc hủy gói trả phí/phiên tư vấn. Quyền đại diện và phạm vi ngoài V1.0 chưa được suy từ quan hệ gia đình. Các tác động liên quan cần contract riêng nếu scope sau này có thêm.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+17/06/05/16 là mã HM-SCR. Ba hành động đều cần đúng vai trò, chiều, bản quyền và xác nhận. Nhánh rời của B minh họa dừng chiều nhận A → B; T01 phải chốt nếu sản phẩm muốn ngừng cả hai chiều. Tăng hoặc cấp lại scope là quyết định mới, không đường tắt Undo làm sống lại grant cũ.
+
+III Flow chi tiết
+1 Mở quyền hiện tại tại 17
+a Điểm vào và dữ liệu nguồn
+A/B vào 17 từ 06, 19 hoặc mục quyền ở 16. Server trả metadata người/chiều/scope hiện hành trong quyền của actor. Hiện rõ A chia sẻ cho B khác B chia sẻ cho A; phiên bản và trạng thái giúp biết đang sửa bản nào. Không dùng dữ liệu cache cũ để xác nhận rằng grant vẫn active khi chưa kiểm được.
+b Quyền thực hiện
+Chỉ chủ dữ liệu hoặc đại diện đúng mô hình được duyệt được thu hồi trên dữ liệu đó. B chỉ xem grant của B và rời theo policy; người có quyền ghi sức khỏe không tự là quản trị gia đình. Server kiểm quyền trên mọi mutation, không tin actor/owner do client tự gửi. Nếu đã mất quyền đối với metadata hoặc quan hệ không còn, phản hồi tối thiểu không lộ thông tin người khác.
+2 Thu hồi một số quyền
+a Chọn giảm scope
+A chọn Điều chỉnh giảm quyền, lấy scope hiện hành làm bản nguồn. T01/T02 quyết định quyền nào được bỏ độc lập. Nếu bỏ quyền xem làm quyền ghi/sửa phụ thuộc không còn hợp lệ, UI phải xem lại các quyền kéo theo; không giữ write ẩn hoặc tự xóa thêm quyền mà không nêu tác động. Luồng này không bật thêm scope; muốn tăng quyền chuyển nhánh cấp mới theo contract Flow 05.
+b Xem lại và xác nhận
+POP-06 hiện đúng A/B/chiều, trước/sau, nhóm/hành động bị dừng và quyền còn giữ. Có thể giải thích giới hạn bản sao ngoài app bằng câu ngắn. Quay lại trước gửi không đổi grant. Xác nhận gửi operation với expected grant version và scope đã xem lại; Backend kiểm actor, version, phụ thuộc và commit nhất quán. Nếu scope đã đổi từ thiết bị khác, trả conflict, tải lại trong quyền rồi review, không áp bản giảm dựa trên quyền cũ tùy tiện.
+3 Ngừng toàn bộ chia sẻ và rời quyền nhận
+A chọn Ngừng chia sẻ toàn bộ chiều A → B hoặc B chọn Rời quyền đang nhận từ A. Mỗi hành động có thông điệp actor/phạm vi đúng; đề xuất chỉ ngừng chiều được xem lại. Nếu sản phẩm chọn kết thúc cả quan hệ hai chiều, T01 cần thao tác xác nhận và quyền phù hợp cho cả hai, không tự suy từ nút “Rời”. Dữ liệu B đã ghi cho A vẫn giữ tác giả/nguồn theo policy; ngừng truy cập không xóa hồ sơ A hoặc lịch thuốc.
+
+4 Commit và hiệu lực server
+a Thời điểm và hành động mới
+Đề xuất revoke có tác dụng từ commit server hợp lệ, không chờ thông báo/ack của B. Server tăng version quyền hoặc đánh trạng thái theo contract, chặn đọc/ghi ngoài scope mới và vô hiệu các đường truy cập liên quan trong hệ thống kiểm soát được. T02/T06 định nghĩa điểm kiểm quyền của request đang chạy, jobs và file/token; không dùng đồng hồ máy hoặc client success flag làm nguồn hiệu lực.
+b Đọc và ghi đang chạy
+Một mutation đã commit hợp lệ trước revoke có thể đã lưu; không hứa đảo ngược. Mutation đi qua gate sau revoke không dùng cached grant để ghi. Response đọc đang xử lý có thể đã được kiểm trước revoke; T06 phải xác định điểm kiểm trước trả kết quả và giới hạn. Client khi biết quyền đã đổi phải bỏ response/callback cũ liên quan, không render lại dữ liệu bị che. Audit giữ thứ tự/kết quả để xử lý tranh chấp, không sửa lịch sử cho khớp UI.
+5 Cập nhật các thiết bị và tác vụ liên quan
+Thiết bị A hiển thị kết quả server cùng scope/version/thời điểm; 06/17 cập nhật, không tuyên bố mọi thiết bị B đã xóa. Thiết bị B khi nhận signal, quay app foreground hoặc gặp denied phải kiểm quyền, che/dọn phần liên quan và hủy/bỏ response cũ. Cache, temp file, search/count, preview và tác vụ tạo/tải file phải theo quyền mới. Nếu chỉ giảm một nhóm, nhóm khác tiếp tục trong quyền; không tự thay A thành Tôi.
+Bản nháp chưa gửi có nội dung đã mất quyền xử lý theo T03: che/xóa/khóa đúng account/subject; không tự gửi khi có mạng lại. Lệnh có thể đã gửi cần tra operation bằng đường được phép, không giả chưa lưu hoặc trả payload nhạy cảm sau mất quyền. Nhắc/notification trên thiết bị khác cần cập nhật theo scope/recipient; link cũ không bỏ qua gate hiện tại. Lời nhắc gốc của A không tự bị dừng chỉ vì A ngừng chia sẻ cho B.
+6 Offline timeout và yêu cầu lặp
+Đề xuất các thao tác giảm/revoke/leave cần mạng, offline chỉ có bản nháp nếu được chọn, không báo “Đã thu hồi”. Nếu gửi xong timeout, tra operation trước retry; cùng operation/nội dung trả kết quả cũ, khác nội dung bị từ chối theo contract. Cùng thao tác trên grant đã dừng cần kết quả rõ no change/conflict/đã hoàn tất, không xóa lại hoặc phát sự kiện gây tác dụng phụ lặp.
+Thiết bị B hoàn toàn offline có thể chưa biết quyền đổi; app không cam kết thu hồi bản sao đó tức thì. Thực thi server và trạng thái làm sạch thiết bị phải tách. Phần hệ thống không kiểm soát như ảnh chụp, file đã xuất hoặc nội dung chuyển ra ngoài có giới hạn; không dùng câu “Xóa dữ liệu khỏi mọi nơi” để mô tả revoke.
+7 Cấp lại và lời mời cũ
+Muốn chia sẻ lại phải có quyết định/cơ chế cấp mới theo Flow 05, với scope/version hiện tại và định danh đúng. Retry, restore hoặc token/invite đã hoàn tất cũ không được tái kích hoạt grant sau revoke. T04/T06 chốt xử lý lời mời pending hoặc nâng quyền đang chờ cho cùng chiều; revoke không được bị event accept/confirm đến muộn tự động đảo ngược.
+
+IV Layout sơ bộ
+1 Quyền hiện hành và chọn giảm
+Wireframe đen trắng để review người/chiều/scope và tác động. Danh sách quyền là placeholder cho scope registry được chốt; không tự mặc định tất cả quyền có thể giảm độc lập. Không thêm mã màn chính cho bước trong 17.
+
+a Biến thể
+17 có loading, scope hiện tại, đã ngừng/no change, một phần còn quyền, conflict, hết phiên, mất quyền metadata và offline. Bản hiện tại từ server khác bản nháp lựa chọn. Chữ lớn/tên dài cần cuộn và nhãn chiều vẫn rõ.
+
+2 Xem lại thu hồi một phần và ngừng toàn bộ
+
+a Xác nhận không mở rộng tác động
+Cả hai là biến thể POP-06. Hiện rõ những quyền bị dừng/kéo theo và chiều giữ nguyên. Nếu policy yêu cầu xác thực lại, thêm bước được chọn trong T02; không tự đặt mật khẩu/OTP mới hoặc làm revoke phụ thuộc người nhận chấp thuận. Hủy trước gửi giữ nguyên server.
+
+3 Người nhận xem quyền và rời
+
+a Phạm vi rời cần chốt
+17 của B chỉ điều khiển quyền B đang nhận theo policy, không có control thu hồi người khác. Câu “Rời kết nối” phải được diễn giải rõ một chiều hay cả hai trước khi triển khai. Không dùng action rời để xóa ghi nhận B từng tạo cho A; quyền xem lại audit/kết quả sau rời phải theo T03/T06.
+
+4 Kết quả server và góc nhìn mất quyền
+
+a Kết quả và giới hạn thiết bị
+Kết quả server có scope/version/hiệu lực và trạng thái riêng của đồng bộ nếu biết. Không hiện “Đã làm sạch mọi thiết bị” chỉ từ response revoke. Màn B mất quyền che dữ liệu liên quan, cho xem quyền tối thiểu/chọn người khác/Tôi bằng hành động rõ; không tự xin cấp lại hoặc dùng link cũ để phục hồi quyền.
+
+V Ma trận tác động và trạng thái
+1 Hành động và đối tượng bị ảnh hưởng
+Hành động
+Tác động cần xác định
+Không tự kéo theo
+A giảm scope A → B
+B mất nhóm/action chọn và phụ thuộc đã xem lại.
+Không đổi B → A hoặc quyền A cấp cho C.
+A ngừng toàn chiều A → B
+Mất toàn scope chiều đó, metadata quan hệ theo policy.
+Không xóa tài khoản, thuốc, dữ liệu gốc hoặc thuê bao.
+B rời quyền nhận từ A
+Dừng quyền của chính B theo phạm vi được chọn.
+Không thu hồi C hoặc ngầm dừng B chia sẻ cho A.
+Thu hồi khi đang đọc/ghi
+Commit/checkpoint theo contract và audit.
+Không hứa undo mutation đã commit hoặc mọi response đã phát.
+Làm sạch cache/jobs/nhắc
+Phần liên quan scope/subject/recipient trong hệ thống.
+Không dừng nhắc gốc của A hoặc xóa dữ liệu không liên quan.
+Cấp lại quyền
+Quyết định/grant version mới phù hợp Flow 05.
+Không sống lại từ retry, link hay event cũ.
+2 Trạng thái hiển thị
+Trạng thái
+Thông tin và hành động
+Nghĩa phải giữ
+Đang xem hiện trạng
+Scope/version/chiều từ server.
+Snapshot cũ chưa là quyền hiện hành chắc chắn.
+Nháp giảm/chưa gửi
+Quyền trước/sau để xem lại.
+Chưa thu hồi trên server.
+Đang gửi/unknown
+Tiến độ hoặc tra operation.
+Không báo thành công chỉ vì đóng popup.
+Đã commit revoke/leave
+Kết quả server và quyền còn lại.
+Khác mọi thiết bị đã làm sạch.
+Conflict/no change
+Kết quả cụ thể, tải lại trong quyền nếu cần.
+Không ghi đè scope từ bản cũ.
+Mất quyền ở B
+Che phần liên quan, chọn người khác.
+Không lộ data/count hoặc tự chuyển dữ liệu ngầm.
+Offline/chờ đồng bộ
+Giới hạn thực, recheck khi có mạng.
+Không hứa quyền đã bị xóa khỏi bản ngoài app.
+
+3 Hợp đồng hiệu lực và lịch sử
+a Nguồn sự thật
+Đề xuất grant/relation ID, owner/recipient/actor, scope trước/sau, permission version, operation_id, revoke/leave reason nếu được chọn, server effective time và audit. Lưu kết quả thao tác để tra sau timeout. Schema/enum là đầu ra T06, chưa có database/API production được xác nhận. Grant cũ không bị xóa dấu vết để làm mất lịch sử đồng ý trước đó.
+b Các điểm kiểm quyền
+Revoke phải được thực thi ở list/detail/history/search/count/file và write, không chỉ trang 17. Jobs đang tạo dữ liệu/tệp cần kiểm lại tại điểm công bố/tải theo scope; link/token cũ không đủ nếu grant đã mất. T06 xác định cơ chế vô hiệu và phạm vi hệ thống kiểm soát, gồm URL/file token đã phát nếu có; không tuyên bố mọi tài nguyên đã phát đều thu hồi được mà chưa có thiết kế/kiểm chứng.
+c Đường tra operation sau rời
+Kết quả tối thiểu của thao tác do chính actor gửi có thể được phép đọc theo policy T03/T06 mà không trả hồ sơ sức khỏe đã mất quyền. Nếu không được đọc receipt đó, UI nêu giới hạn và đường hỗ trợ theo contract. Không giữ quyền dữ liệu cũ chỉ để hiện thông báo thành công. Operation retry gắn đúng account/grant generation, không gửi bằng account hoặc grant mới.
+d Phục hồi và event đến muộn
+Restore/migration phải giữ revoke/version/tombstone tương đương theo thiết kế; không áp snapshot consent cũ như cấp quyền mới. Pending invite/confirm/permission increase cùng A/B phải bị kiểm theo generation/policy, không tái active vì sự kiện đến muộn. Idempotency trả kết quả thao tác cũ khác với thực hiện lại revoke trên một grant vừa được cấp mới.
+4 Giới hạn dữ liệu và UI
+Revoke không đổi tác giả của bản B từng nhập, không tự xóa dữ liệu A hoặc đổi lịch thuốc. Retention/xóa tài khoản/xuất dữ liệu là phạm vi riêng; quyền xem lịch sử audit sau rời được chốt theo vai trò. Cache local được dọn khi biết thay đổi, nhưng không hứa xóa ảnh chụp/file ngoài app. Thông báo chỉ nội dung tối thiểu phù hợp, không phán xét người rời hoặc ép họ duy trì chia sẻ.
+5 Tăng quyền và thay đổi phạm vi
+Flow 07 ưu tiên giảm/ngừng/rời. Tăng scope hoặc kết nối lại phải có quyết định/đồng ý phù hợp Flow 05; không dùng thao tác “hoàn tác thu hồi” để bỏ qua gate. Chọn có hỗ trợ chấm dứt hai chiều, xác thực lại, lý do bắt buộc hoặc hiệu lực hẹn giờ là thay đổi sản phẩm cần chốt rõ trong task, chưa mặc định có chỉ từ wireframe.
+
+VI Task triển khai và điểm cần chốt
+HM-F07-T01–T10 là mã gói việc toàn luồng; task nguồn HM-V1 giữ ở mục h để tránh backlog trùng. Vai trò là đề xuất, chưa gán người/ngày. Câu hỏi nằm trong mục c; TTL/độ trễ/thời hạn chưa duyệt không làm pass/fail cuối cùng. Các task Flow 05/06 vẫn sở hữu mời và sử dụng quyền của mình.
+1 HM F07 T01 Chốt phạm vi thu hồi và rời kết nối
+a Mục tiêu  Chốt phạm vi thu hồi và rời kết nối; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product cùng Privacy, Design và Backend. Master Q02/Q04; grant Flow 05; context Flow 06.
+c Cần xác nhận trong task  Chốt A/đại diện nào được thu hồi, B được rời phạm vi nào, một chiều hay cả hai, giảm từng quyền hay theo nhóm. Đề xuất mỗi thao tác chỉ chiều được xem lại; phụ thuộc quyền phải hiện rõ. Chốt trường hợp không còn scope nhưng quan hệ còn metadata.
+d Công việc thực hiện  Lập actor/owner/recipient/chiều matrix, nhóm bị giảm và nhóm giữ nguyên; phân biệt cancel invite pending với revoke active. Không mặc định người thân có quản trị toàn gia đình.
+e Đầu ra  Policy phạm vi và quyền thực hiện có version/reviewer.
+f Nghiệm thu  Biết ai dừng quyền của ai và chiều nào; không ảnh hưởng C/chiều ngược/account/data ngoài ý định.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T02/T07/T08/T09; giao T02–T10.
+2 HM F07 T02 Chốt hiệu lực và xác nhận tác động
+a Mục tiêu  Chốt hiệu lực và xác nhận tác động; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product cùng Backend, Privacy và QA. T01; semantics commit/authorization Flow 06.
+c Cần xác nhận trong task  Chốt immediate commit hay cơ chế khác; đề xuất hiệu lực server không chờ B đồng ý/đọc nhắc. Chốt expected_version, phụ thuộc read/write, xác thực lại nếu cần, lý do bắt buộc/tùy chọn và grant đã dừng. Chưa tự thêm hiệu lực hẹn giờ hoặc cửa sổ số.
+d Công việc thực hiện  Lập before/after, dependency cascade, commit versus read/write races và wording. Xem lại tất cả quyền kéo theo trước gửi; scope tăng đi luồng cấp mới.
+e Đầu ra  Lifecycle/ảnh hưởng/copy đã review cùng oracle ranh giới.
+f Nghiệm thu  Không ghi đè bản quyền cũ; không hứa undo commit trước revoke; không trì hoãn revoke vì B chưa ack trong phương án được chọn.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T07/T08/T13/T25; giao T04–T10.
+
+3 HM F07 T03 Chốt cache offline nháp và receipt sau rời
+a Mục tiêu  Chốt cache offline nháp và receipt sau rời; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Kỹ thuật cùng Product và Privacy. T01/T02; policy Flow 01/06/09.
+c Cần xác nhận trong task  Đề xuất revoke/leave cần online. Chốt cache/nháp/temp file đang mở, TTL nếu chọn, signal/recheck, pending writes và kết quả tối thiểu sau actor mất data grant. Nêu giới hạn thiết bị offline và bản sao ngoài app; chưa tự đặt thời hạn dọn.
+d Công việc thực hiện  Phân biệt server effective, device informed và cleanup known/unknown; xử lý chưa gửi khác đã có thể gửi. Receipt không được trả data cũ chỉ vì người đó từng xem.
+e Đầu ra  Policy cleanup/offline/operation status, giới hạn có thể kiểm chứng.
+f Nghiệm thu  Không false success offline; không giữ health grant để đọc kết quả; không gửi queue bằng account/grant khác.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T13/T16/T25; giao T05/T07–T10.
+4 HM F07 T04 Chốt lời mời cũ và cấp lại
+a Mục tiêu  Chốt lời mời cũ và cấp lại; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product với Backend, Privacy và QA. Lifecycle invite Flow 05; T01/T02.
+c Cần xác nhận trong task  Chốt pending invites/increase khi revoke, resend sau rời, cấp mới và quan hệ hai chiều. Đề xuất kết nối lại cần quyết định mới, token/event hoàn tất cũ không làm active lại. Không vô hiệu grant không liên quan hoặc mọi invite toàn tài khoản.
+d Công việc thực hiện  Lập generation/version mapping và event đến muộn: accept/confirm/restore/retry sau revoke hoặc sau regrant. Giữ trace consent cũ thay vì coi như chưa từng có.
+e Đầu ra  Contract regrant/pending invite và fixtures event cũ.
+f Nghiệm thu  Không revive quyền trái ý định; retry của thao tác cũ không revoke grant mới hoặc cấp scope tăng ngầm.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T07/T08/T09/T25; giao T06–T10 và Flow 05.
+
+5 HM F07 T05 Hoàn thiện layout và triển khai app
+a Mục tiêu  Hoàn thiện layout và triển khai app; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Design và Dev App cùng Product, Privacy. Cấu trúc review ngay; final theo T01–T04 và API T06.
+c Cần xác nhận trong task  Chốt biến thể 17 theo A/B, POP-06, copy rời một/hai chiều, kết quả/unknown, ngữ cảnh sau quyền mất và nháp. Platform/language theo Flow 01; không coi wireframe là quyết định scope.
+d Công việc thực hiện  Xây 17/POP-06 và state cập nhật 06/05/16/forms. Giữ bản nguồn/chiều ở review, chặn double submit, cancel không mutate; loading/keyboard/chữ lớn/screen reader; bỏ response cũ.
+e Đầu ra  Layout/copy/build khi thực hiện, mapping state và entry/exit.
+f Nghiệm thu  Quyền server khác device cleanup, không nút xóa mọi bản sao; mất quyền không lộ giá trị/count hoặc tự thay subject ngầm.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T07/T09/T20/T22/T24; giao T09/T10.
+6 HM F07 T06 Chốt API quyền và oracle đồng thời
+a Mục tiêu  Chốt API quyền và oracle đồng thời; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend Lead cùng App, QA và Privacy. T01–T04; contract Flow 05/06.
+c Cần xác nhận trong task  Chốt read current/reduce/revoke/leave/operation status, expected_version/key/grant generation. Xác định điểm kiểm read/write/job/file, expiry/denied/no change và receipt; không giả endpoint production.
+d Công việc thực hiện  Fixtures partial/all/leave, read-write versus revoke, cancel-confirm cũ, revoke-regrant-retry và cùng key khác payload. Nêu rõ data không được trả sau mất quyền.
+e Đầu ra  Contract versioned và oracle độc lập cho mọi actor/action/điểm hiệu lực.
+f Nghiệm thu  Mọi transition có gate/expected hoặc blocker; không client trusted permission; API status không rò scope/data ngoài quyền mới.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T08/T13/T21/T25; giao T05/T07–T10.
+
+7 HM F07 T07 Xây revoke và lịch sử quyền trên server
+a Mục tiêu  Xây revoke và lịch sử quyền trên server; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend cùng reviewer kỹ thuật, Privacy. T06; registry scope và session hiện hành.
+c Cần xác nhận trong task  Chốt atomic grant update/version, audit, operation ledger, invalidate boundary và retention. Actor từ phiên; chủ dữ liệu/recipient kiểm độc lập với grant đọc sức khỏe.
+d Công việc thực hiện  Thực thi reduce/revoke/leave, deny sau hiệu lực, replay đúng operation, generation guard. Giữ dữ liệu gốc và tác giả; revoke không được dừng thuốc hoặc xóa bản ghi vì liên kết chia sẻ mất.
+e Đầu ra  Service/schema/migration khi cần, audit và kết quả kiểm nhất quán.
+f Nghiệm thu  Không write/read ngoài quyền mới ở các gate đã chốt; không last write wins hoặc replay làm tác dụng phụ thừa; thứ tự race truy vết được.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T08/T25; giao T08–T10.
+8 HM F07 T08 Tích hợp cleanup jobs nhắc và phục hồi
+a Mục tiêu  Tích hợp cleanup jobs nhắc và phục hồi; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend và Dev App cùng vận hành/Privacy. T03/T04/T06/T07; Flow 06/08/09.
+c Cần xác nhận trong task  Chốt scope signal, client cleanup, file/token/job invalidation, notification đến B và nhắc gốc A, restore/reconcile. Không tự thêm người/giờ SLA hoặc hứa offline instant cleanup.
+d Công việc thực hiện  Cập nhật caches/UI/requests/queue, jobs kiểm tại publish/download và recipient khi gửi; log tối thiểu. Restore không hồi sinh quyền, pending invite/event cũ kiểm generation. Tiếp tục nhóm còn quyền.
+e Đầu ra  Integration/recovery runbook và impact map liên flow.
+f Nghiệm thu  Không lộ dữ liệu qua preview/file/nhắc sau gate; không xóa nhóm không liên quan; trạng thái server/device trung thực.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T09/T13–T16/T21/T22/T25; giao T09/T10.
+
+9 HM F07 T09 Kiểm chức năng và hiểu tác động
+a Mục tiêu  Kiểm chức năng và hiểu tác động; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  QA cùng Design, Product và App. Có thể lập case trước; chạy khi policy/build đủ.
+c Cần xác nhận trong task  Chốt role/matrix scope, device/language và oracle T06. Policy mở Blocked, chưa chạy Not run; không lấy ảnh giao diện làm bằng chứng quyền server.
+d Công việc thực hiện  Chạy TC01–TC12 và TC19–TC22: partial/full/leave, dependency, confirm/cancel/unknown, chữ lớn, nội dung và nhóm còn lại. Ghi build/config/expected/actual và retest.
+e Đầu ra  Ma trận kết quả/defect và bằng chứng version.
+f Nghiệm thu  Không false revoked/false deleted; actor hiểu một/hai chiều và giới hạn bản ngoài app; UI không làm mất dữ liệu gốc.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T23/T24; giao T10/reviewer.
+10 HM F07 T10 Kiểm truy cập race và bàn giao
+a Mục tiêu  Kiểm truy cập race và bàn giao; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  QA với Backend, Privacy và vận hành. T05–T08 có build; grant lifecycle/fixtures cùng version.
+c Cần xác nhận trong task  Chốt tiêu chí chặn release, quyền test A/B/C, người xử lý operation/cleanup treo và thiết bị mục tiêu. Các phần file/token ngoài kiểm soát ghi giới hạn thật.
+d Công việc thực hiện  Chạy TC13–TC18 và TC23–TC24, API trực tiếp, in flight writes/reads, cache/files/jobs, generation/restore/log. Rà source/mã/task/API/build và tác động Flow 05/06/08/09.
+e Đầu ra  Packet Flow 07 có evidence thực/known gaps và người nhận.
+f Nghiệm thu  Không cấp lại từ event cũ, mutation trái quyền hoặc lộ dữ liệu tại các gate kiểm; tách duyệt thiết kế/code/test/release và cập nhật Master theo review thực.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho phần phụ thuộc và tác động. Không tự giữ quyền hoặc đổi phạm vi để làm flow chạy được.
+h Đối chiếu và bàn giao  HM-V1-T23/T25/T26/T28; bàn giao các flow bị ảnh hưởng.
+
+VII Ca kiểm thử đề xuất
+HM-F07-TC01–TC24 có trạng thái ban đầu Not run. Khi chạy cần precondition/bước/expected/actual, A/B/C roles, grant/version/generation, build/API/config và evidence. Policy mở ghi Blocked cùng task; race dùng trình tự thực thi kiểm soát và oracle T06, không đổi expected để khớp code.
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+01
+A mở 17 với grant A→B và chiều ngược
+Đúng metadata/role/chiều; không gộp hai grant không có quyết định.
+T01/T09
+02
+A giảm một quyền không có phụ thuộc
+Scope còn lại đúng; B/C và chiều ngược không bị tác động ngoài ý định.
+T02/T09
+03
+Bỏ read có write/edit phụ thuộc
+Hiện rõ quyền kéo theo trước xác nhận; xử lý theo T01/T02, không write ẩn.
+T02/T09
+04
+A ngừng toàn chiều chia sẻ
+Dừng scope A→B theo hiệu lực; không xóa record, lịch thuốc, account hay Plus.
+T01/T09
+05
+B rời quyền được nhận
+Đúng B/chiều được xem lại, không thu hồi C hoặc chiều ngược ngầm.
+T01/T09
+06
+Người chỉ view/write gọi revoke người khác
+Server từ chối; UI role không đủ làm owner hoặc admin.
+T07/T09
+07
+Hủy xem lại trước submit
+Không operation/server mutation, không notification thu hồi.
+T05/T09
+08
+Grant đã dừng, gửi lại thao tác
+No change/đã hoàn tất/conflict theo contract; không tác dụng phụ lặp.
+T06/T09
+09
+Scope nguồn đổi trước A xác nhận
+Conflict, review bản mới trong quyền; không ghi đè scope cũ.
+T06/T09
+10
+Revoke timeout sau commit
+Tra operation đúng actor/generation; không false pending/đã xóa device.
+T06/T09
+11
+Server accepted nhưng B chưa đọc nhắc
+Hiệu lực server không chờ B ack theo policy đã chọn.
+T02/T09
+12
+Revoke partial và kiểm dữ liệu còn được phép
+B vẫn dùng nhóm còn quyền; nhóm mất quyền không lộ count/preview.
+T08/T09
+
+1 Ca kiểm thử tiếp theo
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+13
+Revoke versus mutation đang chạy
+Commit trước giữ record; gate sau revoke chặn; trace thứ tự theo T06, không hứa undo.
+T07/T10
+14
+Revoke versus read/response đang xử lý
+Điểm kiểm trước trả theo contract; client bỏ response cũ khi biết revoke, không re render data.
+T06/T10
+15
+Jobs/file/token/link đã tạo trước revoke
+Kiểm tại gate publish/download/open được chốt; không dùng link cũ vượt quyền. Giới hạn token đã phát ghi rõ.
+T08/T10
+16
+B có nháp/queue khi mất quyền
+Che/xóa/khóa theo policy; không gửi lại bằng grant cũ hoặc account khác.
+T03/T10
+17
+Pending invite/accept/confirm đến sau revoke
+Không tự active lại; generation và contract regrant có trace.
+T04/T10
+18
+Revoke rồi regrant, retry operation cũ
+Trả kết quả cũ phù hợp không thực hiện lại trên grant mới; không hồi sinh quyền cũ.
+T06/T10
+19
+B offline và A thu hồi online
+Server effective tách device cleanup chưa biết; không cam kết wipe offline tức thì.
+T03/T09
+20
+A offline muốn thu hồi hoặc rời
+Không báo đã revoke server; retry/nháp theo T03 và đúng account.
+T03/T09
+21
+Tên dài/chữ lớn/keyboard/screen reader
+Đọc đủ actor/chiều/scope/tác động; control tới được; không chỉ màu.
+T05/T09
+22
+B xem history bản từng ghi sau khi rời
+Dữ liệu A giữ nguồn B; access audit/receipt theo policy, không giữ health grant để đọc status.
+T03/T09
+23
+Restore/migration/cache/temp file/notification
+Không hồi sinh revoke/token cũ; scope đúng, cleanup trong hệ thống không xóa dữ liệu A không liên quan.
+T08/T10
+24
+Rà log/analytics và bản sao ngoài app
+Không nội dung sức khỏe/credential/token thô không cần; UI không hứa xóa ảnh/file ngoài app.
+T08/T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Mã và trách nhiệm liên luồng
+Mã hoặc thành phần
+Flow 07 chịu trách nhiệm
+Điểm giao
+HM-SCR-17
+Hiện quyền theo A/B, chọn giảm/ngừng/rời
+Mở từ 06/19/16; không tăng quyền ngầm.
+HM-POP-06
+Xem lại đúng người/chiều/before after/ảnh hưởng
+Hủy không mutate; xác nhận theo expected_version.
+HM-SCR-06/05/16
+Danh sách/chọn hồ sơ/góc nhìn sau quyền đổi
+Flow 06 phản ánh current grant, không render data cũ.
+Flow 02–04
+Lịch/ghi nhận/sức khỏe và history
+Không xóa gốc/dừng lịch chỉ do chia sẻ mất.
+Flow 05
+Invite pending và chia sẻ lại
+Hủy pending khác revoke active; generation guard event cũ.
+Flow 01/08/09
+Phiên/nhắc/queue và cache
+Recheck quyền, jobs/recipient đúng scope, state offline rõ.
+Grant/operation/audit
+Hiệu lực server, consent history và replay
+Gói evidence/contract pin cùng version các flow.
+2 Điều kiện review và nghiệm thu
+Review tài liệu: T01–T04 chốt đủ actor/chiều/scope/hiệu lực/giới hạn, các gate token/file/jobs rõ và có oracle race. Review implementation: đúng matrix/API/build/config, chạy A/B/C quyền và request đang chạy, kiểm replay/restore/cleanup, known gaps có người nhận. Không lấy việc bấm nút hay ảnh wireframe làm chứng cứ server đã bảo vệ dữ liệu; chưa test ghi Not run.
+3 Nguồn và trạng thái
+Master Screen List V1.0–V3.1 bản 0.1 ngày 23/10/2026 cung cấp FLOW-07 và SCR-17/POP-06. HM_Flow_05_VI_v0_1.docx phân biệt pending/active, chiều và cấp lại; HM_Flow_06_VI_v0_1.docx cung cấp grant kiểm từng request, context/cache và race. Bản Clarifications and Recommendations V1.0 mục quyền/offline cung cấp phương án thu hồi và giới hạn bản sao, chưa được xem là mọi policy đã duyệt.
+Mã task HM-V1 tham chiếu các phần gia đình/quyền, đồng bộ, QA/bảo mật và vận hành. Tài liệu này là nháp Flow 07 mới ngày 24/10/2026, chưa xác nhận build/kết quả thực tế hoặc người phê duyệt. Không sửa Master/các flow trước trong lần tạo; policy mới cần impact map và cập nhật version tài liệu bị ảnh hưởng trước bàn giao.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng trao đổi giữa app và dịch vụ.
+HM
+HealMata
+Tiền tố flow, màn, task và case.
+ID
+Identifier
+Định danh account/grant/relation/operation.
+OTP
+One Time Password
+Mã một lần nếu phương án xác thực lại được chọn; chưa tự thêm.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và tiêu chí cụ thể.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+SLA
+Service Level Agreement
+Cam kết dịch vụ; chưa có ngưỡng làm sạch/đáp ứng được đặt tại đây.
+TC
+Test Case
+Mã ca kiểm thử của Flow 07.
+TTL
+Time To Live
+Thời hạn lưu cache/nháp nếu policy chọn; chưa tự đặt số.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+URL
+Uniform Resource Locator
+Địa chỉ/link cần gate truy cập hiện hành nếu hệ thống kiểm soát.
+UX
+User Experience
+Trải nghiệm và khả năng hiểu/khôi phục luồng.
+1 Thuật ngữ quyền và hiệu lực
+Grant/scope: quyền và phạm vi dữ liệu/hành động. Revoke: thu hồi grant; leave: người nhận rời quyền theo policy; cancel: hủy invite pending. Commit/effective time: điểm server chấp nhận/có hiệu lực theo contract. Generation: phiên cấp quyền để event/retry cũ không tác động nhầm grant mới. Receipt: kết quả tối thiểu của operation. Tombstone: dấu trạng thái vô hiệu theo thiết kế để phục hồi không hồi sinh quyền. Cleanup: làm sạch phần dữ liệu local/job trong phạm vi kiểm soát. Audit: dấu vết hành động/kết quả theo actor và version.

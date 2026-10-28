@@ -1,0 +1,415 @@
+HM FLOW 12 Phân tích và tạo báo cáo
+HealMata V2.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Design, Data, App, Backend, reviewer nội dung và QA để triển khai hành trình chọn đúng người/kỳ, đọc số liệu có nguồn, xem dữ liệu thiếu, tạo báo cáo theo mẫu rồi xem/tải/chia sẻ có chủ đích. Mọi kết quả cần truy được về dữ liệu và phiên bản phép tính/mẫu.
+Quyền dữ liệu và quyền lợi Plus là hai điều kiện riêng. Có gói trả phí không tự mở dữ liệu người thân; hết gói không tự xóa dữ liệu. V2.0 và phân bổ Free/Plus trong nguồn là đề xuất, cần chốt tại task. Tài liệu chưa xác nhận build, độ đúng phép tính hoặc tính năng thương mại đã sẵn sàng.
+I Phạm vi và kết quả cần đạt
+1 Màn hình và hành trình
+14/30 vào 31 phân tích; 34 chọn/xem lại/tạo; 32 danh sách và trạng thái job; 33 chi tiết báo cáo; 29 nguồn và lịch sử sửa; 22 xuất dữ liệu gốc theo Flow10. 35/36 là chuyển giao sang Flow13 cho quyền lợi gói, không xử lý thanh toán trong Flow12. Không tạo mã màn mới cho từng trạng thái job.
+2 Kỳ và dữ liệu
+Thiết kế lựa chọn ngày/tuần/tháng/quý/năm theo phạm vi đã duyệt, luôn nêu khoảng ngày thật, timezone, đơn vị, nguồn và điều kiện đủ dữ liệu. Không thu hẹp mục tiêu dài hạn chỉ vì dữ liệu thử ngắn; cũng không dựng xu hướng năm từ vài tuần. 30 biểu đồ cơ bản có thể thuộc core theo quyết định riêng, không tự chuyển toàn bộ vào paywall.
+3 Báo cáo và giới hạn nội dung
+Đề xuất báo cáo chuẩn bị đi khám bằng mẫu theo quy tắc đã review, không AI sinh nhận định. Có chủ thể/kỳ/mốc snapshot/version; nguồn sửa thì tạo bản mới, không âm thầm thay tệp cũ. Không chẩn đoán, tạo health score, suy tuân thủ thuốc hoặc đề xuất điều trị từ số ghi nhận hay số việc chăm sóc.
+4 Ranh giới và kết quả
+Flow12 sở hữu phân tích, job báo cáo, đọc/tải và chia sẻ có chủ ý nếu scope chọn. Flow10 giữ xuất gốc miễn phí trong quyền; Flow13 giữ mua/restore/gia hạn. Chưa gửi local không tự có trong báo cáo server. Bản tải ra ngoài app có giới hạn thu hồi. Kết quả phải khớp giữa API, chart, bảng và file theo cùng spec/fixtures độc lập.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+Mã số là HM-SCR. Các nhánh quyền và quyền lợi được kiểm riêng tại server. 32/33 dùng cùng job/report identity khi quay lại, refresh không tự tạo mới. Nhánh 22 là xuất gốc riêng, không biến thành báo cáo Plus.
+
+III Flow chi tiết
+1 Mở phân tích và chọn người kỳ
+a Ngữ cảnh và quyền
+Từ 14/30 hoặc mục báo cáo mở 31. Chọn đúng người trong quyền; giữ nhãn chủ thể và kỳ trên màn, preview và xác nhận tạo. Khi đổi người/kỳ, loại phản hồi cũ và tải đúng query. Server lọc nội dung, tổng số và metadata trước trả; thiếu quyền không gợi ý mua Plus để mở dữ liệu trái quyền.
+b Phạm vi và cách đọc
+Chọn kỳ được hỗ trợ hoặc khoảng ngày theo spec, timezone hồ sơ và mốc lấy dữ liệu đã chốt. Chỉ số có định nghĩa, nguồn, đơn vị, số mẫu/điều kiện đủ dữ liệu khi áp dụng. Có bảng thay thế và đường mở 29. Không nối khoảng trống như dữ liệu liên tục; màu sắc không tự gán tốt/xấu y tế. Không so đơn vị/nguồn chưa có quy tắc tương thích.
+2 Thiếu dữ liệu lỗi và xem nguồn
+Tách giá trị 0 thật, không có bản ghi, thiếu trường/đơn vị, chưa đủ mẫu, đang tải và truy vấn lỗi. Kỳ dài chỉ hiện phạm vi thật, không bù bằng 0 hoặc kết luận khỏe/bệnh. Tỷ lệ xác nhận nếu được duyệt phải rõ tử số/mẫu số/kỳ, không gọi là bằng chứng đã uống. 29 kiểm quyền hiện tại trước xem/sửa; sửa nguồn theo Flow03/04, không sửa tệp snapshot cũ.
+3 Chuẩn bị xem lại và tạo báo cáo
+34 chọn chủ thể, kỳ, nội dung/mẫu, ngôn ngữ và định dạng có thật; câu hỏi chuẩn bị đi khám do người dùng kiểm tra nếu scope chọn. Preview nêu dữ liệu được đưa vào, thiếu gì, nguồn và giới hạn. Dữ liệu chưa gửi ở máy cần xử lý qua Flow09, không âm thầm lấy vào file server. Quay lại trước tạo không sinh job.
+Trước gửi kiểm data access và quyền lợi tính năng riêng. Thiếu Plus chỉ giải thích đúng phần nâng cao, cho chuyển Flow13 nếu người dùng muốn và giữ đường core/xuất gốc. Không tự mua hoặc tự cấp membership. Gửi với operation ổn định; có receipt mới báo đã nhận. Timeout là chưa rõ, đối chiếu cùng ý định thay vì tạo lại job để thử.
+
+4 Danh sách và tiến độ báo cáo
+32 hiển thị trong quyền theo người/kỳ/trạng thái: chờ, đang tạo, sẵn sàng, lỗi, không còn khả dụng theo policy. Đóng app rồi mở lại tìm đúng job; refresh chỉ tải trạng thái. Lỗi một phần không đưa tệp thiếu như báo cáo hoàn chỉnh. Hủy job sau nhận chỉ có nếu contract được duyệt. Thông báo sẵn sàng mở 33 sau kiểm phiên/quyền, không tự tải/chia sẻ.
+5 Chi tiết snapshot và bản mới
+33 nêu người, kỳ, khoảng dữ liệu thật, thời điểm snapshot, nguồn/đơn vị, thiếu dữ liệu và version công thức/mẫu. Báo cáo cũ luôn giữ mốc; không trình bày như dữ liệu vừa cập nhật. Mở 29 có thể thấy nguồn hiện tại khác snapshot; nhãn phải giải thích được. Tạo lại sau sửa nguồn là report identity/version mới; bản cũ xử lý theo retention/quyền, không bị ghi đè ngầm.
+6 Tải và chia sẻ có chủ đích
+a Quyền và tệp
+Kiểm quyền khi tạo, trước công bố, khi mở và tải/chia sẻ. Link/file ID không phải chứng cứ quyền. Tệp hết hạn hoặc không còn quyền thì chặn; tải lại/tạo mới theo policy, không dùng cache để vượt chặn. Khi tải chưa biết kết quả lưu trên máy, chỉ nêu trạng thái quan sát được, không báo chắc đã lưu hoặc đã đọc.
+b Chuyển giao ra ngoài app
+Cho xem lại đúng tệp/người/kỳ/mốc trước hành động tải/chia sẻ. Chỉ mở bảng chia sẻ hệ điều hành sau thao tác rõ; người dùng tự chọn người nhận. Không tự email, chọn bác sĩ/người thân hoặc tạo link công khai. Hủy bảng chia sẻ không ghi đã gửi; callback hạn chế không được biến thành đã được đọc. File temp/cache được bảo vệ và dọn theo policy; không hứa thu hồi bản đã ra ngoài app.
+7 Thu hồi quyền đổi gói và offline
+Grant bị thu hồi giữa job hoặc trước publish/tải: ngừng công bố/trả file ngoài quyền, cập nhật danh sách/preview/cache theo policy. Plus mất hiệu lực không tự xóa dữ liệu hoặc khóa export gốc; cách đọc/tải báo cáo đã tạo và việc đang chạy phải chốt T04/T05. Người trả tiền không sở hữu dữ liệu người khác; rời gia đình cần kiểm quyền hiện hành riêng.
+Tạo báo cáo cần nguồn online theo phương án đề xuất; xem cache/file offline chỉ trong phạm vi T05 duyệt cùng Flow09/10. Đổi account không lộ báo cáo, thumbnail, file temp hoặc callback cũ. Restore không hồi sinh grant/report file đã vô hiệu; đăng nhập lại không tự phục hồi quyền đã thu hồi. Trợ giúp qua 20 theo kênh đã chốt, không tự bỏ gate để mở file.
+
+IV Layout sơ bộ
+1 Phân tích và dữ liệu chưa đủ
+
+a Biến thể và giới hạn
+Chart là vùng giữ chỗ, không phải số liệu thực. Cần phiên bản có đơn vị/trục/legend/bảng thay thế và đủ trạng thái lỗi, rỗng, thiếu nguồn, thiếu quyền. Các kỳ dài vẫn chỉ dùng dữ liệu thật.
+
+2 Chọn và xem lại báo cáo
+
+a Biến thể và giới hạn
+34 có thể gồm hai bước cùng mã. Điều kiện Free/Plus là policy T01/T04; chưa có bảng quyền lợi thì không gắn nhãn thương mại như đã chốt. Mẫu/câu hỏi/nội dung phải qua T02/T03.
+
+3 Danh sách và chi tiết bản báo cáo
+
+a Biến thể và giới hạn
+32 cần khôi phục đúng job sau đóng app. 33 có snapshot và version; bản cũ không tự đổi. Phần preview/tổng/thumbnail cũng kiểm quyền; lỗi tạo hoặc tệp thiếu không gọi sẵn sàng.
+
+4 Tải chia sẻ và truy nguồn
+
+a Biến thể và giới hạn
+Bảng chia sẻ thật do hệ điều hành/app đích hiển thị. Khung trái là xem lại trước chuyển giao. Khung phải là nguồn hiện tại trong quyền, không mặc định trùng dữ liệu snapshot hoặc cho sửa ngoài quyền.
+
+V Trạng thái và hợp đồng dữ liệu
+1 Các lớp dữ liệu cần tách
+Lớp
+Điều kiện hoặc bằng chứng
+Không được suy
+Quyền dữ liệu
+Grant/scope hiện hành tại gate server
+Mua Plus không cấp quyền sức khỏe
+Quyền lợi tính năng
+Entitlement theo policy và nguồn Flow13
+Checkout thành công chưa tự là quyền dữ liệu
+Dữ liệu nguồn
+Kỳ timezone đơn vị nguồn và độ mới
+Thiếu dữ liệu không phải 0/bình thường
+Snapshot báo cáo
+Mốc dữ liệu và version công thức/mẫu
+Nguồn sửa không tự sửa bản cũ
+Job và tệp
+Receipt trạng thái tạo file/hạn theo nguồn
+Nhận yêu cầu chưa có nghĩa tạo xong
+Tải chia sẻ
+Kết quả quan sát được từ kênh
+Mở bảng chia sẻ chưa chứng minh gửi/đọc
+2 Trạng thái job và khôi phục
+Trạng thái
+Ý nghĩa
+Bước tiếp
+Chưa gửi
+Chọn/xem lại chưa tạo job
+Sửa lựa chọn hoặc quay lại
+Chưa rõ kết quả
+Có thể đã nhận nhưng mất phản hồi
+Tra/retry cùng operation
+Chờ hoặc đang tạo
+Có job chưa có tệp hoàn chỉnh
+Xem lại tiến độ, không tạo lại ngầm
+Sẵn sàng
+Tệp đủ điều kiện công bố
+Kiểm quyền rồi xem/tải
+Lỗi hoặc thiếu phần
+Không hoàn tất theo contract
+Báo rõ, retry có kiểm soát
+Không còn khả dụng
+Hết hạn/mất quyền/vô hiệu theo policy
+Chặn nội dung; hướng xử lý trong quyền
+
+3 Hợp đồng số liệu và snapshot
+a Spec chỉ số
+T02 định nghĩa mỗi chỉ số: trường nguồn, loại bản ghi, đơn vị, cách đổi đơn vị nếu được duyệt, kỳ/timezone, tử số/mẫu số, xử lý sửa/xóa/trùng/người nhập hộ, điều kiện đủ dữ liệu, làm tròn và nhãn. Không đặt ngưỡng y khoa hoặc suy tương quan thành nguyên nhân. Fixture tính độc lập với code tổng hợp phải làm oracle cho chart/bảng/report/export.
+b Tái hiện báo cáo
+Đề xuất report_id/job_id/operation_id, requester/subject được server kiểm, phạm vi/kỳ/timezone, snapshot_at/cutoff, source references/version, formula/template/language/schema version và file metadata. Snapshot phải nhất quán theo contract; nếu quét từng phần cần semantics được công bố, không tự gọi là một mốc duy nhất. Tái hiện số liệu không cho phép khôi phục dữ liệu đã xóa hoặc vượt retention/quyền.
+c Nguồn thay đổi
+Report cũ bất biến nội dung theo snapshot trong phạm vi lưu được duyệt; bản mới có identity/version mới. Muốn nêu đã có thay đổi nguồn phải có chứng cứ, không tự suy từ refresh. Link 29 mở nguồn hiện tại và quyền hiện hành; khi nguồn đã xóa/không còn quyền, nêu giới hạn thay vì dựng lại dữ liệu. Không dùng file cũ làm đường bypass thu hồi.
+4 API job và vòng đời file
+T06 chốt idempotency/receipt/status, cancel nếu hỗ trợ, retry lỗi/unknown và điều kiện partial. T04/T05 chốt quyền tạo/publish/open/tải, file expiry, quyền lợi đổi giữa job, cache/temp và cleanup khi revoke/xóa/đổi account. Cùng khóa khác scope không sửa job ngầm; event lặp/đảo thứ tự không công bố lại file đã vô hiệu. Metadata/count cũng phải lọc quyền.
+5 Handoff billing đo lường và vận hành
+Flow13 cung cấp quyền lợi theo account/gia đình và mốc hiệu lực đã xác minh; Flow12 không tự suy từ tap mua hoặc cache gói. Chưa chốt billing thì nhánh dữ liệu/mẫu có thể tiếp tục; tính năng phụ thuộc entitlement dùng trạng thái rõ trên môi trường thử. Không tự đặt giá hoặc giới hạn Free/Plus ở đây.
+Log/analytics không chứa nội dung report, tên thuốc, số đo, token/receipt nhạy cảm. Đếm tạo, sẵn sàng, tải, mở chia sẻ theo định nghĩa riêng; không suy sức khỏe hoặc hiệu quả điều trị. Support có owner xử lý job treo/tệp lỗi/quyền; upgrade/restore kiểm dữ liệu, file, grant và entitlement với nguồn hiện hành trước mở.
+
+VI Task triển khai
+1 T01 Chốt phạm vi phân tích và ma trận Free Plus
+a Mục tiêu  Mỗi tính năng có phạm vi phát hành và điều kiện rõ.
+b Phụ trách và đầu vào  Product/PM với Finance Privacy Data; cần Master Q03/Q10, V2.0 và nền thực.
+c Điểm cần xác nhận trong task  Chốt kỳ ngày/tuần/tháng/quý/năm, 30 core, 31 mở rộng, report nâng cao và export gốc miễn phí.
+d Công việc  Lập feature × kỳ × actor × entitlement; nối Flow10/13; rà build/API còn thiếu.
+e Đầu ra  Scope/feature matrix và baseline có version.
+f Tiêu chí nghiệm thu  Không đưa core đã có vào paywall ngầm; không mua gói để mở dữ liệu ngoài quyền.
+g Khi thiếu đầu vào  Làm dữ liệu/contract độc lập khi billing chưa chốt; chưa bật thương mại phụ thuộc.
+h Liên kết  HM-V2-T01 T02; nối Flow10 13
+2 T02 Chốt chỉ số dữ liệu và phép tính
+a Mục tiêu  Số liệu có định nghĩa đủ để tính và kiểm độc lập.
+b Phụ trách và đầu vào  Product/Data với chuyên môn Backend QA; cần schema Flow02–04/11 trong scope.
+c Điểm cần xác nhận trong task  Chốt nguồn, đơn vị, timezone, mẫu số/tử số, đủ mẫu, missingness, hiệu chỉnh và làm tròn.
+d Công việc  Lập metric dictionary cùng trường hợp 0 thật/thiếu/lỗi; fixture tính độc lập cho API chart bảng report.
+e Đầu ra  Data spec/version và fixture có expected.
+f Tiêu chí nghiệm thu  Không nối khoảng trống giả; không suy đã uống từ xác nhận hoặc sức khỏe từ số việc.
+g Khi thiếu đầu vào  Thiếu nguồn/đơn vị thì ghi không thể tính; chỉ dựng dữ liệu mẫu có nhãn.
+h Liên kết  HM-V2-T03 T05 T19
+
+VI Task triển khai tiếp theo
+3 T03 Chốt mẫu nội dung và snapshot báo cáo
+a Mục tiêu  Bản báo cáo có nguồn và giới hạn, không tự tạo kết luận ngoài scope.
+b Phụ trách và đầu vào  Product/Design với reviewer chuyên môn Data Privacy; cần T01 T02.
+c Điểm cần xác nhận trong task  Duyệt mẫu/câu hỏi, snapshot semantics, version, ngôn ngữ, định dạng và điều kiện không công bố.
+d Công việc  Tạo mẫu theo quy tắc; nhận xét trong phạm vi duyệt; nguồn sửa tạo bản mới; thiết kế truy nguồn hiện tại.
+e Đầu ra  Report spec/template version và mẫu đã review.
+f Tiêu chí nghiệm thu  Không AI sinh nhận định, không chẩn đoán/đổi liều; bản cũ giữ mốc, file thiếu không thành hoàn chỉnh.
+g Khi thiếu đầu vào  Chưa review nội dung chỉ dựng cấu trúc; PDF vẫn là định dạng đề xuất.
+h Liên kết  HM-V2-T03 T04 T07 T08
+4 T04 Chốt quyền dữ liệu và quyền lợi tính năng
+a Mục tiêu  Từng gate kiểm đúng hai điều kiện độc lập.
+b Phụ trách và đầu vào  Backend/Auth với Privacy Product và đầu mối Flow13; cần T01.
+c Điểm cần xác nhận trong task  Chốt create/publish/open/tải khi grant hoặc entitlement đổi; chính sách đọc báo cáo đã tạo sau hết gói.
+d Công việc  Lập matrix self/người thân/gia đình/Plus; preview/count/thumbnail/file đều kiểm; nối nguồn quyền lợi xác minh.
+e Đầu ra  Access/entitlement contract và oracle thay đổi quyền.
+f Tiêu chí nghiệm thu  Người trả tiền không sở hữu dữ liệu người khác; mất Plus không xóa dữ liệu/khóa xuất gốc.
+g Khi thiếu đầu vào  Có thể dùng contract entitlement giả lập có nhãn; không coi checkout/tap là quyền thật.
+h Liên kết  HM-V2-T07 T11 T17 T20
+
+VI Task triển khai tiếp theo
+5 T05 Chốt vòng đời file cache và chia sẻ
+a Mục tiêu  Tệp được quản lý trong app và giới hạn bản ngoài app được giải thích rõ.
+b Phụ trách và đầu vào  Privacy/App/Backend với Product; cần T03 T04 và Flow09/10.
+c Điểm cần xác nhận trong task  Chốt lưu/xóa/hạn tải, cache/temp/offline, revoke/đổi account/restore và chuyển giao chia sẻ.
+d Công việc  Lập data lifecycle cho report/file; xem lại trước share; quyền kênh tải và cleanup theo nền tảng đã chọn.
+e Đầu ra  File policy, sharing flow và ma trận cleanup.
+f Tiêu chí nghiệm thu  Không link công khai tự động; không email/chọn người nhận ngầm; hủy share không ghi đã gửi/đọc.
+g Khi thiếu đầu vào  Chưa duyệt offline thì không mở cache để vượt kiểm; vẫn làm state hết hạn/mất quyền.
+h Liên kết  HM-V2-T09 T10 T17 T21
+6 T06 Xây API tổng hợp jobs và renderer
+a Mục tiêu  Chart và báo cáo lấy cùng spec và có kết quả job kiểm chứng được.
+b Phụ trách và đầu vào  Backend/Data với QA App; cần T02–T05.
+c Điểm cần xác nhận trong task  Chốt operation/receipt, snapshot consistency, retry/cancel, partial, nguồn version và ngưỡng vận hành có căn cứ.
+d Công việc  Làm query/tổng hợp, job/renderer, list/detail/source/file gates; chống trùng và event đảo thứ tự.
+e Đầu ra  API/schema/error map, renderer version và tệp mẫu.
+f Tiêu chí nghiệm thu  Fixture khớp; retry không nhân report; nguồn sửa không ghi đè bản cũ; revoke không công bố file trái quyền.
+g Khi thiếu đầu vào  Làm staging/mock cho contract; chưa gọi số liệu mock là dữ liệu thật hoặc pass production.
+h Liên kết  HM-V2-T05 T07 T09 T17
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế chart bảng file và trạng thái
+a Mục tiêu  Người đọc hiểu của ai kỳ nào nguồn nào và thiếu gì.
+b Phụ trách và đầu vào  Designer với Product Data chuyên môn App; cần T01–T05.
+c Điểm cần xác nhận trong task  Duyệt 31–34, link29/22, preview, bảng thay thế, ngôn ngữ và layout file.
+d Công việc  Hoàn thiện wireframe; trục/legend/đơn vị/nhãn; loading/rỗng/lỗi/thiếu mẫu/quyền/Plus; chữ lớn và đọc màn hình.
+e Đầu ra  UI/file design cùng state map có version.
+f Tiêu chí nghiệm thu  Màu không tự gán tốt/xấu y tế; không thu chữ quá nhỏ; thiếu quyền không gợi ý mua để mở.
+g Khi thiếu đầu vào  Dùng 8 khung IV làm cơ sở review; chưa xem là UI hoặc báo cáo cuối cùng.
+h Liên kết  HM-V2-T04 T06 T08 T10
+8 T08 Triển khai app tạo xem tải và chia sẻ
+a Mục tiêu  Có hành trình tích hợp giữ đúng chủ thể report và quyền.
+b Phụ trách và đầu vào  App với Backend/Data; cần T06 T07.
+c Điểm cần xác nhận trong task  Chốt query invalidation, resume job, mở file/share thật, nguồn và gate từ Flow13.
+d Công việc  Làm31–34, khôi phục job, source29, export22, tải/share có chủ ý; chống callback/file account cũ.
+e Đầu ra  Build tích hợp cùng bằng chứng trạng thái và hướng phục hồi.
+f Tiêu chí nghiệm thu  Refresh không sinh job; tap notification không tự share; đúng file/người/kỳ trước chuyển giao.
+g Khi thiếu đầu vào  Billing chưa đủ điều kiện dùng môi trường thử với trạng thái rõ; giữ core/export gốc.
+h Liên kết  HM-V2-T06 T08 T10 T17 T18 T22
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm độ đúng dữ liệu chart và file
+a Mục tiêu  Có oracle độc lập cho số liệu và thể hiện.
+b Phụ trách và đầu vào  QA/Data với Design chuyên môn; cần T02 T03 và build T06/T08.
+c Điểm cần xác nhận trong task  Chốt fixture nhiều kỳ, đơn vị, missingness, nhập hộ/sửa/xóa, ngôn ngữ và report dài.
+d Công việc  Chạy TC01–TC12; so API/chart/bảng/file; kiểm chữ lớn, nguồn, snapshot và truy vết.
+e Đầu ra  Kết quả theo build/spec/fixture, file render và defect.
+f Tiêu chí nghiệm thu  Không pass chỉ vì số liệu hai màn giống nhau; đối chiếu kết quả tính độc lập và đủ dữ liệu.
+g Khi thiếu đầu vào  Thiếu oracle/build ghi Not run hoặc Blocked; không tự đặt ngưỡng y khoa để đủ case.
+h Liên kết  HM-V2-T19; T03 T04 hỗ trợ
+10 T10 Kiểm race quyền phục hồi và phát hành
+a Mục tiêu  Biết giới hạn thực và không lộ dữ liệu qua file hoặc job cũ.
+b Phụ trách và đầu vào  QA/Security/App/Backend/vận hành; cần T04 T05 T08 T09.
+c Điểm cần xác nhận trong task  Chốt device/OS, race matrix, upgrade/restore, hiệu năng, ngưỡng và hỗ trợ.
+d Công việc  Chạy TC13–TC24; revoke/Plus đổi/job lỗi/timeout/cache; kiểm log, chia sẻ thực và restore.
+e Đầu ra  Bằng chứng thực, known limits, runbook và release packet.
+f Tiêu chí nghiệm thu  Không file/preview trái quyền; bản cũ không đổi ngầm; không log dữ liệu sức khỏe hoặc token thô.
+g Khi thiếu đầu vào  Thiếu môi trường đánh Blocked; chưa mở thương mại nếu gate liên quan chưa đạt.
+h Liên kết  HM-V2-T20 T21 T22 T23 T24
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA ghi build, spec/template version, fixture/oracle, account/subject/grant/entitlement, report/job ID và thiết bị/OS. Thiếu đầu vào ghi Blocked cùng owner; kết quả số liệu, quyền, file và kênh chia sẻ kiểm riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+12-01
+Đổi người/kỳ khi response trước tới trễ
+Nhãn/query/chart/report đúng chủ thể; callback cũ không lẫn nội dung hoặc tổng.
+T04 T08
+12-02
+Kỳ ngày tuần tháng quý năm với dữ liệu ngắn
+Giữ kỳ đã duyệt nhưng nêu phạm vi thật; không dựng insight năm từ vài tuần.
+T01 T02
+12-03
+0 thật thiếu bản ghi thiếu đơn vị và lỗi query
+Bốn trường hợp có nghĩa/trạng thái đúng; không điền 0 hoặc bình thường vào chỗ thiếu.
+T02 T07
+12-04
+Fixture có đơn vị thời gian và hiệu chỉnh khác
+API/chart/bảng/file khớp oracle độc lập; không tự đổi đơn vị ngoài spec.
+T02 T09
+12-05
+Fixture xác nhận thuốc hoặc hoàn tất việc
+Tỷ lệ nếu có rõ mẫu số/kỳ; không gọi đã uống/tuân thủ/sức khỏe tốt.
+T02 T03
+12-06
+Mở biểu đồ với khoảng trống và chữ lớn
+Không nối dữ liệu giả; trục/legend/đơn vị và bảng thay thế còn dùng được.
+T02 T07
+12-07
+Mở29 từ chart hoặc report rồi quay lại
+Đúng nguồn hiện tại trong quyền; nhãn khác snapshot khi cần; trở về đúng report.
+T03 T08
+12-08
+34 chọn phạm vi preview rồi quay lại
+Không tạo job trước xác nhận; đúng người/kỳ/nguồn/giới hạn, không tự nhập dữ liệu local chưa gửi.
+T03 T07
+12-09
+Tạo report rồi đóng app mở lại/refresh
+Tìm đúng job và trạng thái; không tạo job mới ngầm.
+T06 T08
+12-10
+Sửa nguồn sau report rồi tạo bản mới
+Bản cũ giữ snapshot; report mới có identity/version mới, không ghi đè tệp cũ.
+T03 T06
+12-11
+Kiểm file dài tiếng Việt Anh theo mẫu duyệt
+Số liệu/nhãn/nguồn/mốc/version đầy đủ và đọc được; không nội dung ngoài scope.
+T03 T07
+12-12
+Free user hoặc người thiếu quyền dữ liệu
+Export gốc vẫn trong quyền; Plus không mở dữ liệu bị chặn; core không bị paywall ngầm.
+T01 T04
+
+VII Ca kiểm thử quyền lỗi và khôi phục
+Toàn bộ ca hiện là Not run. QA ghi build, spec/template version, fixture/oracle, account/subject/grant/entitlement, report/job ID và thiết bị/OS. Thiếu đầu vào ghi Blocked cùng owner; kết quả số liệu, quyền, file và kênh chia sẻ kiểm riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+12-13
+Server nhận job rồi timeout retry cùng ý định
+Unknown được đối chiếu; không nhân job hoặc công bố nhiều bản ngoài policy.
+T06 T08
+12-14
+Job lỗi một phần hoặc renderer thất bại
+Không đưa file thiếu như bản hoàn chỉnh; có state lỗi và retry đúng contract.
+T03 T06
+12-15
+Grant thu hồi sau tạo trước publish
+Không công bố file/preview trái quyền; cleanup theo T05.
+T04 T05
+12-16
+Grant đổi ngay trước tải hoặc share
+Kiểm gate hiện hành; link/file ID/cache không vượt quyền; không tự cấp lại grant.
+T04 T08
+12-17
+Plus hết hiệu lực khi job đang chạy
+Theo oracle T04; không xóa dữ liệu hoặc khóa export gốc; không suy từ cache gói.
+T01 T04
+12-18
+Mở báo cáo đã tạo sau hết gói/rời gia đình
+Đọc/tải theo policy và quyền dữ liệu hiện hành; người trả tiền không có toàn quyền.
+T04 T05
+12-19
+File hết hạn tải mạng lỗi hoặc lưu máy chưa rõ
+Chặn/tra hoặc tải lại trong quyền; không báo chắc đã lưu khi không biết.
+T05 T08
+12-20
+Mở bảng share rồi hủy hoặc app đích không xác nhận
+Không tự chọn người nhận/email/link; không ghi đã gửi/được đọc thiếu bằng chứng.
+T05 T08
+12-21
+Logout A login B với file/temp/callback còn
+Không lộ report/thumbnail/file A trong app B; queue/job xử lý theo account.
+T05 T08
+12-22
+Xóa nguồn/account hoặc restore từ bản cũ
+Không hồi sinh quyền/report file đã vô hiệu; snapshot không dùng để vượt retention.
+T03 T05
+12-23
+Event đảo thứ tự hoặc notification tới muộn
+Trạng thái theo nguồn/version; không công bố lại file vô hiệu hoặc auto share.
+T06 T08
+12-24
+Kiểm log analytics hỗ trợ và hồi quy core
+Không report/số đo/token thô; metrics tách tạo/tải/share; core và export gốc còn đúng.
+T01 T05 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+SCR14 30 31
+Nguồn vào và phân tích theo thời gian
+Kỳ/đơn vị/thiếu dữ liệu/spec; core30 chốt riêng
+SCR34
+Chọn xem lại và tạo
+Đúng người/kỳ; quyền và quyền lợi riêng
+SCR32 33
+Job danh sách chi tiết snapshot
+Bản cũ giữ mốc; nguồn sửa tạo bản mới
+SCR29
+Nguồn hiện tại và lịch sử sửa
+Gate hiện hành; không sửa report cũ
+SCR22 Flow10
+Xuất dữ liệu gốc
+Miễn phí trong quyền; khác report nâng cao
+Flow13 SCR35 36
+Quyền lợi Plus
+Nguồn xác minh; không cấp quyền dữ liệu
+Flow06–09
+Ngữ cảnh grant nhắc offline
+Kiểm quyền/cache/đổi account
+Flow10
+Xóa xuất và lifecycle file
+Không hồi sinh quyền/file sau restore
+2 Điều kiện đóng flow
+T01–T05 có policy/spec và người duyệt; T06 contract/API/renderer; T07 đủ layout app/file; T08 build; T09–T10 có bằng chứng. Chỉ số có oracle độc lập và template được review. Thiếu baseline Free/Plus chỉ chặn phần phụ thuộc, không tự chặn nhánh dữ liệu độc lập hoặc gán số thương mại.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026, trang 8, 13, 26 và 29: SCR29–34, FLOW12, Q03/Q10. HealMata V2.0 VI bản 0.1 ngày 18/10/2026, phần I–II, bảng task trang 1–6 và task03/04/07–10: số liệu có nguồn, missingness, snapshot/mẫu, quyền khác entitlement, export gốc miễn phí và chia sẻ có chủ đích.
+Mã T01–T10 ở đây là nhóm công việc Flow12, liên kết HM-V2-T01–T24 của nguồn, không thay mã nguồn. Các lựa chọn mới vẫn cần chốt trong task. Tài liệu bổ sung flow/layout, chưa xác nhận code, chất lượng dữ liệu hay release. Thay policy hoặc công thức cần cập nhật version/fixtures/contract/layout/case liên quan.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+AI
+Artificial Intelligence
+Không dùng AI sinh nhận định trong scope đề xuất này.
+API
+Application Programming Interface
+Hợp đồng giao tiếp app và dịch vụ.
+CSV
+Comma Separated Values
+Phương án định dạng dữ liệu gốc theo Flow10.
+HM
+HealMata
+Tiền tố flow màn task và case.
+ID
+Identifier
+Định danh subject job report operation.
+JSON
+JavaScript Object Notation
+Phương án định dạng máy đọc nếu được duyệt.
+OS
+Operating System
+Hệ điều hành của thiết bị.
+PDF
+Portable Document Format
+Định dạng báo cáo đề xuất, chưa mặc định chốt.
+PM
+Project Manager
+Điều phối phạm vi đầu vào và bàn giao.
+QA
+Quality Assurance
+Kiểm chất lượng theo build/spec/oracle.
+SCR
+Screen
+Mã màn trong Master Screen List.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ phân tích và báo cáo
+Snapshot là dữ liệu chụp tại mốc được định nghĩa; cutoff là mốc lấy dữ liệu. Missingness là dữ liệu thiếu; fixture là bộ dữ liệu kiểm có expected; oracle là kết quả chuẩn tính độc lập. Template là mẫu báo cáo theo quy tắc; renderer tạo tệp từ mẫu. Version xác định phiên bản dữ liệu/công thức/mẫu; source là nguồn truy vết.
+Grant là quyền dữ liệu; entitlement là quyền lợi tính năng/gói. Job là tác vụ tạo báo cáo; operation là ý định gửi có định danh; receipt là kết quả theo nguồn. Idempotency giúp retry không tạo tác động lặp ngoài thiết kế; unknown là chưa rõ kết quả. Publish là công bố tệp đủ điều kiện; share là chuyển giao do người dùng chủ động. Scope là phạm vi duyệt; baseline là bộ quyết định hiện hành; restore là khôi phục.

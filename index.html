@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#20bfa5">
+  <title>HealMata · Prototype 18 flows</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/review.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/split.css">
+  <link rel="stylesheet" href="css/i18n.css">
+</head>
+<body>
+  <aside class="library" aria-label="Danh mục hành trình">
+    <img class="library-logo" src="assets/logo-horizontal-original.png" alt="HealMata">
+    <div class="library-intro">PROTOTYPE V1.0 <span>18 hành trình</span></div>
+    <nav id="flow-list" aria-label="Chọn flow"></nav>
+    <div class="library-footer">Art từ thiết kế gốc · Dữ liệu giả lập<br>27.10.2026 · Mở trực tiếp, dùng offline</div>
+  </aside>
+  <main class="workspace">
+    <header class="review-bar">
+      <button class="icon-button mobile-menu" id="menu-toggle" aria-label="Mở danh mục flow">☰</button>
+      <div><div class="eyebrow" id="flow-number"></div><h1 id="flow-title"></h1></div>
+      <div class="sync-label"><span></span>App ↔ Flow · Đồng bộ hai chiều</div>
+    </header>
+    <div class="review-controls">
+      <label>Vai đang xem <select id="role-select" aria-label="Vai đang xem"></select></label>
+      <label>Tình huống <select id="scenario-select" aria-label="Tình huống"><option value="normal">Bình thường</option><option value="offline">Mất mạng</option><option value="timeout">Gửi xong, mất phản hồi</option><option value="conflict">Dữ liệu đã thay đổi</option><option value="revoked">Quyền bị thu hồi</option></select></label>
+      <button class="review-button" id="reset-flow">Đặt lại flow</button>
+      <button class="review-button" id="reset-all">Đặt lại toàn bộ</button>
+    </div>
+    <div class="review-board">
+    <div id="app-stage" class="app-stage">
+      <div class="device-wrap">
+        <div class="device-caption">iPhone 16 <span>393 × 852 CSS px</span></div>
+        <section class="iphone" aria-label="Màn hình iPhone HealMata">
+          <div class="status-bar"><strong>9:41</strong><div class="dynamic-island" aria-hidden="true"></div><span aria-label="Tín hiệu và pin">▮▮▮  ▰</span></div>
+          <header class="app-header" id="app-header"></header>
+          <div id="context-strip" class="context-strip"></div>
+          <div id="app-content" class="app-content"></div>
+          <nav id="tab-bar" class="tab-bar" aria-label="Điều hướng ứng dụng"></nav>
+          <div class="home-area" aria-hidden="true"><span></span></div>
+          <div id="modal-layer" class="modal-layer" hidden></div>
+          <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+        </section>
+      </div>
+    </div>
+    <section id="map-stage" class="map-stage" aria-label="Sơ đồ luồng tương tác"><div class="map-heading"><div class="eyebrow">SƠ ĐỒ TƯƠNG TÁC</div><h2 id="map-title"></h2><p>Bấm một ô để mở màn hình hoặc popup bên trái.</p></div>
+      <aside class="step-guide" aria-label="Hướng dẫn màn hiện tại" aria-live="polite">
+        <div class="eyebrow">ĐANG XEM</div><h2 id="current-screen-name"></h2><div id="current-screen-code" class="screen-code"></div>
+        <p id="current-screen-help"></p>
+        <div class="guide-divider"></div><h3>Trong hành trình này</h3><div id="step-list"></div>
+        <details class="guide-notes"><summary>Ghi chú bản prototype</summary><p>Các thao tác lưu, đồng bộ, quyền iOS, thanh toán, phiên gọi và chi trả dùng dữ liệu giả lập trên trình duyệt. Các mức giá và thời hạn hiển thị là fixture để test.</p><p>Các nút trên màn có thao tác hoặc đích đến. Chọn tình huống ở thanh ngoài để thử mất mạng, chưa rõ kết quả, xung đột và mất quyền.</p></details>
+      </aside>
+      <div id="flow-map"></div><div class="map-exceptions" id="map-exceptions"></div>
+    </section>
+    </div>
+    <footer class="workspace-footer"><span id="coverage-label"></span><span>Chữ, form và biểu đồ là thành phần tương tác; logo, mascot và ảnh lấy từ PSD của bạn.</span></footer>
+  </main>
+  <script src="js/catalog.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/i18n-core.js"></script>
+  <script src="js/runtime.js"></script>
+  <script src="js/screens-core.js"></script>
+  <script src="js/screens-family.js"></script>
+  <script src="js/screens-services.js"></script>
+  <script src="js/screens-ops.js"></script>
+  <script src="js/details.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/entry.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/i18n.js"></script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+HM FLOW 01 Khởi động và tài khoản
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  23/10/2026
+Tài liệu này hoàn thiện luồng đầu tiên từ mở ứng dụng tới vào Hôm nay, gồm đăng nhập, đăng ký email, xác minh, khôi phục, xử lý trùng email và thiết lập hồ sơ khi cần. Mục tiêu là giúp Product, Design, Dev, Backend và QA review cùng một hành trình trước khi triển khai.
+Các quyết định đã chốt được giữ nguyên. Flow nhánh điều kiện, wireframe và phương án mật khẩu là đề xuất để review; chưa phải UI cuối hoặc yêu cầu đã duyệt. Những câu hỏi còn mở nằm ngay trong task ở phần VI. Tài liệu chưa có kết quả kiểm thử trên app thực tế.
+I Phạm vi và điểm kết thúc
+1 Quyết định được kế thừa
+• Không có màn Welcome riêng. HM-SCR-01 ngừng dùng; HM-STA-01 là trạng thái khởi động và kiểm tra phiên.
+• Phiên hợp lệ vào Home; không có hoặc phiên không hợp lệ vào HM-SCR-02. Lỗi kết nối chưa xác định không tự đồng nghĩa phiên đã hết hạn.
+• Đăng nhập mạng xã hội gồm Google và Facebook; tạo tài khoản bằng email; có đường khôi phục tài khoản.
+• Backend kiểm tra trùng email; trùng email không tự gộp tài khoản hoặc cho phép truy cập dữ liệu.
+2 Phạm vi bàn giao
+Luồng kết thúc khi đúng tài khoản đã có phiên hợp lệ và được chuyển tới HM-SCR-04 Hôm nay, hoặc người dùng dừng ở trạng thái lỗi/hủy có đường quay lại rõ. Gate thiết lập HM-SCR-03 phụ thuộc AUTH-06; không tự thêm bước chọn vai trò, nhập bệnh, nhập thuốc hoặc mời gia đình vào điều kiện đăng nhập.
+3 Ranh giới với luồng khác
+Nội dung Hôm nay, gia đình/quyền, thuốc và sức khỏe được bàn giao cho các flow sau. Trong luồng này chỉ xác định điểm đến và kiểm tra không lộ dữ liệu trước xác thực. Liên kết từ lời mời/thông báo sau đăng nhập phải kiểm quyền lại; quy tắc mở đúng đối tượng thuộc flow tương ứng.
+
+II Bản đồ luồng tổng thể
+
+1 Cách đọc sơ đồ
+23, 24, 25, 26 và 03 là các mã HM-SCR tương ứng. Sơ đồ dùng đường quay lại 02 sau đăng ký/xác minh để làm phương án review an toàn; Product có thể chọn tiếp tục phiên mới nếu AUTH-03/AUTH-06 quy định rõ. Khôi phục xong quay lại đăng nhập theo phương án đề xuất, không tự tạo phiên từ thông báo thành công.
+Đăng nhập qua nhà cung cấp có thể tạo danh tính mới hoặc chỉ cho tài khoản đã có; lựa chọn này phải được ghi trong task T01/T02, không suy rằng nút Google/Facebook đã quyết định chính sách đăng ký xã hội.
+
+III Flow chi tiết
+1 Khởi động và khôi phục phiên
+a Điểm vào và bước xử lý
+Người dùng mở app hoặc quay lại sau khi cần kiểm phiên. Hiện HM-STA-01; chưa hiển thị tên, hồ sơ hay dữ liệu riêng tư của phiên trước. Đọc trạng thái phiên bằng cơ chế đã chọn; nếu cần refresh thì chỉ có một lượt đang xử lý cho cùng phiên.
+b Kết quả và nhánh lỗi
+Không có phiên → 02. Phiên hợp lệ → 04, trừ gate hồ sơ đã được chốt tại AUTH-06. Phiên được xác định không còn hợp lệ → dừng request riêng tư và về 02 theo policy. Không có mạng/timeout → hiển thị lỗi có Thử lại; chưa tự xóa token hoặc dữ liệu chờ chỉ vì chưa nhận được phản hồi. Nếu cho chế độ offline, phạm vi phải được quyết định tại T05; bản nháp chưa tự cho phép.
+2 Đăng nhập email
+a Gửi và xác thực
+Tại 02, nhập email và phương thức xác thực được chọn. Wireframe minh họa mật khẩu; nếu chọn OTP/magic link, vùng nhập và các bước phải thay tương ứng. Client kiểm thiếu/sai định dạng; Backend quyết định danh tính và trạng thái. Khi gửi, chặn thao tác trùng và thông báo tiến độ.
+b Thành công hoặc thất bại
+Xác thực hợp lệ → nhận trạng thái phiên và hồ sơ → 03 nếu gate đã duyệt yêu cầu, nếu không → 04. Sai thông tin → thông báo chung, không xác nhận email có tồn tại. Tài khoản bị hạn chế → thông báo phù hợp và Trợ giúp theo contract; không tự suy lý do. Timeout → kiểm kết quả hoặc thử lại theo contract, không tạo nhiều lượt cạnh tranh.
+3 Đăng nhập Google hoặc Facebook
+a Chuyển ra và quay về
+Người dùng chọn đúng nhà cung cấp; mở luồng nhà cung cấp bằng cơ chế đã chọn. Khi quay về, chỉ xử lý callback của lượt đang hoạt động. Backend kiểm chứng danh tính; email từ client không đủ để tạo phiên. Hủy → 02 sẵn sàng; không ghi là đăng nhập thất bại nghiêm trọng và không tạo phiên.
+b Kết quả cần phân biệt
+Danh tính nhà cung cấp đã liên kết → đăng nhập đúng tài khoản. Trùng email nhưng chưa liên kết → nhánh T02/26. Không có email hoặc email chưa được tin cậy → nhánh AUTH-05 được chọn, chưa tự tạo tài khoản thiếu cơ chế phục hồi. Danh tính mới → chỉ tạo tài khoản nếu chính sách được duyệt; nếu không, hướng dẫn đăng ký email.
+
+4 Đăng ký email và xác minh
+a Tạo tài khoản tại HM SCR 23
+Từ 02 chọn Đăng ký email. Nhập dữ liệu tối thiểu và phương thức xác thực đã chọn; quy tắc mật khẩu/mã chưa được tự đặt. Xem nội dung điều khoản được duyệt. Backend kiểm email và chống tạo tài khoản trùng khi bấm lại hoặc gửi từ hai thiết bị. Nếu kết quả chưa rõ, kiểm trạng thái trước tạo lại.
+b Xác minh tại HM SCR 24 khi áp dụng
+Nếu AUTH-03 yêu cầu, hiển thị bước mã hoặc liên kết được gửi. Gửi thành công không có nghĩa email đã được xác minh. Mã/link sai, hết hạn, đã dùng hoặc gửi lại có nhánh khôi phục theo policy. Khi đổi email, kiểm lại định danh và vô hiệu bằng chứng cũ theo contract. Chưa xác minh không được vượt gate yêu cầu bằng deep link.
+c Kết thúc và bỏ dở
+Phương án sơ đồ: xác minh xong về 02, sau đăng nhập chuyển tới gate hồ sơ/Home. Nếu chọn tự tiếp tục đăng nhập sau xác minh, phải ghi rõ điều kiện cấp phiên và xử lý khi mở link ở thiết bị khác. Bỏ dở rồi quay lại dùng trạng thái từ Backend để tiếp tục đúng bước; không tạo lại hồ sơ hoặc tài khoản.
+5 Khôi phục tài khoản tại HM SCR 25
+a Yêu cầu và chứng minh quyền sở hữu
+Từ 02 mở khôi phục, nhập email. Trả thông báo chung phù hợp cho email không tồn tại, tài khoản xã hội hoặc có email credential theo policy, tránh lộ danh tính. Kênh khôi phục phải chứng minh quyền sở hữu; chưa có kênh hợp lệ thì hướng dẫn hỗ trợ theo quy tắc đã duyệt, không bỏ qua xác thực.
+b Hoàn tất và hết hạn
+Minh họa mật khẩu: mở link/mã hợp lệ → nhập mật khẩu mới → Backend xác nhận → trở lại 02. Mã/link hết hạn, dùng lại, mở trên thiết bị khác và giới hạn gửi lại có trạng thái riêng. Thu hồi phiên cũ hoặc yêu cầu đăng nhập lại trên các thiết bị theo AUTH-08 đã chọn; không tự đặt chính sách.
+6 Trùng email và liên kết tại HM SCR 26
+Backend phát hiện xung đột trước khi cấp phiên cho danh tính mới. Nếu cho liên kết, yêu cầu xác thực tài khoản hiện có và kiểm danh tính nhà cung cấp, rồi người dùng xác nhận rõ. Hủy hoặc bằng chứng không hợp lệ → không thay liên kết. Chứng minh email trùng đơn thuần không đủ. Nếu không hỗ trợ liên kết trong V1.0, 26 được thay bằng hướng dẫn tại 02 và Trợ giúp.
+7 Thiết lập hồ sơ và điểm bàn giao
+Nếu AUTH-06 chọn thiết lập bắt buộc, 03 hiển thị trường tối thiểu đã duyệt; lưu hợp lệ rồi mới vào 04. Nếu bỏ dở, lần mở tiếp theo về đúng bước. Khi vào 04, chỉ lấy dữ liệu trong quyền của tài khoản đang xác thực. Lưu hồ sơ hoặc đăng nhập thành công không cấp quyền sức khỏe của người thân.
+
+IV Layout sơ bộ của các màn hình
+1 Khởi động và đăng nhập
+Wireframe đen trắng dùng để duyệt thứ tự nội dung. Kích thước là tỷ lệ minh họa, chưa phải dp/sp hoặc thông số nền tảng. Các logo Google/Facebook sẽ được thay bằng asset chính thức khi hoàn thiện UI.
+
+a Bố cục và tương tác
+Đăng nhập có thương hiệu, tiêu đề, form email, nút chính, hai nút nhà cung cấp, đăng ký và Help/legal. Khi bàn phím mở hoặc chữ lớn, vùng nội dung cuộn; trường đang nhập và hành động chính phải tới được. Khởi động không có nút “Bắt đầu” để tránh tái tạo Welcome.
+
+2 Đăng ký và xác minh email
+
+a Biến thể cần vẽ tiếp
+23: mặc định, validation, đang gửi, lỗi mạng, email xung đột và kết quả chưa rõ. 24: chờ xác minh, sai/hết hạn, gửi lại bị giới hạn, đã xác minh và đổi email. Nếu chọn liên kết thay mã, thay vùng mã bằng hướng dẫn mở email và cách quay lại kiểm trạng thái.
+b Quay lại và dữ liệu nhập
+Có thể giữ email không nhạy cảm nếu policy cho phép; mật khẩu/mã không đi qua URL hoặc được chuyển sang tài khoản khác. Đóng app, quay lại từ email hoặc thay email phải được liên kết với lượt hiện tại trên Backend.
+
+3 Khôi phục tài khoản
+
+a Các bước cùng một mã
+HM-SCR-25 A và B là hai trạng thái trong luồng khôi phục, không cấp thêm mã màn chính. Ngoài hai bố cục này cần biến thể gửi hướng dẫn xong, link/mã không hợp lệ, hết hạn và thành công. Nếu không dùng mật khẩu, T01/T06 thay nội dung tương ứng; nút “Quên mật khẩu” tại 02 đổi thành tên phù hợp.
+
+4 Liên kết danh tính và hồ sơ ban đầu
+
+a Điều kiện hiện màn
+26 chỉ áp dụng nếu AUTH-04 cho liên kết. 03 chỉ làm gate nếu AUTH-06 quy định. Tên hiển thị và múi giờ là trường minh họa cần duyệt, không mặc định yêu cầu người dùng nhập toàn bộ thông tin sức khỏe. Có thể gộp các bước con vào màn gốc nếu vẫn đủ hành vi và dễ hiểu.
+
+V Trạng thái và quy tắc dùng chung
+1 Ma trận trạng thái cần có
+Trạng thái
+Giao diện và hành động
+Kết quả cần bảo toàn
+Sẵn sàng / thiếu dữ liệu
+Nhãn trường rõ, lỗi tại trường; focus đúng; cho sửa.
+Chưa gửi request khi dữ liệu không hợp lệ.
+Đang xác thực / đang lưu
+Hiện tiến độ và khóa submit tương ứng; chặn lượt cạnh tranh.
+Không gửi trùng; không treo vô thời hạn.
+Hủy nhà cung cấp
+Về 02 sẵn sàng, có thể chọn cách khác.
+Không tạo phiên từ callback bị hủy.
+Sai thông tin
+Thông báo chung, giữ email khi được phép.
+Không lộ email tồn tại hoặc lý do nhạy cảm.
+Mất mạng / timeout
+Nêu chưa kết nối/chưa rõ kết quả, có thử lại phù hợp.
+Không tự coi tài khoản bị mất hoặc thao tác chưa từng xảy ra.
+Hạn chế / giới hạn tần suất
+Thông báo và đường hỗ trợ; thời gian chờ lấy từ contract.
+Không tự đặt số lần, thời hạn hoặc bỏ qua bảo vệ.
+Callback / link cũ
+Từ chối hoặc hướng dẫn bắt đầu lại đúng bước.
+Không thay phiên của lượt/tài khoản hiện tại.
+Phiên bị thu hồi / đổi tài khoản
+Dừng request riêng tư; che cache và xử lý queue theo policy.
+Tài khoản B không thấy dữ liệu/thông báo/queue của A.
+Hồ sơ lưu chưa rõ
+Hiện trạng thái và kiểm lại trước tạo/lưu tiếp.
+Không tạo hồ sơ thứ hai vì thử lại.
+Chữ lớn / bàn phím / màn thấp
+Cuộn, đọc nhãn và thông báo lỗi được, nút chính tới được.
+Không cắt chữ hoặc để bàn phím che đường hoàn thành.
+2 Quy tắc dữ liệu và quyền
+Backend là nguồn thẩm quyền cho account ID, provider subject, trạng thái email, phiên và hồ sơ. Client kiểm định dạng không thay xác minh. API dữ liệu riêng tư luôn kiểm phiên/quyền riêng; đăng nhập không có nghĩa được xem gia đình. Không ghi mật khẩu, mã, token, authorization code hoặc dữ liệu sức khỏe vào log/analytics. Khi đo lỗi, dùng mã sự kiện tối thiểu và định danh lượt theo contract.
+3 Điểm giao cho các flow khác
+04 là điểm kết thúc thành công, chưa đặc tả nội dung Home tại đây. 20 là đích Trợ giúp dùng chung; 27 là Điều khoản/Riêng tư, mở nội dung đúng version và có đường quay lại. Không tạo Help/legal giả hoặc tự xem việc đọc điều khoản là đồng ý chia sẻ dữ liệu sức khỏe.
+
+VI Task triển khai và điểm cần chốt
+Mã HM-F01-T01–T10 là gói công việc tổng hợp cho toàn luồng. Mã task Login gốc được giữ trong mục h để đối chiếu, không tạo hai backlog độc lập cho cùng việc. Khi mục h rút gọn PM/FE/BE/QA, tiền tố đầy đủ là HM-SCR-02. Vai trò là đề xuất; tên người và ngày chưa được gán.
+1 HM F01 T01 Chốt các lựa chọn tài khoản
+a Mục tiêu  Chốt các lựa chọn tài khoản cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Product phối hợp kỹ thuật và reviewer riêng tư. Bắt đầu từ quyết định hiện có; phần lựa chọn còn chờ.
+c Cần xác nhận trong task  Chốt AUTH-01 nền tảng/thiết bị; AUTH-02 mật khẩu, OTP hay magic link; AUTH-03 email verification; AUTH-06 Home hay gate hồ sơ; AUTH-09 ngôn ngữ. Đề xuất minh họa dùng mật khẩu và khôi phục qua email; chưa được duyệt. Chốt social sign in có tạo danh tính mới không.
+d Công việc thực hiện  Ghi lựa chọn, lý do, người xác nhận, version và phần ảnh hưởng; giữ kênh Google/Facebook và email sign up đã chốt. Không tự đặt ngưỡng thời gian/số lần.
+e Đầu ra  Bảng quyết định có giá trị rõ cho từng nhánh; layout cần thay nếu chọn phương án khác.
+f Nghiệm thu  Các nhánh chưa chốt không được ghi là yêu cầu cuối; wireframe và phần độc lập vẫn tiếp tục.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-PM-01; giao cho T02–T10. Không tạo task song song trùng mã nguồn.
+2 HM F01 T02 Chốt và đặc tả xung đột danh tính
+a Mục tiêu  Chốt và đặc tả xung đột danh tính cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Product và Backend phối hợp QA. Phụ thuộc T01 cho phương thức email; cần nguồn danh tính đáng tin.
+c Cần xác nhận trong task  Chốt AUTH-04 cho liên kết hay chặn; AUTH-05 xử lý provider không có email/email chưa tin cậy. Đề xuất xác thực tài khoản cũ rồi xác nhận liên kết. Chuẩn hóa email theo policy; không tự bỏ dấu chấm hoặc +tag theo nhà cung cấp.
+d Công việc thực hiện  Viết tình huống email mới, email trùng cùng/khác provider, đã liên kết nơi khác, người dùng hủy, xác thực cũ thất bại và callback cũ. Xác định mức thông tin được hiển thị an toàn.
+e Đầu ra  Contract danh tính và flow 26 hoặc nội dung thay thế tại 02; audit tối thiểu.
+f Nghiệm thu  Trùng email không tự merge/link; không cấp phiên tài khoản cũ chỉ từ email client gửi.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa PM-01; BE-02/BE-04; QA-03 của HM-SCR-02. Giao T04/T07/T10.
+
+3 HM F01 T03 Hoàn thiện layout và nội dung
+a Mục tiêu  Hoàn thiện layout và nội dung cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Design phối hợp Product. Có thể review cấu trúc ngay; khóa bản cuối sau T01/T02.
+c Cần xác nhận trong task  Chốt AUTH-07 nội dung/URL Help, Terms, Privacy và cách ghi nhận xác nhận cần thiết; AUTH-09 copy. Chốt trường 03, vị trí xác minh 24 và cách quay lại. Không dùng wireframe như UI đã duyệt.
+d Công việc thực hiện  Vẽ đầy đủ trạng thái phần V cho các mã áp dụng; chữ lớn, bàn phím, screen reader và màn thấp. Chọn thang đo theo nền tảng tại AUTH-01; dùng asset nhà cung cấp phù hợp khi làm UI.
+e Đầu ra  Wireframe đã sửa, UI/tokens/copy khi thực hiện, navigation map và danh sách trạng thái có version.
+f Nghiệm thu  Mỗi hành động có đích và trạng thái; không còn nút giả; xác nhận layout độc lập với kết quả triển khai.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-UX-01/02/03; mở rộng 03/23–27/STA-01. Giao T04–T06/T09.
+4 HM F01 T04 Triển khai đăng nhập trên app
+a Mục tiêu  Triển khai đăng nhập trên app cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Dev App phối hợp Backend. T01–T03 đủ cho nhánh, contract T07/T08 và môi trường kiểm.
+c Cần xác nhận trong task  Chốt AUTH-10 cấu hình provider, callback và môi trường; không đưa secrets vào tài liệu bàn giao. Chọn cách xử lý callback sau app bị đóng hoặc đổi tài khoản theo contract.
+d Công việc thực hiện  Xây 02, email form, Google/Facebook và điều hướng 23/25/26/20/27. Chặn submit trùng, xử lý cancel/network/timeout. Chỉ mở Home sau xác nhận Backend; không tin cờ client.
+e Đầu ra  Build đăng nhập, trạng thái và bằng chứng tích hợp trên môi trường được chọn.
+f Nghiệm thu  Đúng mã và đích; callback cũ không tạo/đổi phiên; cancel không tạo tài khoản/phiên mới.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-FE-02/03/04/05. Dùng T09/T10 kiểm nghiệm.
+
+5 HM F01 T05 Triển khai khởi động và vòng đời phiên
+a Mục tiêu  Triển khai khởi động và vòng đời phiên cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Dev App và Backend. T01; T07; cần AUTH-08 được quyết định cho hành vi cuối.
+c Cần xác nhận trong task  Chốt expiry/refresh/revoke, nhiều thiết bị, offline, logout, phục hồi app và queue khi đổi tài khoản. Mất mạng chưa rõ không được tự hiểu là phiên không hợp lệ. Ngưỡng timeout và giới hạn đều lấy từ quyết định/config đã duyệt.
+d Công việc thực hiện  Xây STA-01, phân biệt có phiên/không phiên/không xác minh được; bỏ kết quả cũ; lưu phiên theo cơ chế nền tảng đã chọn. Che dữ liệu trước xác thực và cô lập cache/thông báo/queue giữa các tài khoản.
+e Đầu ra  Bảng chuyển trạng thái, module session và kiểm tài khoản A/B.
+f Nghiệm thu  Không Welcome; phiên hợp lệ về đúng đích; retry không phát sinh các lượt cạnh tranh; không lộ dữ liệu cũ.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-FE-01/06 và BE-05; giao T09/T10.
+6 HM F01 T06 Triển khai đăng ký xác minh và phục hồi
+a Mục tiêu  Triển khai đăng ký xác minh và phục hồi cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Dev App và Backend. T01/T03; contract T07; kênh email và tài khoản kiểm phù hợp.
+c Cần xác nhận trong task  Chốt độ dài/quy tắc credential, kênh verify/recovery, thời hạn, gửi lại, dùng một lần, thiết bị khác và thu hồi phiên sau reset. Tất cả con số chờ review, không lấy từ wireframe.
+d Công việc thực hiện  Xây 23, các bước 24 và 25 theo lựa chọn; xử lý quay lại/bỏ dở, resend, link hết hạn/đã dùng, email trùng và timeout. Phản hồi phục hồi không tiết lộ email tồn tại. Không tự cấp phiên từ link chỉ dùng để đổi credential.
+e Đầu ra  Flow account creation/verification/recovery có API, UI và trạng thái tiếp tục.
+f Nghiệm thu  Retry và đăng ký đồng thời không tạo tài khoản trùng; link sai/đã dùng không vượt gate; khôi phục về đích đã chốt.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Mở rộng biên đăng ký/khôi phục của HM-SCR-02-PM-02 và FE-05/BE-02; phần chi tiết mới thuộc Flow 01.
+
+7 HM F01 T07 Định nghĩa contract xác thực và dữ liệu trả về
+a Mục tiêu  Định nghĩa contract xác thực và dữ liệu trả về cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Backend Lead phối hợp Dev App. T01/T02; input từ T05/T06; không phụ thuộc UI hoàn chỉnh.
+c Cần xác nhận trong task  Chốt operation schema và lỗi chuẩn; AUTH-10 môi trường, API và cấu hình; cơ chế correlation/retry phù hợp từng operation. Không giả URL production hoặc endpoint đã có.
+d Công việc thực hiện  Định nghĩa restore, email auth, provider verify, register, verify/resend, recovery/reset, linking nếu có, profile và revoke. Mỗi thao tác có điều kiện, lỗi, state/result và khả năng thử lại; không trả bí mật không cần.
+e Đầu ra  Contract versioned với ví dụ thành công/lỗi và fixtures; App/Backend cùng nhận một bản.
+f Nghiệm thu  Mô tả được mọi nhánh phần III; signup pending khác verified; authenticated khác authorized; timeout có cách tra/khôi phục.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-PM-02 và BE-01; mở rộng cho toàn Flow 01. Giao T04–T10.
+8 HM F01 T08 Xây dịch vụ danh tính và hồ sơ
+a Mục tiêu  Xây dịch vụ danh tính và hồ sơ cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Backend phối hợp reviewer kỹ thuật. T01/T02/T07; cấu hình provider và session theo T05.
+c Cần xác nhận trong task  Chốt mapping account/provider subject, quy tắc tạo hồ sơ duy nhất, field 03 và lưu trạng thái onboarding. Chọn các giới hạn chống lạm dụng, audit và khả năng rollback theo hệ thống thực.
+d Công việc thực hiện  Verify bằng chứng provider và email theo cơ chế được chọn; xử lý signup/link/recovery nguyên tử thích hợp. Backend quyết định state và quyền; reject xung đột; lưu hồ sơ có khả năng tiếp tục sau bỏ dở.
+e Đầu ra  Dịch vụ identity/session/profile, fixtures và kết quả kiểm tích hợp.
+f Nghiệm thu  Không tạo trùng khi đồng thời; không auto merge; hạn chế tài khoản được thực thi; không credential/token trong log.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-BE-02/03/04/05; bổ sung hồ sơ và thao tác tài khoản. Giao T09/T10.
+
+9 HM F01 T09 Kiểm thử chức năng và layout
+a Mục tiêu  Kiểm thử chức năng và layout cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  QA phối hợp Design và Dev. Có thể lập case ngay; chạy sau build/contract và quyết định nhánh liên quan.
+c Cần xác nhận trong task  Chốt thiết bị/ngôn ngữ/phương thức từ T01, copy từ T03; lập case blocked cho policy còn mở. Không tự chọn expected để khớp implementation.
+d Công việc thực hiện  Chạy các case TC01–TC12 và TC17–TC20 phần VII; cả chữ lớn, keyboard, cancel/back, mạng lỗi, resume và Help/legal. Ghi build/config/expected/actual; retest lỗi.
+e Đầu ra  Ma trận kết quả Pass/Fail/Blocked/Not run và ảnh/bằng chứng cần thiết.
+f Nghiệm thu  Không có đường cụt hoặc nút không làm việc; màn và flow đúng bản đã review; chưa chạy không ghi đạt.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-QA-01/02/04; mở rộng đăng ký/phục hồi/hồ sơ. Giao T10 và người quyết định release.
+10 HM F01 T10 Kiểm cô lập tài khoản và bàn giao
+a Mục tiêu  Kiểm cô lập tài khoản và bàn giao cho Flow 01; trạng thái ban đầu Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  QA cùng Backend và reviewer kỹ thuật. T04–T08 đủ build/contract; T09 có kết quả luồng; domain review phù hợp.
+c Cần xác nhận trong task  Chốt tiêu chí chặn release, mức quyền test và người nhận vận hành. Bản nháp chưa xác nhận app hoặc tích hợp đã chạy; dùng tài khoản test/synthetic.
+d Công việc thực hiện  Chạy TC13–TC16, kiểm callback/token không hợp lệ, linking trái phép, session/cache/queue và tài khoản bị thu hồi; rà log. Đối chiếu mã màn, quyết định, API/build/config; ghi lỗi và phương án xử lý.
+e Đầu ra  Gói bàn giao Flow 01: tài liệu/layout/contract/build/case/version, known gaps và kết quả review thực.
+f Nghiệm thu  Không lỗi sai tài khoản/lộ credential trong phạm vi kiểm; các gate còn mở có người xử lý. Phê duyệt thiết kế và nghiệm thu implementation là hai kết quả riêng.
+g Khi thiếu đầu vào  Tiếp tục phần độc lập; ghi rõ nhánh Chờ quyết định và tác động. Không biến phương án minh họa thành yêu cầu đã duyệt.
+h Đối chiếu và bàn giao  Kế thừa HM-SCR-02-QA-03 và điều kiện Done; cập nhật Master Screen List sau review, không tự đánh hoàn thành toàn app.
+
+VII Ca kiểm thử và kiểm độ đầy đủ
+Các case dưới đây là kế hoạch, trạng thái ban đầu Not run. Chỉ chạy khi policy liên quan đã chọn; nếu thiếu thì ghi Blocked và mã task. Khi chạy cần lưu thiết bị, môi trường, build/API/config, expected/actual và bằng chứng. Tiền tố case đầy đủ HM-F01-TC.
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+01
+Có phiên hợp lệ, mở app
+Chạy STA-01; tới 04 hoặc gate đã duyệt; không Welcome/nháy Login; không lộ dữ liệu cũ.
+T05; T09
+02
+Không có phiên hoặc server xác định phiên không hợp lệ
+Mở app với từng điều kiện; tới 02; không tải dữ liệu riêng tư trái quyền.
+T05; T09
+03
+Mất mạng lúc kiểm phiên rồi có lại
+Hiện chưa kết nối/Thử lại; không tự diễn giải invalid; retry theo AUTH-08 đã chốt.
+T05; T09
+04
+Email sai định dạng và credential không đúng
+Sai định dạng: lỗi tại trường; credential sai: lỗi chung; không lộ email tồn tại.
+T04; T09
+05
+Bấm đăng nhập nhiều lần và timeout
+Không chạy lượt cạnh tranh; quay lại và retry theo contract; không đổi sai phiên.
+T04–T05; T09
+06
+Google và Facebook thành công hoặc hủy
+Kiểm từng provider; thành công đúng account; hủy về 02, không tạo phiên.
+T04; T09
+07
+Đăng ký cùng email từ hai lượt đồng thời
+Một danh tính hợp lệ; không tạo trùng; phản hồi và đường khôi phục đúng policy.
+T06; T08; T09
+08
+Verify sai, hết hạn, đã dùng, gửi lại
+Không vượt gate; resend theo giới hạn được duyệt; trạng thái server quyết định.
+T06; T09
+09
+Khôi phục với email có và không có tài khoản
+Thông báo công khai an toàn; không tiết lộ account; người đủ bằng chứng mới đổi được credential.
+T06; T09
+10
+Link reset cũ hoặc mở trên thiết bị khác
+Kết quả theo policy đã chọn; không đổi mật khẩu bằng bằng chứng đã hết hạn/dùng lại.
+T06; T09
+
+1 Ca kiểm thử tiếp theo
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+11
+Trùng email chưa liên kết
+Không auto merge; 26 yêu cầu đúng bằng chứng và xác nhận nếu được duyệt, hoặc hướng dẫn thay thế.
+T02; T09
+12
+Provider thiếu hoặc email chưa tin cậy
+Thực hiện AUTH-05 đã chọn; không tự tạo tài khoản thiếu định danh phục hồi.
+T02; T09
+13
+Callback của lượt cũ sau khi hủy/đổi tài khoản
+Không cấp/đổi phiên ngoài lượt hiện tại; không lẫn danh tính.
+T04; T10
+14
+Đăng xuất A, đăng nhập B; còn cache/queue/thông báo A
+B không thấy dữ liệu, preview hoặc queue A; không gửi lệnh A bằng phiên B.
+T05; T10
+15
+Token provider không hợp lệ và liên kết trái phép
+Backend từ chối; email client gửi không phải bằng chứng; không tạo grant sức khỏe.
+T07–T08; T10
+16
+Phiên thu hồi hoặc tài khoản bị hạn chế giữa luồng
+Request riêng tư bị chặn; giao diện khôi phục theo contract, không che lỗi bằng phiên cũ.
+T05; T08; T10
+17
+Bỏ dở đăng ký/03 và mở lại app
+Tiếp tục theo state thật; không tạo account/profile thứ hai.
+T06; T08; T09
+18
+Chữ lớn, màn thấp, keyboard, screen reader
+Đọc và thao tác đủ; focus/nhãn/lỗi đúng; không che nút chính hoặc cắt nội dung.
+T03; T09
+19
+Mở Help, Terms, Privacy rồi quay về
+Đúng nội dung/đích đã duyệt; không submit lại; không cấp consent sức khỏe.
+T03–T04; T09
+20
+Gửi hồ sơ hoặc đăng ký xong nhưng mất phản hồi
+Tra trạng thái/thử lại đúng operation; không tạo trùng; chỉ báo thành công khi có căn cứ.
+T06–T08; T09
+
+VIII Bàn giao và nguồn đối chiếu
+1 Danh mục màn trong luồng
+Mã
+Mức tham gia
+Task chịu trách nhiệm
+HM-STA-01
+Khởi động; không tái cấp SCR-01
+T03; T05; T09–T10
+HM-SCR-02
+Đăng nhập và điều hướng chính
+T01–T05; T07–T10
+HM-SCR-23
+Đăng ký email
+T01; T03; T06–T10
+HM-SCR-24
+Xác minh khi AUTH-03 chọn
+T01; T03; T06–T10
+HM-SCR-25
+Khôi phục nhiều bước
+T01; T03; T06–T10
+HM-SCR-26
+Liên kết nếu AUTH-04 cho phép
+T02–T04; T07–T10
+HM-SCR-03
+Thiết lập nếu AUTH-06 yêu cầu
+T01; T03; T05; T07–T10
+HM-SCR-04
+Đích bàn giao; layout Home ở flow sau
+T05; T08–T10
+HM-SCR-20 và 27
+Trợ giúp và nội dung pháp lý dùng chung
+T03–T04; T09
+2 Kiểm trước khi đóng luồng
+Review tài liệu: từng mã có flow, layout hoặc ranh giới bàn giao; các nhánh AUTH có task; mọi nút có đường đi; không còn Welcome. Review triển khai: contract/build/config trùng bản, case có kết quả thật, lỗi còn mở có tác động/người xử lý và quyết định release. Ghi riêng Đã duyệt thiết kế, Đã code và Đã kiểm; không dùng một trạng thái Hoàn thành cho cả ba.
+3 Nguồn và quy tắc thay thế
+Đối chiếu HealMata_Master_Screen_List_V1_0_to_V3_1_VI_v0_1.docx ngày 23/10/2026; HM-SCR-02_Login_Flow_and_Tasks_EN_v0.3.docx; HM-SCR-02_Login_Screen_Spec_EN_v0.2.docx và các quyết định người dùng trong trao đổi. Bản Master xác định mã; bản Login cung cấp AUTH-01–10 và task gốc. Tài liệu này bổ sung Flow 01 và các màn lân cận; chưa ghi đè quyết định đã chốt hoặc tự thay contract đã duyệt.
+Các trường, wireframe và task mới đều là đề xuất. Chưa có người review, ngày cam kết, endpoint production hoặc kết quả app thực tế được xác nhận trong tài liệu. Sau review, cập nhật Master với trạng thái Có bản nháp flow/layout; chỉ đổi thành Đã duyệt khi có quyết định rõ.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Nghĩa trong tài liệu
+API
+Application Programming Interface
+Hợp đồng trao đổi dữ liệu giữa app và Backend.
+AUTH
+Authentication
+Mã nhóm lựa chọn xác thực AUTH-01–10 từ tài liệu Login.
+BE
+Backend
+Mã task dịch vụ phía server trong tài liệu Login.
+FE
+Frontend
+Mã task phía ứng dụng trong tài liệu Login.
+HM
+HealMata
+Tiền tố mã flow, task, case, màn hình.
+OTP
+One Time Password
+Mã dùng một lần; là một lựa chọn, chưa mặc định được chọn.
+PM
+Project Manager
+Nhóm task điều phối/quyết định trong tài liệu Login.
+QA
+Quality Assurance
+Kiểm thử và xác nhận chất lượng với kết quả thực tế.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+STA
+State
+Mã trạng thái, ví dụ khởi động HM-STA-01.
+TC
+Test Case
+Mã ca kiểm thử của Flow 01.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+UX
+User Experience
+Trải nghiệm sử dụng, bao gồm đường đi và phục hồi.
+URL
+Uniform Resource Locator
+Địa chỉ nội dung hoặc đích điều hướng.
+dp
+Density Independent Pixel
+Đơn vị bố cục Android khi nền tảng được chọn.
+sp
+Scale Independent Pixel
+Đơn vị chữ Android có xét tùy chọn cỡ chữ.

@@ -1,0 +1,9 @@
+{
+  "testedAt": "2026-10-28T01:44:23.112Z",
+  "checks": [
+    "102 screens × 2 languages: one control inside iPhone, titles fit",
+    "25 popups: dropdown stays in phone and changing language preserves popup",
+    "393px viewport: button/menu inside phone and no horizontal overflow"
+  ],
+  "errors": []
+}

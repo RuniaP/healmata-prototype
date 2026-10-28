@@ -1,0 +1,418 @@
+HM FLOW 10 Xóa hoặc xuất dữ liệu
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Design, App, Backend, Privacy, vận hành và QA để thiết kế hai nhánh: xuất dữ liệu gốc và yêu cầu xóa tài khoản. Người dùng cần biết phạm vi, tác động, trạng thái xử lý và cách nhận kết quả. Đã tiếp nhận yêu cầu không đồng nghĩa tệp đã sẵn sàng hoặc mọi bản dữ liệu đã bị xóa.
+SCR21/22 và OPS04 là ứng viên theo Master; mốc phát hành, phương thức vận hành và các chính sách mới vẫn cần chốt tại T01–T05. Tài liệu là bản nháp thiết kế, chưa xác nhận có tính năng tự động, thời hạn cam kết hoặc kết quả kiểm thử thực tế.
+I Phạm vi và kết quả cần đạt
+1 Người dùng và quyền
+Đề xuất đợt đầu cho chủ tài khoản yêu cầu xóa tài khoản của mình và xuất dữ liệu của mình đã được server nhận. Quyền xem hoặc nhập hộ không tự cho quyền xuất hay xóa tài khoản người thân. Mở rộng xuất trong quyền cần quyết định riêng tại T01; không suy từ góc nhìn gia đình ra quyền quản trị.
+2 Màn hình và điểm vào
+19 vào 21 hoặc 22; POP13 xác nhận xóa, POP14 xác nhận xuất. 22 giữ danh sách/kết quả xuất trong cùng trang; 21 hiển thị trạng thái xóa theo khả năng truy cập còn lại. 20 là trợ giúp; OPS04 là xử lý riêng tư, có thể dùng công cụ hiện có ngoài app. Không mặc định xây portal quản trị mới.
+3 Hai kết quả khác nhau
+Xuất: đúng người, đúng phạm vi và mốc dữ liệu, tệp đọc được, tải trong quyền và thời hạn được duyệt. Xóa: yêu cầu đúng chủ thể được tiếp nhận; các bước khóa/thu hồi/xử lý dữ liệu được theo dõi; kết quả nêu rõ phạm vi hoàn tất và phần giữ lại theo policy. Không báo xóa toàn bộ tại bước gửi.
+4 Ranh giới
+Xóa tài khoản khác đăng xuất, rời kết nối hoặc bỏ queue trên máy. Xuất dữ liệu gốc khác báo cáo phân tích Flow12, không tạo chẩn đoán hoặc ép mua Plus để thực hiện nhánh dữ liệu gốc này. Flow01 xác thực; Flow07 thu hồi; Flow08 nhắc; Flow09 dữ liệu chờ. Phiên bản sau có giao dịch cần impact review riêng, không tự hủy thanh toán hoặc hoàn tiền trong Flow10.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+Các bước online phải kiểm quyền tại server. Quay lại trước gửi không tạo job. Kết quả chưa rõ cần đối chiếu cùng yêu cầu, không tạo yêu cầu mới để đoán thành công. Các trạng thái nằm trong 21/22; không cấp mã màn mới cho từng nhánh.
+
+III Flow chi tiết
+1 Điểm vào và chuẩn bị
+a Đúng tài khoản và kết nối
+Từ 19 mở 21 hoặc 22 nếu scope được duyệt. Luôn ghi rõ tài khoản/chủ dữ liệu. Đổi góc nhìn sang người thân không đổi chủ thể xóa. Chưa đủ phiên/quyền chuyển Flow01 hoặc trạng thái xử lý được; offline báo cần kết nối, không đưa yêu cầu xóa/xuất vào queue chung rồi báo đã nhận.
+b Dữ liệu chưa gửi
+Đọc trạng thái queue của đúng account theo Flow09. Xuất không tự chứa dữ liệu chỉ ở máy; cho biết cần xử lý phần chưa gửi nếu muốn dữ liệu đó có trong nguồn. Xóa phải giải thích queue sẽ được xử lý ra sao theo T05. Lệnh đang gửi hoặc unknown có thể đã commit; không coi bỏ local là rollback server.
+2 Chọn phạm vi xuất
+22 cho chọn loại dữ liệu, khoảng thời gian và định dạng thực sự được hỗ trợ. Xác định mốc lấy dữ liệu và timezone, gồm lịch sử hiệu chỉnh/nguồn nhập theo T02. Phạm vi chỉ của mình trong phương án đầu; trường liên quan người nhập hộ phải tối thiểu và được duyệt, không kèm email đăng nhập/token/định danh nhạy cảm của người khác. Phạm vi không có bản ghi khác lỗi truy vấn hoặc thiếu quyền.
+3 Xem lại xác thực và gửi xuất
+POP14 hiển thị chủ dữ liệu, phạm vi, định dạng và lưu ý bản tải ngoài app không thu hồi được. Xác thực lại nếu T03 yêu cầu; hủy/quay lại trước gửi giữ lựa chọn theo policy, không tạo job. Gửi với định danh ổn định cho ý định đó. Nhận receipt thì báo đã nhận; timeout thì báo chưa rõ và có kiểm tra lại. Bấm nhiều lần không tạo nhiều job ngoài policy.
+4 Chờ tạo và tải tệp
+22 hiển thị chờ/đang xử lý/lỗi/sẵn sàng/hết hạn theo nguồn. Tệp sẵn sàng có phạm vi, mốc dữ liệu và hạn tải nếu được chọn. Kiểm quyền khi tạo, khi mở trạng thái và khi tải; link không trở thành đường bỏ qua quyền. Không tự gửi file/email hay chia sẻ cho người thân. Hủy job sau tiếp nhận chỉ có nếu contract hỗ trợ.
+
+5 Tệp lỗi hết hạn và mất quyền
+a Tải và khôi phục
+Lỗi tạo/tải không báo đã hoàn tất tải. Khi kết quả tải không quan sát được, nêu tệp sẵn sàng thay vì khẳng định đã lưu vào máy. Tệp hết hạn hoặc bị vô hiệu thì chặn đường cũ; tạo yêu cầu mới phải xác nhận phạm vi hiện hành. Khi account đổi hoặc quyền mất, không hiển thị kết quả cũ trong phiên mới.
+b Ý nghĩa dữ liệu xuất
+Tệp chứa dữ liệu gốc với đơn vị, timezone, thời điểm, nguồn và trạng thái hiệu chỉnh theo schema T02. Không biến dữ liệu thiếu thành 0/bình thường; không biến chưa xác nhận thành chưa uống. Nếu định dạng CSV được duyệt, cần quy tắc mã hóa/ký tự và nội dung chuỗi an toàn khi mở bằng công cụ bảng tính, có kiểm thử mẫu. Không coi file là báo cáo y khoa.
+6 Xem tác động và gửi yêu cầu xóa
+21 nêu đúng account, phần dữ liệu xử lý, ảnh hưởng tới phiên/grant/kết nối/lịch/nhắc/queue và phần giữ lại theo T04/T05. Có đường quay lại và xuất trước khi xóa nếu còn đủ quyền; không tự tạo job xuất. POP13 cùng bước xác thực lại bảo đảm chủ tài khoản xác nhận có chủ ý; cơ chế theo Flow01/T03, không tự thêm OTP hoặc dùng email trùng làm chứng cứ.
+Server kiểm điều kiện và ghi nhận yêu cầu hợp lệ với lifecycle theo T04. Chọn khóa tài khoản, thu hồi phiên/grant và ngừng công việc tương lai phải có điểm hiệu lực rõ. Nếu mất phản hồi, tra kết quả bằng kênh đã thiết kế; không coi phiên bị thu hồi là lỗi gửi chắc chắn rồi tạo lại account hoặc yêu cầu khác.
+7 Theo dõi và kết thúc
+Trạng thái đã tiếp nhận/đang xử lý/cần bổ sung/lỗi xử lý/hoàn tất phản ánh nguồn. Không báo hoàn tất nếu chỉ một kho đã xóa. Khi phiên đã bị thu hồi, T03/T04 phải cung cấp xác nhận tối thiểu hoặc kênh theo dõi an toàn đã duyệt; không yêu cầu người dùng đăng nhập lại vào tài khoản đã khóa để xem tiến độ. Trợ giúp không tự mở lại tài khoản hoặc cấp quyền truy cập dữ liệu đã xóa.
+Hủy yêu cầu chỉ có trước mốc mà policy và backend cho phép; không hứa Undo sau xóa. Tệp xuất đang chờ hoặc đã tạo phải xử lý theo lifecycle xóa. Dữ liệu hoạt động, kho file, cache, queue, jobs, log và backup có kết quả riêng. Restore phải áp lại danh sách xóa/thu hồi trước mở dịch vụ; bản sao người dùng đã tải ra ngoài app không nằm trong khả năng thu hồi của app.
+
+IV Layout sơ bộ
+1 Điểm vào và phạm vi xuất
+
+a Biến thể và giới hạn
+Màn 22 cần thêm loading, chưa có dữ liệu, lỗi quyền và khoảng thời gian không hợp lệ. Trường định dạng chỉ đưa lựa chọn có thật; CSV là phương án chưa duyệt. Nội dung chưa gửi không tự xuất từ server.
+
+2 Xác nhận xuất và theo dõi tạo tệp
+
+a Biến thể và giới hạn
+POP14 không thay cơ chế xác thực thật. 22 có chờ, đang tạo, lỗi và chưa rõ kết quả; không dùng cùng nhãn Hoàn tất cho cả nhận yêu cầu và tạo xong. Không cần route mới cho từng trạng thái.
+
+3 Tệp sẵn sàng và không còn khả dụng
+
+a Biến thể và giới hạn
+Quyền được kiểm lại trước tải. Nếu có link tải, T03 phải quyết định cơ chế bảo vệ và vô hiệu; không hứa thu hồi file đã lưu ngoài app. Hạn tải hiển thị từ dữ liệu/policy thật.
+
+4 Yêu cầu xóa và xác nhận
+
+a Biến thể và giới hạn
+Khung bên phải gom minh họa xác nhận và ghi chú về kết quả, không phải cho thấy mọi trạng thái cùng lúc. Cần bản 21 sau tiếp nhận và kênh theo dõi khi phiên bị thu hồi theo T03/T07.
+
+V Trạng thái và hợp đồng dữ liệu
+1 Trạng thái xuất
+Trạng thái
+Ý nghĩa
+Bước tiếp
+Chưa gửi
+Lựa chọn/nháp trên UI
+Xem lại hoặc quay lại
+Chưa rõ kết quả
+Có thể server đã nhận nhưng mất phản hồi
+Tra cùng request; không nhân job
+Đã nhận hoặc chờ
+Có receipt; tệp chưa sẵn sàng
+Xem trạng thái trong quyền
+Đang tạo
+Job đang xử lý
+Chờ; retry theo contract khi lỗi
+Sẵn sàng
+Tệp tạo xong theo phạm vi/mốc đã xác nhận
+Kiểm quyền rồi tải
+Lỗi tạo hoặc tải
+Không hoàn tất bước tương ứng
+Nêu lỗi và hướng phục hồi
+Hết hạn hoặc vô hiệu
+Tệp/đường tải không còn dùng được
+Chặn; yêu cầu mới nếu đủ quyền
+2 Trạng thái yêu cầu xóa
+Trạng thái
+Ý nghĩa
+Không được suy
+Chưa gửi hoặc hủy trước gửi
+Chưa tạo yêu cầu hợp lệ
+Không khóa/xóa tài khoản
+Chưa rõ kết quả
+Có thể đã tiếp nhận
+Không tự coi thất bại hoặc đã xóa
+Đã tiếp nhận
+Có receipt theo nguồn
+Chưa phải mọi kho đã xử lý
+Đang xử lý hoặc cần bổ sung
+Có tiến độ/phần việc còn lại
+Không ghi hoàn tất chung
+Lỗi cần xử lý
+Một hoặc nhiều bước chưa đạt
+Không tự mở lại quyền đã thu hồi
+Hoàn tất theo policy
+Các bước bắt buộc đủ chứng cứ
+Không có nghĩa xóa bản sao ngoài app
+
+3 Hợp đồng yêu cầu và bằng chứng
+a Định danh và quyền
+Đề xuất request_id, operation_id, account/subject được server xác định/kiểm quyền, loại export/delete, scope snapshot, policy version, mốc dữ liệu/timezone, trạng thái và thời điểm. Reauth được ràng buộc đúng account/hành động và thời hạn theo T03. Client đổi subject hoặc đoán request/file ID không tạo quyền.
+b Idempotency và race
+Cùng ý định retry dùng định danh ổn định; cùng khóa khác scope/payload bị xử lý theo contract, không sửa job đã nhận ngầm. Delete và export chạy cạnh tranh có thứ tự/điểm hiệu lực do T04/T06 chốt. Nếu account chuyển sang trạng thái khóa/xóa trong lúc tạo hoặc tải, kiểm quyền và lifecycle tại gate đã thiết kế; không để job cũ tái cấp truy cập.
+c Mốc dữ liệu và tính đầy đủ
+Export cần schema/version và manifest hoặc thông tin tương đương: loại dữ liệu, khoảng ngày, cutoff, số lượng nếu có, timezone/đơn vị và giới hạn. Chốt snapshot nhất quán hoặc semantics lấy từng phần; không mô tả dữ liệu tại một thời điểm nếu job thực tế quét các phần lệch mốc. Phần thiếu phải được báo hoặc job thất bại theo contract, không im lặng mất bản ghi.
+4 Vòng đời dữ liệu và restore
+T04 lập retention theo từng kho, ngoại lệ giữ lại, quyền truy cập, thời hạn và bằng chứng xóa. Các con số 30 ngày dữ liệu hoạt động và 35 ngày backup ở tài liệu đề xuất trước chưa thành cam kết, không tự dùng làm deadline UI. Yêu cầu theo thị trường/kênh phát hành cần reviewer phù hợp xác minh trong task; tài liệu này không đặt thời hạn pháp lý.
+Danh sách xóa/thu hồi hoặc cơ chế tương đương phải sống đủ để restore không hồi sinh account/grant/jobs. Khôi phục cách ly, áp lifecycle, kiểm dữ liệu/quyền rồi mới mở. Log chỉ giữ phần cần thiết được duyệt; không tự chép payload sức khỏe vào audit để thay dữ liệu đã xóa. Có backup chưa chứng minh restore đạt.
+5 Vận hành và giao tiếp kết quả
+OPS04 giới hạn nhân sự và hành động; dùng công cụ hiện có nếu đủ. Mỗi yêu cầu có owner, chứng cứ xác minh, tiến độ theo kho và kết quả tối thiểu. Kênh xác nhận khi khóa phiên phải chống dò trạng thái tài khoản; không để support truy cập file sức khỏe mặc định. Thông báo qua email/kênh ngoài app chỉ triển khai sau khi được chốt và có người nhận đã xác minh.
+
+VI Task triển khai
+1 T01 Chốt phạm vi và quyền xóa xuất
+a Mục tiêu  Có ranh giới rõ cho chủ dữ liệu và mốc phát hành.
+b Phụ trách và đầu vào  Product với Privacy; nhận Q08 và Flow01 06 07 09.
+c Điểm cần xác nhận trong task  Chốt V1.0 hay mốc khác, self hay xuất trong quyền; quyền xem không tự thành quyền xuất/xóa.
+d Công việc  Lập action × actor × chủ dữ liệu × điều kiện; xác định kênh/công cụ xử lý.
+e Đầu ra  Scope matrix và quyết định có version.
+f Tiêu chí nghiệm thu  Không có nút hoặc API cho xóa tài khoản người thân từ grant xem/ghi hộ.
+g Khi thiếu đầu vào  Vẫn làm flow/state và contract; chưa mở phần quyền chưa duyệt.
+h Liên kết  HM-V1-T01 T02 T25
+2 T02 Chốt schema và phạm vi dữ liệu xuất
+a Mục tiêu  Tệp có nghĩa rõ và đối chiếu được với nguồn.
+b Phụ trách và đầu vào  Product/Data với Backend và chuyên môn; cần T01 và schema Flow02–04.
+c Điểm cần xác nhận trong task  Chốt định dạng, trường, nguồn nhập hộ tối thiểu, lịch sử sửa, cutoff, timezone và phần dữ liệu thiếu.
+d Công việc  Lập data mapping; mẫu tệp và manifest; xử lý phạm vi rỗng, ký tự, đơn vị và chuỗi mở bằng bảng tính nếu áp dụng.
+e Đầu ra  Export schema/version và mẫu có oracle.
+f Tiêu chí nghiệm thu  Đúng account và số liệu nguồn; không lộ định danh đăng nhập người khác, không tự chẩn đoán.
+g Khi thiếu đầu vào  CSV chỉ là phương án; chưa chốt thì dùng mẫu review có nhãn, không báo tính năng sẵn sàng.
+h Liên kết  HM-V1-T25; nối Flow03 04 12
+
+VI Task triển khai tiếp theo
+3 T03 Chốt xác thực tải và kênh theo dõi
+a Mục tiêu  Mỗi yêu cầu và tệp chỉ được mở bởi người đủ quyền.
+b Phụ trách và đầu vào  Security/Auth với App Backend Privacy; cần T01.
+c Điểm cần xác nhận trong task  Chốt reauth, hạn/thu hồi tải, link có kiểm quyền, kênh tối thiểu khi tài khoản đã khóa.
+d Công việc  Ràng buộc hành động/account; kiểm gate tạo/status/tải; thiết kế recovery không cần login account đã xóa.
+e Đầu ra  Authorization contract và ma trận phiên/quyền.
+f Tiêu chí nghiệm thu  Đoán ID/link hoặc đổi account không mở file; hết hạn bị chặn; kênh theo dõi không lộ dữ liệu.
+g Khi thiếu đầu vào  Chưa chốt kênh thì không hứa gửi email hoặc truy cập sau khóa; vẫn làm quyền API.
+h Liên kết  HM-V1-T04 T25 T26
+4 T04 Chốt lifecycle xóa và retention
+a Mục tiêu  Kết quả xóa được đo theo từng kho và không hồi sinh khi restore.
+b Phụ trách và đầu vào  Privacy/vận hành với Product Backend Security; cần T01.
+c Điểm cần xác nhận trong task  Chốt thời hạn từng kho, ngoại lệ/cơ sở giữ lại, điểm khóa phiên, mốc không thể hủy, tiêu chí hoàn tất.
+d Công việc  Lập inventory dữ liệu và phụ thuộc; xác minh yêu cầu thị trường/kênh với reviewer phù hợp; bỏ số đề xuất chưa duyệt khỏi copy cam kết.
+e Đầu ra  Retention matrix, deletion state machine và decision log.
+f Tiêu chí nghiệm thu  Tiếp nhận khác hoàn tất; có chứng cứ cho kho hoạt động/file/log/backup và cơ chế áp lại sau restore.
+g Khi thiếu đầu vào  Chưa có thời hạn thì giữ trường cần chốt; không tự nhận 30/35 ngày là yêu cầu pháp lý.
+h Liên kết  HM-V1-T01 T02 T25 T28
+
+VI Task triển khai tiếp theo
+5 T05 Chốt queue kết nối nhắc và job đang chạy
+a Mục tiêu  Xóa không để dữ liệu hoặc quyền cũ quay lại ngoài policy.
+b Phụ trách và đầu vào  App/Backend với Product; nhận T04 và Flow07–09.
+c Điểm cần xác nhận trong task  Chốt queue chưa gửi/in flight/unknown, export đang tạo, kết nối/grant, lịch/nhắc và thiết bị offline.
+d Công việc  Lập event → tác động; chặn gửi mới theo lifecycle; xác định ranh giới commit và cách xử lý máy chưa liên lạc.
+e Đầu ra  Impact matrix và oracle race.
+f Tiêu chí nghiệm thu  Bỏ local không hứa rollback; máy offline không bị coi đã xóa ngay; job cũ không tái cấp quyền.
+g Khi thiếu đầu vào  Làm cơ chế version/gate trước; policy chưa duyệt thì chưa đóng nhánh liên quan.
+h Liên kết  HM-V1-T13 T16 T25
+6 T06 Thiết kế API jobs và audit
+a Mục tiêu  Yêu cầu có định danh kết quả và khả năng đối chiếu.
+b Phụ trách và đầu vào  Backend lead với App và vận hành; cần T02–T05.
+c Điểm cần xác nhận trong task  Chốt idempotency, receipt/status, retry, partial failure, snapshot export và race delete/export.
+d Công việc  Ghi lifecycle nhất quán; phân quyền nội bộ; thiết kế tạo/tải/vô hiệu file và dấu xóa/thu hồi có thể phục hồi.
+e Đầu ra  Contract, schema, error map và dữ liệu kiểm.
+f Tiêu chí nghiệm thu  Timeout retry không nhân job hoặc xóa sai account; log không payload nhạy cảm không cần.
+g Khi thiếu đầu vào  Dựng mock/contract trước; không dùng mock làm chứng cứ xóa thật.
+h Liên kết  HM-V1-T25 T27
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế màn xác nhận và trạng thái
+a Mục tiêu  Người dùng hiểu tác động và có đường quay lại/khắc phục.
+b Phụ trách và đầu vào  Designer với Product Privacy App; nhận T01–T06.
+c Điểm cần xác nhận trong task  Duyệt 21/22 POP13/14, câu chữ giữ lại/hạn tải, trạng thái sau khóa phiên và trợ giúp.
+d Công việc  Hoàn thiện 8 khung ở IV; loading/rỗng/lỗi/unknown/mất quyền; chữ lớn, đọc màn hình, nút xác nhận có chủ ý.
+e Đầu ra  Layout và copy review theo policy version.
+f Tiêu chí nghiệm thu  Không báo đã xóa toàn bộ khi nhận yêu cầu; không ép mua Plus; không đặt nút hủy sau xóa khi chưa hỗ trợ.
+g Khi thiếu đầu vào  Giữ placeholder cho số/kênh chưa chốt; không coi đây là UI cuối cùng.
+h Liên kết  HM-V1-T24 T25 T26
+8 T08 Triển khai app và vận hành yêu cầu
+a Mục tiêu  Có luồng thực từ ý định tới kết quả trong phạm vi duyệt.
+b Phụ trách và đầu vào  App/Backend/vận hành; cần T06 T07.
+c Điểm cần xác nhận trong task  Chốt công cụ OPS04 hiện có hay cần bổ sung, vai trò xử lý và bằng chứng kết thúc.
+d Công việc  Làm 21/22 reauth/status/tải, jobs xóa/export, hạn chế quyền và kênh kết quả đã chọn.
+e Đầu ra  Build tích hợp, runbook xử lý lỗi và audit tối thiểu.
+f Tiêu chí nghiệm thu  Quyền kiểm từng gate; không tự gửi file ra kênh ngoài; kết quả theo nguồn thay vì suy từ UI.
+g Khi thiếu đầu vào  Kiểm trên dữ liệu thử trong môi trường staging được duyệt; ghi rõ giới hạn so với production.
+h Liên kết  HM-V1-T25 T26 T28
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm luồng tệp và quyền
+a Mục tiêu  Chứng minh nhánh chức năng đúng dữ liệu và trạng thái.
+b Phụ trách và đầu vào  QA với Design QA Security; cần build T08 và quyết định T01–T07.
+c Điểm cần xác nhận trong task  Chốt bộ dữ liệu/oracle, trạng thái trống, cutoff, account/grant và định dạng.
+d Công việc  Chạy TC01–TC12; so nội dung tệp, quyền tải, UI/quay lại và lỗi mạng.
+e Đầu ra  Báo cáo build/OS/case/defect cùng bằng chứng.
+f Tiêu chí nghiệm thu  Không đánh pass từ mock hoặc receipt đơn lẻ; tệp phải đọc và đối chiếu được.
+g Khi thiếu đầu vào  Chưa có build/định dạng đánh Not run hoặc Blocked rõ owner.
+h Liên kết  HM-V1-T23 T24 T25
+10 T10 Kiểm xóa restore và chốt phát hành
+a Mục tiêu  Biết rõ phần đã xóa giữ lại và khôi phục an toàn.
+b Phụ trách và đầu vào  QA/Security/vận hành với Backend; cần T04 T05 T08 T09.
+c Điểm cần xác nhận trong task  Chốt môi trường cách ly, kịch bản backup/restore, thời gian đo và ngưỡng nghiệm thu.
+d Công việc  Chạy TC13–TC24, race/partial/restore; kiểm account/grant/jobs/file; rà support và known limits.
+e Đầu ra  Bằng chứng deletion/restore, giới hạn, hỗ trợ và release packet.
+f Tiêu chí nghiệm thu  Restore không mở lại account/quyền cũ; hoàn tất cần đủ kho bắt buộc; không dựa việc có backup để pass.
+g Khi thiếu đầu vào  Thiếu dữ liệu hoặc môi trường thì ghi Blocked; chỉ chạy kịch bản xóa trong phạm vi kiểm thử đã được duyệt.
+h Liên kết  HM-V1-T23 T25 T26 T28
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA gắn build, dữ liệu, account/subject, policy version, môi trường/OS và bằng chứng. Expected theo quyết định đã duyệt; phần thiếu đầu vào ghi Blocked cùng owner. Các thao tác xóa kiểm trên dữ liệu thử trong môi trường được phép.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+10-01
+Mở 21/22 từ 19 trong scope được chọn
+Đúng account, đúng nhánh; ngoài scope không giả có tính năng đã triển khai.
+T01 T07
+10-02
+Đổi sang góc nhìn B rồi yêu cầu xóa
+Không cho xóa account B từ grant xem/ghi; chủ thể rõ ở xác nhận.
+T01 T03
+10-03
+Mất mạng hoặc thiếu phiên trước gửi
+Không queue xóa/xuất rồi báo đã nhận; chuyển bước kết nối/auth đúng.
+T03 T07
+10-04
+Có queue local khi chọn xuất hoặc xóa
+Nêu dữ liệu chưa gửi; xử lý theo Flow09/T05, không giả đã nằm trong file.
+T02 T05
+10-05
+Chọn loại dữ liệu ngày và định dạng
+Kiểm khoảng hợp lệ, timezone/cutoff; chỉ lựa chọn thực sự được hỗ trợ.
+T02 T07
+10-06
+POP14 quay lại hoặc reauth thất bại
+Không tạo job; phạm vi không đổi ngầm; chưa báo yêu cầu thành công.
+T03 T07
+10-07
+Server nhận job xuất nhưng mất phản hồi
+Unknown; tra/retry cùng request, không nhân job ngoài policy.
+T06 T08
+10-08
+Job chờ tạo lỗi hoặc hoàn tất
+Hiển thị đúng trạng thái từng bước; có retry/recovery theo contract.
+T06 T07
+10-09
+So tệp với dữ liệu gốc có hiệu chỉnh
+Đúng phạm vi/cutoff/đơn vị/nguồn; không lộ login ID người khác hay đổi nghĩa thiếu dữ liệu.
+T02 T09
+10-10
+Phạm vi xuất rỗng hoặc lỗi thiếu một phần
+Rỗng có chứng cứ khác lỗi truy vấn; phần thiếu không bị che bằng success đầy đủ.
+T02 T06
+10-11
+Tải hết hạn hoặc dùng link account khác
+Kiểm quyền hiện hành và hạn; chặn link/ID ngoài quyền.
+T03 T08
+10-12
+Tải lỗi đổi account hoặc mở tệp bằng công cụ hỗ trợ
+Không lộ tệp cũ; không báo đã lưu nếu chưa biết; định dạng/chuỗi đọc an toàn theo T02.
+T02 T03
+
+VII Ca kiểm thử xóa và khôi phục
+Toàn bộ ca hiện là Not run. QA gắn build, dữ liệu, account/subject, policy version, môi trường/OS và bằng chứng. Expected theo quyết định đã duyệt; phần thiếu đầu vào ghi Blocked cùng owner. Các thao tác xóa kiểm trên dữ liệu thử trong môi trường được phép.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+10-13
+POP13 hủy trước gửi hoặc reauth lỗi
+Không tạo yêu cầu xóa; không khóa account chỉ vì mở màn.
+T03 T07
+10-14
+Xác nhận yêu cầu xóa hợp lệ
+Receipt và lifecycle đúng; nhận yêu cầu khác hoàn tất mọi kho.
+T04 T06
+10-15
+Xóa nhận rồi timeout hoặc phiên bị thu hồi
+Tra qua kênh đã duyệt; không coi mất phiên là gửi thất bại rồi tạo lại.
+T03 T06
+10-16
+Xóa khi queue đang gửi hoặc unknown
+Giải quyết theo ranh giới commit; không hứa bỏ local là rollback.
+T05 T06
+10-17
+Xóa cạnh tranh với tạo/tải export
+Gate/lifecycle nhất quán; job/link cũ không tái mở dữ liệu ngoài policy.
+T03 T05
+10-18
+Xóa khi máy khác offline còn nhắc/cache
+Áp trong phạm vi kiểm soát; nêu giới hạn, không báo đã hủy/xóa tức thì trên mọi máy.
+T04 T05
+10-19
+Một kho xóa lỗi trong khi kho khác xong
+Tiến độ partial/lỗi; không đánh hoàn tất; retry không xử lý nhầm account.
+T04 T06
+10-20
+Kiểm phần giữ lại và thời hạn hiển thị
+Khớp retention đã duyệt; không lấy số đề xuất thành cam kết hoặc xóa audit trái policy.
+T04 T10
+10-21
+Restore từ bản trước yêu cầu xóa
+Áp dấu xóa/thu hồi trước mở dịch vụ; account/grant/jobs không hồi sinh.
+T04 T10
+10-22
+Người không được phân quyền mở OPS04 hoặc receipt
+Chặn truy cập; log tối thiểu, không mở file sức khỏe mặc định cho support.
+T03 T06
+10-23
+Xin hủy sau tiếp nhận hoặc đăng nhập lại sau khóa
+Chỉ hỗ trợ mốc/policy đã chọn; không giả undo hoặc tự tái tạo account.
+T04 T07
+10-24
+Kiểm kết quả cuối và bản file đã tải ngoài app
+Nêu đúng phạm vi hoàn tất/giữ lại; không hứa thu hồi bản sao ngoài app; kênh trợ giúp hoạt động.
+T04 T08 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+SCR19
+Điểm vào dữ liệu và tài khoản
+T01 xác nhận scope rồi T07 làm layout
+SCR21 POP13
+Xóa account self và trạng thái thật
+T03 T04 T05; không giả xóa tự động
+SCR22 POP14
+Chọn xuất tạo và tải tệp
+T02 T03; kết quả trong cùng trang
+SCR20 OPS04
+Trợ giúp xử lý riêng tư trong quyền
+Công cụ/kênh hiện có nếu đủ
+Flow01
+Auth và xác thực lại
+Không tự thêm phương thức login
+Flow07 08
+Thu hồi quyền và cập nhật nhắc
+Giới hạn máy offline theo policy
+Flow09
+Queue và đổi account
+Bỏ local không xóa bản server
+Flow12
+Phân tích/báo cáo về sau
+Không gộp báo cáo trả phí với xuất gốc
+2 Điều kiện đóng flow
+T01–T05 có scope/policy và người duyệt; T06 có contract; T07 đủ layout/state; T08 có build và vận hành; T09–T10 có bằng chứng xuất, xóa và restore. Phạm vi dữ liệu, thời hạn, ngoại lệ và kênh sau khóa phiên phải rõ trước phát hành. Một task xong không thay kết quả của các kho/hệ thống còn lại.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026, trang 9, 20, 23, 26 và 29: SCR21/22, OPS04, POP13/14, FLOW10 và Q08. Clarifications and Recommendations V1.0 ngày 21/10/2026 mục III12 trang 15: đề xuất yêu cầu xóa/xuất, retention, backup/restore và giới hạn bản tải ngoài app. HM Flow09 bản 0.1 ngày 24/10/2026: local/queue/unknown không đồng nghĩa server chưa nhận; đổi account không chuyển queue.
+Các lựa chọn mới từ nguồn vẫn cần quyết định; không xác nhận 30/35 ngày hoặc CSV là baseline. Mã HM-V1 tham chiếu các nhóm quyền riêng tư, QA, hỗ trợ và phát hành. Tài liệu này chưa chứng minh engine/app đã có tính năng hoặc kết quả thực tế; thay scope cần cập nhật policy, contract, layout và expected liên quan.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng giao tiếp app và dịch vụ.
+CSV
+Comma Separated Values
+Định dạng dữ liệu bảng đang được đề xuất.
+HM
+HealMata
+Tiền tố flow màn task và case.
+ID
+Identifier
+Định danh account request file operation.
+OPS
+Operations
+Mã công cụ vận hành theo phạm vi quyền.
+OS
+Operating System
+Hệ điều hành trong ma trận kiểm.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và expected.
+RPO
+Recovery Point Objective
+Mức mất dữ liệu chấp nhận khi phục hồi; cần chốt riêng.
+RTO
+Recovery Time Objective
+Thời gian phục hồi mục tiêu; chưa có ngưỡng ở đây.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ dữ liệu và yêu cầu
+Scope là phạm vi đã duyệt; retention là chính sách lưu giữ theo loại dữ liệu. Cutoff là mốc dữ liệu của lần xuất; manifest là thông tin mô tả phạm vi và nội dung tệp. Reauth là xác thực lại. Receipt là kết quả tiếp nhận/xử lý theo nguồn; job là tác vụ xử lý. Unknown là chưa biết kết quả; in flight là request đang chạy. Idempotency giúp retry cùng ý định không tạo tác động lặp ngoài thiết kế.
+Lifecycle là vòng đời yêu cầu/account; revoke là thu hồi quyền; purge là làm sạch trong phạm vi kiểm soát; backup/restore là sao lưu/khôi phục. Dấu xóa hoặc danh sách thu hồi giúp áp lại trạng thái sau restore. Audit là dấu vết hành động và kết quả được bảo vệ. Oracle là quy tắc kết quả chuẩn để đối chiếu kiểm thử. Baseline là bộ quyết định hiện hành.

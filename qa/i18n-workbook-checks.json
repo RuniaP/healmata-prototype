@@ -1,0 +1,15 @@
+{
+  "rows": 1543,
+  "headers": [
+    "Key",
+    "Vietnamese",
+    "English"
+  ],
+  "keysUnique": true,
+  "translationsComplete": true,
+  "matchesRuntimeJSON": true,
+  "placeholdersMatch": true,
+  "tableFilter": true,
+  "frozenHeaderAndKeyColumn": true,
+  "sha256": "b8564bb196b587e04d8b6a8d3780b4b12c8f0ce921da710554fd3d329772f655"
+}

@@ -1,0 +1,30 @@
+{
+  "testedAt": "2026-10-27T16:41:19.377Z",
+  "checks": [
+    {
+      "name": "App left and flow right visible together; native iPhone size",
+      "result": "PASS"
+    },
+    {
+      "name": "Diagram opens screen and highlights it without hiding either pane",
+      "result": "PASS"
+    },
+    {
+      "name": "Diagram opens popup; app closes it and marker follows both directions",
+      "result": "PASS"
+    },
+    {
+      "name": "App follows a different branch and automatically switches flow",
+      "result": "PASS"
+    },
+    {
+      "name": "All nodes in 18 flows sync the correct screen/popup and marker",
+      "result": "PASS"
+    },
+    {
+      "name": "Responsive layout has no horizontal page overflow",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

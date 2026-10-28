@@ -1,0 +1,978 @@
+[
+  {
+    "flow": 1,
+    "title": "Khởi động và tài khoản",
+    "steps": [
+      {
+        "route": "sta01",
+        "label": "Khởi động và kiểm tra phiên",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s02",
+        "label": "Đăng nhập",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s23",
+        "label": "Đăng ký email",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s24",
+        "label": "Xác minh email",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s25",
+        "label": "Khôi phục tài khoản",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s26",
+        "label": "Liên kết danh tính",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s03",
+        "label": "Thiết lập hồ sơ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s04",
+        "label": "Hôm nay",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 2,
+    "title": "Tạo, sửa và dừng lịch thuốc",
+    "steps": [
+      {
+        "route": "s10",
+        "label": "Danh sách lịch thuốc",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s11",
+        "label": "Nhập lịch mới",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s11-review",
+        "label": "Xem lại lịch",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s28",
+        "label": "Chi tiết lịch",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s11-edit",
+        "label": "Chỉnh sửa lịch",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s28",
+        "label": "Xác nhận dừng",
+        "role": "owner",
+        "popup": "stopMedicine",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 3,
+    "title": "Ghi nhận và hiệu chỉnh thuốc",
+    "steps": [
+      {
+        "route": "s12",
+        "label": "Chi tiết lần dùng",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s12",
+        "label": "Xem lại ghi nhận",
+        "role": "owner",
+        "popup": "confirmMedicine",
+        "exists": true
+      },
+      {
+        "route": "s13",
+        "label": "Lịch sử ghi nhận",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s13-edit",
+        "label": "Hiệu chỉnh",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s13-edit",
+        "label": "Xem lại hiệu chỉnh",
+        "role": "owner",
+        "popup": "amendMedicine",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 4,
+    "title": "Ghi nhận sức khỏe",
+    "steps": [
+      {
+        "route": "s14",
+        "label": "Lịch sử sức khỏe",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s15",
+        "label": "Chọn loại ghi nhận",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s15-question",
+        "label": "Trả lời câu hỏi",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s15-measure",
+        "label": "Nhập số đo",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s15-review",
+        "label": "Xem lại dữ liệu",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s29",
+        "label": "Chi tiết và nguồn",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s29-edit",
+        "label": "Hiệu chỉnh số đo",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s30",
+        "label": "Biểu đồ cơ bản",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 5,
+    "title": "Mời và kết nối người thân",
+    "steps": [
+      {
+        "route": "s06",
+        "label": "Kết nối gia đình",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s07",
+        "label": "Chọn quyền chia sẻ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s07-review",
+        "label": "Xem lại lời mời",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s07-share",
+        "label": "Chia sẻ lời mời",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s08",
+        "label": "Người nhận phản hồi",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s09",
+        "label": "Chủ hồ sơ xác nhận",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 6,
+    "title": "Xem và nhập hộ trong quyền",
+    "steps": [
+      {
+        "route": "s05",
+        "label": "Chọn hồ sơ",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s16",
+        "label": "Hôm nay của người thân",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s12",
+        "label": "Ghi nhận thuốc hộ",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s15-measure",
+        "label": "Nhập số đo hộ",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s17",
+        "label": "Xem phạm vi được cấp",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 7,
+    "title": "Thu hồi quyền và rời kết nối",
+    "steps": [
+      {
+        "route": "s17",
+        "label": "Quyền hiện tại",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s17-reduce",
+        "label": "Chọn giảm quyền",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s17-reduce",
+        "label": "Xem lại giảm quyền",
+        "role": "owner",
+        "popup": "reduceGrant",
+        "exists": true
+      },
+      {
+        "route": "s17",
+        "label": "Ngừng chia sẻ",
+        "role": "owner",
+        "popup": "revokeGrant",
+        "exists": true
+      },
+      {
+        "route": "s17",
+        "label": "Người nhận rời kết nối",
+        "role": "caregiver",
+        "popup": "leaveGrant",
+        "exists": true
+      },
+      {
+        "route": "s16",
+        "label": "Góc nhìn sau mất quyền",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 8,
+    "title": "Nhắc thuốc",
+    "steps": [
+      {
+        "route": "s18",
+        "label": "Cài đặt lời nhắc",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s18",
+        "label": "Giải thích quyền",
+        "role": "owner",
+        "popup": "notificationPermission",
+        "exists": true
+      },
+      {
+        "route": "s37",
+        "label": "Thiết bị nhận nhắc",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s18-plan",
+        "label": "Kết quả đặt nhắc",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s12",
+        "label": "Mở đúng lần dùng",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 9,
+    "title": "Offline, đồng bộ và đổi tài khoản",
+    "steps": [
+      {
+        "route": "s38",
+        "label": "Danh sách thao tác chờ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s12",
+        "label": "Ghi nhận khi offline",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s38",
+        "label": "Đồng bộ và kiểm kết quả",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s38-conflict",
+        "label": "Xem lại xung đột",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s19",
+        "label": "Đăng xuất còn dữ liệu",
+        "role": "owner",
+        "popup": "logout",
+        "exists": true
+      },
+      {
+        "route": "s02",
+        "label": "Đăng nhập tài khoản khác",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 10,
+    "title": "Xuất dữ liệu và xóa tài khoản",
+    "steps": [
+      {
+        "route": "s19-data",
+        "label": "Dữ liệu và tài khoản",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s22",
+        "label": "Chọn phạm vi xuất",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s22",
+        "label": "Xác nhận xuất",
+        "role": "owner",
+        "popup": "exportData",
+        "exists": true
+      },
+      {
+        "route": "s22-status",
+        "label": "Theo dõi và tải tệp",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s21",
+        "label": "Tác động xóa tài khoản",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s21",
+        "label": "Xác nhận xóa",
+        "role": "owner",
+        "popup": "deleteAccount",
+        "exists": true
+      },
+      {
+        "route": "s21-status",
+        "label": "Theo dõi yêu cầu xóa",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops04",
+        "label": "Xử lý riêng tư",
+        "role": "privacy",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 11,
+    "title": "Việc chăm sóc và bàn giao",
+    "steps": [
+      {
+        "route": "s40",
+        "label": "Việc chăm sóc",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s41",
+        "label": "Tạo việc",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s43",
+        "label": "Nhận hoặc từ chối",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s42",
+        "label": "Chi tiết việc",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s45",
+        "label": "Gửi yêu cầu bàn giao",
+        "role": "caregiver",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s46",
+        "label": "Người mới phản hồi",
+        "role": "caregiver2",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s42",
+        "label": "Hoàn tất việc",
+        "role": "caregiver2",
+        "popup": "completeWork",
+        "exists": true
+      },
+      {
+        "route": "s44",
+        "label": "Bảng gia đình",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s47",
+        "label": "Timeline",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s48",
+        "label": "Nhắc phối hợp",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 12,
+    "title": "Phân tích và tạo báo cáo",
+    "steps": [
+      {
+        "route": "s31",
+        "label": "Phân tích theo thời gian",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s34",
+        "label": "Chọn và xem lại báo cáo",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s32",
+        "label": "Danh sách job báo cáo",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s33",
+        "label": "Chi tiết snapshot",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s29",
+        "label": "Truy dữ liệu nguồn",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s33-share",
+        "label": "Xem lại tải/chia sẻ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 13,
+    "title": "Family Plus và khôi phục gói",
+    "steps": [
+      {
+        "route": "s35",
+        "label": "Quyền lợi và offer",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s35-checkout",
+        "label": "Kênh mua giả lập",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s36",
+        "label": "Xác minh quyền lợi",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s36",
+        "label": "Quản lý gia hạn",
+        "role": "owner",
+        "popup": "cancelRenewal",
+        "exists": true
+      },
+      {
+        "route": "s36-restore",
+        "label": "Khôi phục giao dịch",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops06",
+        "label": "Đối soát Family Plus",
+        "role": "finance",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 14,
+    "title": "Chọn bác sĩ và đặt lịch",
+    "steps": [
+      {
+        "route": "s49",
+        "label": "Danh mục bác sĩ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s50",
+        "label": "Hồ sơ bác sĩ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s51",
+        "label": "Người khám và khung giờ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s52",
+        "label": "Xem lại quote",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s53",
+        "label": "Thanh toán giả lập",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s54",
+        "label": "Kết quả tiền và lịch",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s56",
+        "label": "Lịch đã xác nhận",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 15,
+    "title": "Đổi, hủy lịch và hoàn tiền",
+    "steps": [
+      {
+        "route": "s55",
+        "label": "Danh sách lịch",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s56",
+        "label": "Chi tiết lịch hiện hành",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s57",
+        "label": "Điều kiện và ảnh hưởng tiền",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s51-change",
+        "label": "Chọn lịch thay thế",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s52-change",
+        "label": "Xem lại thay đổi",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s57",
+        "label": "Xác nhận hủy",
+        "role": "owner",
+        "popup": "cancelBooking",
+        "exists": true
+      },
+      {
+        "route": "s58",
+        "label": "Theo dõi hoàn tiền",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 16,
+    "title": "Chuẩn bị, tham gia và tài liệu",
+    "steps": [
+      {
+        "route": "s59",
+        "label": "Chọn dữ liệu chia sẻ",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s59",
+        "label": "Xem lại packet",
+        "role": "owner",
+        "popup": "sharePacket",
+        "exists": true
+      },
+      {
+        "route": "s60",
+        "label": "Kiểm tra thiết bị",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s61",
+        "label": "Tham gia và nối lại",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s62",
+        "label": "Kết quả sau phiên",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "doc03",
+        "label": "Lịch phía bác sĩ",
+        "role": "doctor",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "doc05",
+        "label": "Packet được chia sẻ",
+        "role": "doctor",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "doc07",
+        "label": "Soạn và review tài liệu",
+        "role": "doctor",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "doc07",
+        "label": "Công bố tài liệu",
+        "role": "doctor",
+        "popup": "publishDocument",
+        "exists": true
+      },
+      {
+        "route": "s63",
+        "label": "Nhận tài liệu",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 17,
+    "title": "Phản ánh, hỗ trợ và kháng nghị",
+    "steps": [
+      {
+        "route": "s64",
+        "label": "Gửi phản ánh",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s65",
+        "label": "Theo dõi và bổ sung",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops10",
+        "label": "Phân tuyến ca",
+        "role": "support",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops10-review",
+        "label": "Review và quyết định",
+        "role": "support",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s65",
+        "label": "Đọc kết quả",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "s65-appeal",
+        "label": "Gửi kháng nghị",
+        "role": "owner",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "doc09",
+        "label": "Phản ánh phía bác sĩ",
+        "role": "doctor",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  },
+  {
+    "flow": 18,
+    "title": "Đối soát và chi trả",
+    "steps": [
+      {
+        "route": "ops11",
+        "label": "Sổ và đối soát",
+        "role": "finance",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops11-discrepancy",
+        "label": "Xử lý sai lệch",
+        "role": "finance",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops12",
+        "label": "Khoản phải trả",
+        "role": "finance",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops12-payee",
+        "label": "Xác minh bên nhận",
+        "role": "finance",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops12-proposal",
+        "label": "Chuẩn bị đề nghị",
+        "role": "finance",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops12-approval",
+        "label": "Phê duyệt",
+        "role": "reviewer",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "ops12-payout",
+        "label": "Thực hiện và tra kết quả",
+        "role": "executor",
+        "popup": null,
+        "exists": true
+      },
+      {
+        "route": "doc08",
+        "label": "Sao kê nhà cung cấp",
+        "role": "doctor",
+        "popup": null,
+        "exists": true
+      }
+    ]
+  }
+]

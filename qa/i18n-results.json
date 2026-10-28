@@ -1,0 +1,51 @@
+{
+  "testedAt": "2026-10-28T01:44:59.311Z",
+  "checks": [
+    {
+      "name": "One dropdown applies immediately and uses the workbook key set",
+      "result": "PASS"
+    },
+    {
+      "name": "All 102 screens and 25 popups contain the language control",
+      "result": "PASS"
+    },
+    {
+      "name": "Switching languages preserves unsaved user input, options, and domain state",
+      "result": "PASS"
+    },
+    {
+      "name": "Language persists through navigation, resets, and reloads",
+      "result": "PASS"
+    },
+    {
+      "name": "Dropdown Escape preserves the open app popup",
+      "result": "PASS"
+    },
+    {
+      "name": "Named placeholders, currency display, and unknown-key guard",
+      "result": "PASS"
+    },
+    {
+      "name": "Downloaded HTML report follows the chosen language",
+      "result": "PASS"
+    },
+    {
+      "name": "File chooser and form validation use the selected language; filenames stay unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "Direct key rendering switches both ways and edited wording keeps the same key",
+      "result": "PASS"
+    },
+    {
+      "name": "Start page and gallery share the persisted language",
+      "result": "PASS"
+    },
+    {
+      "name": "393px iPhone and narrow review pages do not overflow horizontally",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "keys": 1543
+}

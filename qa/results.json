@@ -1,0 +1,96 @@
+{
+  "testedAt": "2026-10-27T16:25:37.947Z",
+  "screens": 102,
+  "popups": 25,
+  "checks": [
+    {
+      "name": "01 Đăng ký → xác minh → hồ sơ → Hôm nay",
+      "result": "PASS"
+    },
+    {
+      "name": "02 Tạo → sửa → dừng lịch giữ phiên bản",
+      "result": "PASS"
+    },
+    {
+      "name": "03 Ghi nhận → hiệu chỉnh có dấu vết",
+      "result": "PASS"
+    },
+    {
+      "name": "04 Nhập số đo → hiệu chỉnh giữ nguồn",
+      "result": "PASS"
+    },
+    {
+      "name": "05 Mời → người nhận chấp nhận → chủ kích hoạt",
+      "result": "PASS"
+    },
+    {
+      "name": "06 Nhập hộ kiểm quyền; không được hiệu chỉnh",
+      "result": "PASS"
+    },
+    {
+      "name": "07 Thu hồi chặn đọc và ghi",
+      "result": "PASS"
+    },
+    {
+      "name": "08 App preference / quyền / request tách riêng",
+      "result": "PASS"
+    },
+    {
+      "name": "09 Offline queue / tài khoản / sync đúng một lần",
+      "result": "PASS"
+    },
+    {
+      "name": "10 Xuất file thật và xử lý xóa riêng tư",
+      "result": "PASS"
+    },
+    {
+      "name": "11 Nhận việc → bàn giao → Lan nhận → hoàn tất",
+      "result": "PASS"
+    },
+    {
+      "name": "12 Report snapshot không thay đổi theo nguồn",
+      "result": "PASS"
+    },
+    {
+      "name": "13 Mua / xác minh / hủy gia hạn / restore",
+      "result": "PASS"
+    },
+    {
+      "name": "14 Giữ chỗ → thanh toán → lịch confirmed",
+      "result": "PASS"
+    },
+    {
+      "name": "15 Đổi giữ lịch cũ / hủy / hoàn tiền 3 bước",
+      "result": "PASS"
+    },
+    {
+      "name": "16 Packet / phiên / bác sĩ công bố / người dùng nhận",
+      "result": "PASS"
+    },
+    {
+      "name": "17 Phản ánh / phân tuyến / quyết định / kháng nghị",
+      "result": "PASS"
+    },
+    {
+      "name": "18 Khớp nguồn / bên nhận / đề nghị / duyệt / chi",
+      "result": "PASS"
+    },
+    {
+      "name": "Conflict không ghi đè / timeout không ghi trùng",
+      "result": "PASS"
+    },
+    {
+      "name": "Sơ đồ 18 flow mở đúng màn / popup",
+      "result": "PASS"
+    },
+    {
+      "name": "iPhone viewport 393 × 852 không tràn ngang",
+      "result": "PASS"
+    },
+    {
+      "name": "Mở trực tiếp file HTML, toàn bộ asset nội bộ",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

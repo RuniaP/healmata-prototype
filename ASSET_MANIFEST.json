@@ -1,0 +1,36 @@
+{
+  "logo-horizontal-original.png": {
+    "source": "PSD/Home.psd",
+    "layer": "Home / Header / Logo_Horizotal · embedded Smart Object"
+  },
+  "mascot-large-original.png": {
+    "source": "PSD/Home.psd",
+    "layer": "Welcome / Mascot · embedded Smart Object (art reused; no Welcome screen)"
+  },
+  "background-mint.png": {
+    "source": "PSD/Home.psd",
+    "layer": "Home / BG"
+  },
+  "doctor-avatar.png": {
+    "source": "PSD/Findadoctor.psd",
+    "layer": "Content / List / Card / Avatar"
+  },
+  "doctor-cindy.png": {
+    "source": "PSD/Findadoctor.psd",
+    "layer": "Content / List / Card copy / Layer 36"
+  },
+  "doctor-chris.png": {
+    "source": "PSD/Findadoctor.psd",
+    "layer": "Content / List / Card 1 / Layer 33"
+  },
+  "call-thumbnail.png": {
+    "source": "PSD/CallADoctor.psd",
+    "layer": "Layer 2"
+  },
+  "fonts/Lato-Regular.ttf": {
+    "source": "Local installed Lato font"
+  },
+  "fonts/Lato-Bold.ttf": {
+    "source": "Local installed Lato font"
+  }
+}

@@ -1,0 +1,430 @@
+HM FLOW 18 Đối soát và chi trả
+HealMata V3.0 và gia cố V3.1  |  Flow và layout sơ bộ cùng task triển khai  |  Bản 0.1
+Tài liệu dành cho Finance, vận hành, Product, Backend, App, Design và QA để đi từ nguồn thu/hoàn tới sổ tiền, đối soát, khoản phải trả, phê duyệt chi và sao kê nhà cung cấp. Mỗi khoản cần truy nguồn, đúng bên nhận và đúng thẩm quyền; chưa rõ kết quả phải tra trước khi thử lại.
+I Phạm vi và kết quả cần đạt
+1 Bề mặt và điểm vào
+OPS-09 đưa giao dịch tư vấn sang OPS-11 để xem bút toán và đối soát; OPS-12 review khoản phải trả và chi trả. Bên nhận được xác minh dùng DOC-08 xem khoản/sao kê, DOC-09 cho phản ánh trong quyền. OPS-01 kiểm quyền công cụ; OPS-10 xử lý tranh chấp liên kết. Có thể dùng công cụ có sẵn nếu đáp ứng contract và audit đã chốt.
+2 Người và quyền
+Tách người chuẩn bị, người duyệt và người thực hiện chi theo mô hình được Finance phê duyệt. Quyền Support, bác sĩ, payer hoặc chủ tài khoản sức khỏe không tự mở quyền sổ tiền hay chi trả. Bên nhận chỉ xem khoản của mình/phạm vi được phép; thông tin tài khoản nhận và bằng chứng được giới hạn riêng.
+3 Các lớp trạng thái
+Thanh toán, hoàn, đối soát, eligibility dịch vụ, payable, approval và payout có trạng thái độc lập. Phiên kết thúc hoặc tài liệu công bố chưa tự đủ điều kiện trả; duyệt chi chưa là đã gửi tiền; đã gửi chưa là nguồn xác nhận đã chi. Sao kê không tạo ví hoặc quyền rút tiền ngầm.
+4 Ranh giới và các điểm cần chốt
+Flow 14 giữ booking/payment; Flow 15 giữ đổi/hủy/refund; Flow 16 giữ phiên và tài liệu; Flow 17 giữ phản ánh/quyết định. Flow 18 ghi sổ và thực thi tài chính theo hợp đồng. Consultation tách khỏi Family Plus. Phí, thuế, tỷ lệ chia, thời điểm đủ điều kiện, lịch chi, kênh, retention và thẩm quyền nằm trong T01–T05; không tự đặt giá trị hoặc quyền chuyển tiền thật.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+OPS-11 là sổ và đối soát; OPS-12 là review khoản phải trả và chi; DOC-08 công bố trạng thái/sao kê trong quyền. Nhánh sai lệch và chưa rõ cần người xử lý. Mũi tên không thay điều kiện eligibility, authorization hoặc bằng chứng từ kênh.
+
+III Flow chi tiết
+1 Mở kỳ và đối chiếu nguồn
+a Vào đúng công cụ
+Nhân sự đăng nhập OPS-01, mở OPS-11 từ OPS-09 hoặc điều hướng Finance. Chọn môi trường, kỳ, tiền tệ và nguồn có quyền; hiển thị thời điểm dữ liệu và mức hoàn chỉnh. Không dùng ngày máy người xem để tự đổi kỳ hạch toán; T01/T02 chốt múi giờ, mốc cắt và kỳ theo nguồn.
+b Gom giao dịch có tham chiếu
+Liên kết payment/refund/booking/provider và tham chiếu kênh tối thiểu. Authorization, reserve, capture và settlement chỉ có khi kênh hỗ trợ; không tự áp đủ mọi trạng thái cho mọi kênh. Booking confirmed và tiền đã thu là hai nguồn riêng, không sửa booking từ trạng thái sổ để làm báo cáo khớp.
+2 Ghi sổ và đối soát
+Ánh xạ tài khoản, thu/hoàn/phí/thuế/phần nhà cung cấp theo hợp đồng versioned và quy tắc tiền tệ/làm tròn. Mỗi sự kiện hợp lệ tạo posting theo contract bút toán kép, có khóa chống trùng, nguồn và audit. Cùng event tới lại không ghi hai lần; event ngược thứ tự cần kiểm nguồn thẩm quyền trước cập nhật.
+Đối soát sổ với báo cáo gateway/bank/settlement theo nguồn thật có sẵn. Tách đã khớp, chênh lệch, thiếu nguồn và đang xác minh. Không có báo cáo không có nghĩa doanh thu bằng 0 hoặc đã cân. Chênh lệch có số liệu hai phía, lý do, owner, bước tiếp và ngày xem lại; giữ trạng thái chưa giải quyết cho tới khi đủ bằng chứng.
+3 Review sai lệch và điều chỉnh
+Mở chi tiết trong OPS-11; Finance kiểm nguồn, phạm vi và nguyên nhân. Điều chỉnh được review theo T02 bằng bút toán đảo/bổ sung liên kết bản gốc, không sửa hoặc xóa lịch sử để cân giả. Không suy rằng cân Nợ/Có là đã đối soát với kênh. Khoản chưa xác minh ảnh hưởng chi thế nào phải theo policy, không tự giữ toàn bộ tiền vô thời hạn.
+
+4 Xác lập khoản phải trả
+a Đủ điều kiện theo dịch vụ và hợp đồng
+OPS-12 kiểm bằng chứng dịch vụ từ Flow 16, điều khoản giá/phí/thuế/chia phần và refund/tranh chấp liên quan. Join event, đóng phòng, công bố tài liệu và đủ điều kiện thanh toán là dữ kiện riêng. T03 chốt trường hợp no show, hủy, hoàn một phần và tài liệu còn thiếu; không tự dùng một event kỹ thuật để mở tiền.
+b Tính và review khoản
+Hiển thị gross, các loại phí/thuế, net, tiền tệ, kỳ và version hợp đồng. Có tham chiếu về nguồn và khoản điều chỉnh. Finance duyệt ví dụ tiền độc lập; tổng hợp không cộng các đồng tiền thành một số nếu chưa có quy tắc quy đổi được duyệt. Không giả định giá người dùng trả bằng số bác sĩ nhận.
+5 Xác minh bên nhận và xử lý khoản giữ
+Bên nhận/payee và tài khoản chi phải được xác minh bằng quy trình T04; không lấy thông tin từ tin nhắn chưa xác minh. Thay bên nhận hoặc thông tin chi có review, audit, hiệu lực và tác động tới đề nghị đang chờ. Thông tin nhạy cảm được che trên UI, API/file cũng kiểm quyền. Không mặc định bác sĩ đăng nhập là chủ hợp lệ của mọi tài khoản ngân hàng họ nhập.
+Khoản giữ có lý do, phạm vi, số tiền, thẩm quyền, owner và lịch xem lại theo T03. Tranh chấp từ OPS-10 cung cấp kết quả được phép, không tự mở toàn bộ bằng chứng chuyên môn. Đóng case không tự release. Giải phóng cần kiểm điều kiện hiện tại và review trong quyền; khoản bị giữ không tự biến mất khỏi sao kê.
+6 Chuẩn bị và phê duyệt đề nghị chi
+Người chuẩn bị chọn khoản hợp lệ, bên nhận đã xác minh, số tiền/tiền tệ/kênh/kỳ và căn cứ. Preview rõ từng khoản/batch nếu hỗ trợ, giữ nguyên tham chiếu. Quay lại chưa tạo tác động chi. Người duyệt khác vai trò theo T05 kiểm lại số liệu/version/hold/payee và chấp thuận hoặc trả về có lý do.
+Duyệt là authorization cho phạm vi cụ thể, chưa thực thi. Nếu số tiền, payee, hợp đồng, eligibility hoặc hold đổi, T05 quy định hiệu lực duyệt và review lại; không âm thầm dùng duyệt cũ cho payload mới. Action có kiểm quyền server, concurrency và audit; ẩn nút UI không thay kiểm quyền.
+
+7 Thực hiện và theo dõi kết quả chi
+a Gửi một ý định chi có định danh
+Người thực hiện trong quyền kiểm lại điều kiện tại thời điểm gửi. T06 chốt operation/request/payout reference bền vững, liên kết từng payable và khả năng idempotency/query của kênh. Retry cùng ý định không tạo tác động chi thứ hai; cùng khóa với payload khác không được âm thầm chấp nhận. Nếu dùng cơ chế thủ công, cần khóa tránh lặp và bằng chứng/kiểm tra tương đương, không giả có API tự động.
+b Chưa rõ và thất bại
+Timeout, đóng app hoặc mất phản hồi không chứng minh thất bại. Hiển thị chưa rõ, tra cùng tham chiếu và phân công owner/next action/review date; không gửi lại từ khoản mới để làm UI xanh. Chỉ retry sau kiểm nguồn và contract cho phép. Kênh không có query/idempotency đủ rõ cần cơ chế review thủ công trước retry theo T06.
+c Thành công và đối soát sau chi
+Nguồn kênh có thẩm quyền xác nhận trạng thái gì thì hiển thị đúng mức đó. Phân biệt đã gửi, kênh chấp nhận và kết quả đã chi; không tự hứa người nhận đã thấy tiền. Ghi posting/statement và đối soát theo nguồn, thời điểm và kỳ. Event thành công tới lặp không cộng hoặc trả lần nữa; event cũ không lùi trạng thái đã xác minh.
+8 Refund muộn và thay đổi sau chi
+Refund sau payable hoặc sau đã chi tạo điều chỉnh/nghĩa vụ theo hợp đồng, giữ liên kết khoản và payout gốc. Không xóa payout cũ, tự trừ khoản mới hoặc thu hồi tài khoản nhận khi chưa có policy/thẩm quyền. T03/T05 chốt negative balance nếu phát sinh, offset/recovery nếu hỗ trợ và cách công bố sao kê; không tạo ví hoặc quyền thu tiền ngầm.
+9 Công bố sao kê và bàn giao
+DOC-08 chỉ xem khoản đủ điều kiện, giữ, đang chi, đã chi và chi tiết/điều chỉnh trong quyền. Có kỳ, tiền tệ, ngày cập nhật và tham chiếu an toàn; DOC-09 tiếp nhận phản ánh liên kết Flow 17. Copy không tiết lộ ghi chú Finance hoặc bằng chứng người khác. Nếu có tải file thì quyền, thời hạn và retention theo T04/T07, không link công khai.
+OPS-11/12 có queue chênh lệch/chi chưa rõ/khoản giữ và bàn giao người nhận thật. Restore, chạy lại job, hai operator đồng thời hoặc event trễ đều giữ lịch sử và không nhân tiền. Phân biệt bằng chứng sandbox, diễn tập và giao dịch thật; tài liệu/build hoàn tất chưa tự cho phép chuyển tiền thật.
+
+IV Layout sơ bộ
+1 Sổ và sai lệch đối soát
+
+a Biến thể và giới hạn
+OPS-11 cần loading/rỗng/thiếu nguồn/nguồn cũ/lỗi/mất quyền; từng kỳ và đồng tiền riêng. Sơ đồ bố trí thông tin không buộc công cụ Finance dùng giao diện điện thoại.
+
+2 Khoản phải trả và khoản giữ
+
+a Biến thể và giới hạn
+OPS-12 có trạng thái không đủ điều kiện, chưa xác minh payee, hold còn mở, nguồn dịch vụ chưa đủ và quyền review. Release có bước review riêng, không tự gắn với đóng ticket.
+
+3 Phê duyệt và kết quả chi
+
+a Biến thể và giới hạn
+Tách chuẩn bị/duyệt/thực hiện, xác nhận đúng hành động. Cần biến thể bị từ chối, stale version, pending, failed và unknown; unknown chỉ có đường tra/review theo contract.
+
+4 Sao kê phía nhà cung cấp
+
+a Biến thể và giới hạn
+DOC-08 có tổng quan/chi tiết cùng bề mặt, không tăng mã màn từ các biến thể. Chỉ hiển thị lý do/số liệu được phép; lối DOC-09 không mở quyền ledger hoặc dữ liệu người khác.
+
+V Trạng thái và hợp đồng tiền
+1 Các lớp nguồn độc lập
+Lớp
+Dữ kiện cần theo dõi
+Không được suy
+Payment/refund
+Thu/hoàn theo khả năng kênh
+Paid không tự xác nhận booking
+Ledger
+Posting cân đối, tham chiếu, currency
+Cân sổ chưa là kênh khớp
+Reconcile
+Kỳ/nguồn/thời điểm/sai lệch
+Thiếu báo cáo không bằng 0
+Eligibility/payable
+Dịch vụ, hợp đồng, khoản giữ
+Join chưa đủ điều kiện nhận
+Approval
+Payload/version và thẩm quyền
+Duyệt chưa là gửi tiền
+Payout
+Gửi/pending/unknown/failed/paid
+Timeout không là failed
+Statement
+Khoản và điều chỉnh trong quyền
+Sao kê không phải ví rút tiền
+2 Trạng thái chi đề xuất
+Trạng thái
+Ý nghĩa
+Bước tiếp
+Chưa đủ điều kiện
+Thiếu căn cứ/payee/đang giữ
+Bổ sung hoặc review đúng tuyến
+Có thể chuẩn bị
+Đạt điều kiện hiện tại
+Preview và tạo đề nghị
+Chờ duyệt/đã duyệt
+Có payload/version được review
+Trả về hoặc kiểm trước thực hiện
+Đang gửi/chờ nguồn
+Có operation chi
+Theo dõi, không mở chi mới
+Chưa rõ kết quả
+Chưa biết kết quả chắc chắn
+Query cùng tham chiếu/review
+Thất bại xác nhận
+Nguồn xác nhận failed theo contract
+Review trước retry nếu cho phép
+Đã chi theo nguồn
+Mức xác nhận theo kênh
+Ghi sổ/đối soát/sao kê
+
+3 Định danh và dữ liệu tối thiểu
+a Chuỗi tham chiếu
+Payment/refund/event/posting/reconcile item/eligibility/payable/proposal/approval/payout/statement ID và version; provider/payee/verified destination; contract version; tiền tệ/đơn vị/amount/gross/net/fee/tax; kỳ/mốc thời gian/nguồn; operation/receipt/channel reference và môi trường. T01/T06 chốt schema và khả năng từng kênh, không yêu cầu mọi field nhạy cảm trên mọi màn.
+b Quy tắc số tiền
+Không dùng số float hoặc format UI làm quy tắc hạch toán; T01 chốt representation chính xác theo tiền tệ/khả năng kênh, rounding từng bước và quy tắc tổng hợp. Finance tạo oracle độc lập cho thu, phí, thuế, hoàn một phần và phần phải trả. Không tự chọn tỷ lệ phí, mức thuế, FX hoặc thời hạn nghĩa vụ.
+c Bất biến và hiệu chỉnh
+Một nghĩa vụ không được chi trùng qua retry, batch mới hoặc chạy lại job. Một event hợp lệ không tạo posting lần hai. Điều chỉnh có căn cứ, version và bút toán liên kết; giữ lịch sử và bằng chứng nguồn. Sổ cân, nguồn khớp và trạng thái nghĩa vụ đúng là ba điều cần kiểm riêng. Cơ chế thực thi bất biến và khóa giao dịch do T06 thiết kế.
+4 Quyền và thay đổi đồng thời
+T04/T05 định nghĩa role/action/limit theo môi trường, bước chuẩn bị/duyệt/thực hiện, quyền hold/release/adjustment/payee change. Trường hợp một người có nhiều role cần mô hình kiểm soát được chốt, không tự bỏ separation để vừa màn hình. Duyệt và gửi phải chống stale version, TOCTOU và hai người chi cùng khoản; kiểm quyền tại server và thời điểm tác động.
+Tệp sao kê, dữ liệu payee, export và job nền có scope riêng; không cấp Finance quyền toàn bộ hồ sơ sức khỏe. Đổi tài khoản, provider tạm dừng, mất role hoặc phiên hết hạn phải gate lại; không hồi sinh quyền khi restore. Audit tối thiểu ghi actor/action/reference/before-after cần thiết, không log secrets, thông tin tài khoản đầy đủ hoặc hồ sơ không cần.
+5 Phục hồi và vận hành
+Job/retry/callback/query có correlation, checkpoint và chính sách xử lý event lệch thứ tự. Restore không replay chi tiền thật như một tác vụ chưa làm; phải đối chiếu nguồn và operation bền vững trước mở lại. Queue có owner/next action/review date, bàn giao đã nhận và escalation khi thiếu đầu mối. T10 diễn tập trên công cụ thật phù hợp, không tự hứa 24/7 hoặc đánh sandbox là đã nhận tiền.
+
+VI Task triển khai
+1 T01 Chốt mô hình tiền và hợp đồng
+a Mục tiêu  Tính được khoản thu/hoàn/phí/phải trả bằng quy tắc được duyệt.
+b Phụ trách và đầu vào  Finance với Product/Backend và reviewer phù hợp; cần Q12, hợp đồng đối tác và kênh.
+c Điểm cần xác nhận trong task  Chốt tài khoản sổ, tiền tệ, đơn vị, rounding, phí/thuế/chia phần, kỳ/múi giờ và FX nếu có.
+d Công việc  Lập sơ đồ luồng tiền và ví dụ số độc lập; tách consultation với Plus.
+e Đầu ra  Baseline versioned và oracle tiền.
+f Tiêu chí nghiệm thu  Không tự đặt tỷ lệ; mỗi đồng tiền có expected, không trộn balances.
+g Khi thiếu đầu vào  Chưa có hợp đồng dùng fixtures có nhãn; chưa mở chi thật.
+h Liên kết  HM-V3-T04 T19 T20; HM-V31-T11
+2 T02 Chốt đối soát và điều chỉnh
+a Mục tiêu  Sai lệch có nguồn và người xử lý, không cân giả.
+b Phụ trách và đầu vào  Finance/Backend/vận hành; cần T01 và mẫu báo cáo kênh.
+c Điểm cần xác nhận trong task  Chốt nguồn/kỳ/matching/cutoff, tolerance nếu có, stale data, approval adjustment và retention.
+d Công việc  Map thu/hoàn/phí/settlement; định nghĩa discrepancy queue, reversal/adjustment và lịch review.
+e Đầu ra  Contract đối soát, posting và runbook.
+f Tiêu chí nghiệm thu  Thiếu nguồn không báo khớp hoặc bằng 0; sửa bằng bút toán liên kết có audit.
+g Khi thiếu đầu vào  Không có settlement thật ghi chưa có dữ liệu; kiểm cơ chế sandbox riêng.
+h Liên kết  HM-V3-T19 T23; HM-V31-T11 T12
+
+VI Task triển khai tiếp theo
+3 T03 Chốt eligibility khoản giữ và refund muộn
+a Mục tiêu  Chỉ nghĩa vụ đủ điều kiện mới đi tới chi.
+b Phụ trách và đầu vào  Finance với vận hành/chuyên môn/Product; cần T01, Flow 15–17.
+c Điểm cần xác nhận trong task  Chốt bằng chứng dịch vụ, payable timing, no show, hold/release và điều chỉnh sau đã chi.
+d Công việc  Lập decision table theo hợp đồng, phạm vi giữ, owner và cách xử lý nghĩa vụ phát sinh/offset nếu có.
+e Đầu ra  Eligibility/hold/adjustment policy và expected.
+f Tiêu chí nghiệm thu  Join không tự đủ điều kiện; refund muộn không xóa payout cũ hoặc tự thu hồi tiền.
+g Khi thiếu đầu vào  Thiếu policy giữ nhánh chưa đủ điều kiện và người phụ trách, không đoán net.
+h Liên kết  HM-V3-T18 T19 T20 T21; HM-V31-T11
+4 T04 Chốt xác minh payee và quyền dữ liệu
+a Mục tiêu  Chi đúng bên nhận đã xác minh và giới hạn dữ liệu.
+b Phụ trách và đầu vào  Finance/Privacy/Security với vận hành; cần T01 và quy trình đối tác.
+c Điểm cần xác nhận trong task  Chốt xác minh/thay payee/destination, hiệu lực với khoản chờ, masking, export và vòng đời quyền.
+d Công việc  Lập role/data matrix; xử lý provider suspend, mất role, account đổi và statement access.
+e Đầu ra  Payee lifecycle, quyền API/tệp và audit.
+f Tiêu chí nghiệm thu  Không chọn tài khoản từ tin nhắn; đổi destination cần review, không lộ dữ liệu đầy đủ.
+g Khi thiếu đầu vào  Chưa có cơ chế xác minh không thực hiện chi; vẫn làm state/fixtures.
+h Liên kết  HM-V3-T02 T20 T23; HM-V31-T04 T11 T18
+
+VI Task triển khai tiếp theo
+5 T05 Chốt quyền duyệt thực hiện và retry
+a Mục tiêu  Mỗi lần chi có đúng approval, phạm vi và người chịu trách nhiệm.
+b Phụ trách và đầu vào  Finance reviewer/người có quyền chi với Backend/vận hành; cần T01–T04.
+c Điểm cần xác nhận trong task  Chốt separation, hạn mức nếu có, approval expiry/invalidation, batch nếu hỗ trợ và manual fallback.
+d Công việc  Lập action matrix chuẩn bị/duyệt/chi/hold/release; xử lý payload đổi và unknown trước retry.
+e Đầu ra  Approval/retry policy và runbook có người nhận.
+f Tiêu chí nghiệm thu  Duyệt không bằng paid; thay nội dung trọng yếu không dùng approval cũ ngoài policy.
+g Khi thiếu đầu vào  Chưa có authority/kênh rõ chỉ sandbox/diễn tập, code không cho phép chuyển tiền thật.
+h Liên kết  HM-V3-T20 T22; HM-V31-T11 T12
+6 T06 Xây ledger đối soát và payout contract
+a Mục tiêu  Giữ tiền và trạng thái đúng qua event lặp, lỗi và đồng thời.
+b Phụ trách và đầu vào  Backend với Finance/QA; cần T01–T05 và khả năng kênh.
+c Điểm cần xác nhận trong task  Chốt IDs/version, exact amount, operation idempotency, query/recovery, event ordering và transaction boundary.
+d Công việc  Xây posting/reconcile/eligibility/proposal/approval/payout/readback; queue/audit và checkpoint restore.
+e Đầu ra  API/schema/jobs/error map và adapter hoặc mapping công cụ.
+f Tiêu chí nghiệm thu  Duplicate không nhân posting/chi; race và payload đổi bị gate; unknown không chi lại mù.
+g Khi thiếu đầu vào  Kênh thiếu query/idempotency cần cơ chế kiểm tra có thẩm quyền, không giả khả năng.
+h Liên kết  HM-V3-T19 T20 T23; HM-V31-T06 T07 T11
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế công cụ và sao kê nhà cung cấp
+a Mục tiêu  Operator biết bước tiếp, bên nhận hiểu khoản tiền trong quyền.
+b Phụ trách và đầu vào  Design với Finance/Product/Privacy và App; cần T01–T05.
+c Điểm cần xác nhận trong task  Chốt bố trí OPS-11/12/DOC-08, copy theo mức nguồn, field che, file tải và POP-20 phù hợp.
+d Công việc  Hoàn thiện 8 khung IV với loading/rỗng/lỗi/unknown/conflict/mất quyền; chữ dễ đọc và hỗ trợ tiếp cận.
+e Đầu ra  Layout/state/copy map và công cụ có sẵn nếu dùng.
+f Tiêu chí nghiệm thu  Không gộp approval/paid, không giấu hold hoặc biến sao kê thành ví.
+g Khi thiếu đầu vào  Công cụ đối tác cần mapping thật; không bắt buộc xây portal mới.
+h Liên kết  HM-V3-T19 T20; HM-V31-T03 T11 T15
+8 T08 Tích hợp công cụ app và bàn giao vận hành
+a Mục tiêu  Có hành trình từ nguồn tiền tới DOC-08, hỗ trợ đúng tuyến.
+b Phụ trách và đầu vào  App/Backend/vận hành/Finance; cần T06 T07 và đầu mối thật.
+c Điểm cần xác nhận trong task  Chốt query/resume, notification, export nếu có, owner/giờ nhận và đối soát thủ công nếu áp dụng.
+d Công việc  Nối OPS-09/11/12, DOC-08/09 và OPS-10; giữ account isolation, source time và action readback.
+e Đầu ra  Build tích hợp, báo cáo và runbook bàn giao.
+f Tiêu chí nghiệm thu  Không gửi file nhạy cảm/link công khai tự động; queue có owner/bước tiếp/ngày review.
+g Khi thiếu đầu vào  Chưa đủ nguồn/đội ghi giới hạn trên công cụ và phân công, không hứa SLA giả.
+h Liên kết  HM-V3-T19 T20 T22 T24; HM-V31-T11 T12 T14
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm tiền và hành trình chức năng
+a Mục tiêu  Expected tiền độc lập và trạng thái khớp nguồn, đúng quyền.
+b Phụ trách và đầu vào  QA với Finance/Design QA/Privacy; cần T01–T08.
+c Điểm cần xác nhận trong task  Chốt fixture currency/contract/role/kênh và oracle độc lập với code tính tiền.
+d Công việc  Chạy TC01–TC12; UI/API/statement/permission và hồi quy payment/refund/session.
+e Đầu ra  Kết quả build/dataset/expected/actual cùng defect.
+f Tiêu chí nghiệm thu  Không Pass chỉ vì Nợ/Có cân hoặc UI đẹp; số nguồn và nghĩa vụ phải đúng.
+g Khi thiếu đầu vào  Thiếu oracle/build/source ghi Not run hoặc Blocked với owner.
+h Liên kết  HM-V3-T25; HM-V31-T11 T16
+10 T10 Kiểm lỗi phục hồi và sẵn sàng vận hành
+a Mục tiêu  Không chi trùng hoặc mất sai lệch sau crash/restore/chuyển ca.
+b Phụ trách và đầu vào  QA/Backend/Security với Finance/vận hành; cần T06 T08 T09.
+c Điểm cần xác nhận trong task  Chốt fault injection, event order, race, restore, manual reconciliation và quyền tiền thật.
+d Công việc  Chạy TC13–TC24; drill payout unknown/refund muộn/payee change và bàn giao queue.
+e Đầu ra  Bằng chứng diễn tập, known limits và release packet.
+f Tiêu chí nghiệm thu  Không tạo chi thứ hai; bằng chứng sandbox tách giao dịch thật; người có thẩm quyền nhận quy trình.
+g Khi thiếu đầu vào  Thiếu công cụ/người nhận thì Blocked; tài liệu không xác nhận đã sẵn sàng chi thật.
+h Liên kết  HM-V3-T23 T25 T27 T28; HM-V31-T11 T17 T18 T19 T20
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA ghi build, môi trường/kênh, role, kỳ/tiền tệ, contract version, source time, operation và expected/actual độc lập. Thiếu đầu vào ghi Blocked có owner; không áp dụng cần lý do. Kiểm số tiền, trạng thái, quyền và bằng chứng nguồn riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+18-01
+Mở OPS-11 từ OPS-09 chọn kỳ và tiền tệ
+Đúng nguồn/môi trường/quyền/thời điểm; tách consultation và Plus.
+T01 T08
+18-02
+Thu/hoàn/phí với hợp đồng versioned
+Posting và gross/net khớp oracle độc lập, không tự đổi tỷ lệ.
+T01 T06
+18-03
+Hoàn một phần và rounding nhiều khoản
+Từng khoản/tổng/đơn vị khớp policy, không mất hoặc tạo phần chênh ngầm.
+T01 T09
+18-04
+Chưa có báo cáo settlement
+Ghi thiếu nguồn, không đánh đã khớp hoặc doanh thu bằng 0.
+T02 T08
+18-05
+Sổ và nguồn kênh lệch
+Có số hai phía/bằng chứng/owner/bước tiếp/ngày review.
+T02 T08
+18-06
+Review điều chỉnh sai lệch
+Giữ bản gốc, bút toán đảo/bổ sung và audit; không sửa lịch sử.
+T02 T06
+18-07
+Phiên đã join hoặc kết thúc nhưng thiếu điều kiện
+Chưa tự tạo khoản có thể chi; eligibility theo bằng chứng/policy.
+T03 T06
+18-08
+Payable gross/net và khoản bị giữ
+Phí/thuế/hợp đồng/hold đúng; giữ và release trong quyền, có căn cứ.
+T01 T03
+18-09
+Payee chưa xác minh hoặc tài khoản từ tin nhắn
+Chặn thực hiện chi, có đường xác minh; không dùng dữ liệu chưa kiểm.
+T04 T05
+18-10
+Chuẩn bị rồi duyệt hoặc trả về
+Đúng role/version/payload; quay lại chưa chi, từ chối có lý do.
+T05 T07
+18-11
+Thực hiện và nguồn xác nhận kết quả
+Mức trạng thái đúng kênh; posting/statement không báo paid từ approval.
+T06 T08
+18-12
+Bên nhận mở DOC-08 chi tiết và DOC-09
+Chỉ khoản trong quyền, dữ liệu che đúng; không thành ví/rút tiền.
+T04 T07
+
+VII Ca kiểm thử lỗi và khôi phục
+Toàn bộ ca hiện là Not run. QA ghi build, môi trường/kênh, role, kỳ/tiền tệ, contract version, source time, operation và expected/actual độc lập. Thiếu đầu vào ghi Blocked có owner; không áp dụng cần lý do. Kiểm số tiền, trạng thái, quyền và bằng chứng nguồn riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+18-13
+Event thu hoặc chi đến hai lần
+Một posting/tác động chi hợp lệ; không cộng tiền lần hai.
+T06 T10
+18-14
+Payout timeout sau kênh đã nhận
+Unknown query cùng reference; không tạo ý định chi mới để retry.
+T05 T06
+18-15
+Hai người hoặc hai job chi cùng payable
+Concurrency giữ một nghĩa vụ; không gửi hai payout qua batch khác nhau.
+T05 T06
+18-16
+Payee hoặc số tiền đổi sau approval
+Gate theo version/policy, review lại; không dùng duyệt cũ cho payload mới.
+T04 T05
+18-17
+Refund tới sau payable hoặc sau đã paid
+Điều chỉnh/nghĩa vụ đúng hợp đồng, giữ payout gốc và sao kê trace.
+T03 T06
+18-18
+Event pending/failed cũ tới sau success
+Tra nguồn thẩm quyền, không lùi sai hoặc phát sinh retry/chi trùng.
+T06 T10
+18-19
+Hold/dispute mở đồng thời với release/chi
+Kiểm điều kiện tại tác động, không vượt hold bằng dữ liệu cũ.
+T03 T05
+18-20
+Crash giữa gửi kênh và ghi nhận cục bộ
+Recovery/query operation bền vững, không chi lại vì thiếu record UI.
+T06 T10
+18-21
+Restore DB hoặc chạy lại kỳ/job cũ
+Đối chiếu nguồn trước mở tác động; không replay tiền thật hoặc mất audit.
+T06 T10
+18-22
+Mất role/đổi account/provider dừng và file cũ
+Gate API/file/export hiện tại, không lộ payee hoặc hồi sinh quyền.
+T04 T06
+18-23
+Manual payout hoặc kênh thiếu query/idempotency
+Có review/chứng cứ tránh trùng theo contract, không giả API hoặc retry an toàn.
+T05 T06
+18-24
+Diễn tập queue chênh lệch/unknown và bàn giao
+Có người nhận/công cụ/giờ thật; sandbox tách thật, không tự cho phép chi tiền.
+T08 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+OPS-09
+Thanh toán và hoàn tư vấn
+Payment/refund và tham chiếu nguồn
+OPS-11
+Sổ và đối soát
+Posting, nguồn kênh, discrepancy/owner
+OPS-12
+Payable và payout
+Eligibility/payee/approval/action/readback
+DOC-08
+Sao kê nhà cung cấp
+Khoản và điều chỉnh trong quyền
+DOC-09 OPS-10
+Phản ánh/chuyển cấp
+Case/decision trong phạm vi được phép
+OPS-01 OPS-07
+Quyền nội bộ/provider
+Role/eligibility hiệu lực cần kiểm lại
+Flow 14 15 16 17
+Lịch/hoàn/phiên/phản ánh
+Dữ kiện độc lập không tự mở điều kiện chi
+OPS-06 Flow 13
+Family Plus riêng
+Không trộn sổ/balance với consultation
+2 Điều kiện đóng flow
+T01–T05 có quyết định được Finance/người đúng thẩm quyền duyệt; T06 contract/jobs/công cụ; T07 layout/state; T08 build và người nhận; T09–T10 có expected và bằng chứng lỗi/restore/diễn tập. Đối soát khớp, không mất nghĩa vụ và không chi trùng phải được kiểm riêng. Queue mở vẫn có owner/bước tiếp/ngày xem lại, không đóng flow bằng cách xóa chênh lệch.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026 trang 19–21,23–24,26: DOC-08/09, OPS-09/11/12, POP-20 và FLOW-18. HealMata V3.0 VI bản 0.1 ngày 18/10/2026 task 19–20 trang 25–26: bút toán kép, nguồn đối soát, eligibility, verified payee, phân tách quyền và payout unknown. HealMata V3.1 VI bản 0.1 task 11–12 trang 16–17: idempotency, refund muộn, source query, queue và bàn giao.
+T01–T10 là nhóm việc triển khai Flow 18, không thay mã nguồn HM-V3/HM-V31. Các lựa chọn bổ sung cần chốt trong task tương ứng. Khi hợp đồng/kênh/policy thay đổi, cập nhật contract, số liệu expected, layout và runbook liên quan; không chỉ sửa tên trạng thái trên UI.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng kết nối app/công cụ/kênh.
+DB
+Database
+Cơ sở dữ liệu và checkpoint phục hồi.
+DOC
+Doctor tools
+Bề mặt công cụ phía bác sĩ.
+FX
+Foreign Exchange
+Quy đổi tiền tệ chỉ khi được chốt.
+HM
+HealMata
+Tiền tố mã màn, flow và task.
+ID
+Identifier
+Định danh giao dịch/khoản/action.
+OPS
+Operations
+Công cụ vận hành theo miền quyền.
+QA
+Quality Assurance
+Kiểm chất lượng và oracle tiền.
+SLA
+Service Level Agreement
+Cam kết dịch vụ cần căn cứ thật.
+TC
+Test Case
+Ca kiểm thử đề xuất, chưa chạy.
+TOCTOU
+Time Of Check To Time Of Use
+Điều kiện đổi giữa kiểm tra và tác động.
+UI
+User Interface
+Giao diện người dùng/công cụ.
+1 Thuật ngữ tiền và xử lý
+Ledger là sổ tiền; posting là ghi bút toán; reconciliation là đối soát; settlement là dữ liệu/quá trình thanh quyết toán từ kênh theo contract. Discrepancy là chênh lệch cần review. Gross là giá trị trước các khoản khấu trừ đã chốt; net là giá trị sau các khoản đó; fee là phí, tax là thuế theo hợp đồng và quyết định được review.
+Eligibility là đủ điều kiện; payable là khoản phải trả; payee là bên nhận; destination là thông tin nơi nhận; hold là giữ khoản theo policy; release là giải phóng theo quyền; payout là thực hiện chi. Approval là phê duyệt cho phạm vi cụ thể, không xác nhận tiền đã về. Statement là sao kê, không tạo ví hoặc quyền rút.
+Unknown là chưa rõ kết quả; query/readback là tra kết quả nguồn. Operation là ý định thao tác có định danh; idempotency giúp retry không lặp tác động. Reversal/adjustment là bút toán đảo/điều chỉnh có trace. Oracle là expected độc lập; audit là dấu vết được bảo vệ; restore là khôi phục; sandbox là môi trường kiểm, không chứng minh tiền thực nhận.

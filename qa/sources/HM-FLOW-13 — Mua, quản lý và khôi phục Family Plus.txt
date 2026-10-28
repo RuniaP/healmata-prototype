@@ -1,0 +1,431 @@
+HM FLOW 13 Mua quản lý và khôi phụcFamily Plus
+HealMata V2.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Finance, Design, App, Backend, QA và vận hành để thiết kế hành trình xem gói, xem lại điều kiện, mua qua kênh được duyệt, xác minh rồi truy vấn quyền lợi. Bao gồm quản lý/gia hạn/hết hạn, khôi phục và đối soát khi giao dịch hoặc quyền lợi chưa rõ.
+Thanh toán, xác minh giao dịch và cấp quyền lợi là ba lớp khác nhau. Người trả tiền không tự có quyền xem sức khỏe người khác. Giá, kỳ, thị trường, kênh, người hưởng và chính sách vẫn cần chốt trong task; tài liệu chưa xác nhận đã được phép mở bán hoặc có kết quả tích hợp thật.
+I Phạm vi và kết quả cần đạt
+1 Màn hình và chuyển giao
+19 hoặc tính năng Plus vào 35 giới thiệu/xem lại; kênh thanh toán ngoài app tự hiển thị giao diện xác nhận thật; 36 quản lý/khôi phục/chờ xác minh; 20 trợ giúp. OPS06 là đối soát Family Plus theo quyền Finance, có thể dùng công cụ hiện có. Không xây form nhập mật khẩu thanh toán hoặc giả giao diện store.
+2 Phạm vi đề xuất
+Một gói Family Plus cho gia đình theo V2.0; sản phẩm/giá/tiền tệ/kỳ/gia hạn/người mua/người hưởng cần T01–T03 duyệt. Không tự thêm mua báo cáo lẻ, gifting, credit, ví, khuyến mại phức tạp hoặc thanh toán tư vấn. Nhóm gia đình trong app không tự đồng nhất với nhóm chia sẻ của kênh thanh toán.
+3 Kết quả cần kiểm chứng
+Trước mua thấy đúng giá/kỳ/quyền lợi và điều kiện từ nguồn. Sau mua/restore chỉ hiển thị quyền lợi được xác minh cho đúng account và gia đình hưởng. Pending, unknown, hủy, lỗi, chưa có giao dịch hợp lệ và đang hiệu lực có trạng thái riêng; không yêu cầu mua lại để chữa lỗi hiển thị trước đối soát.
+4 Core và quyền dữ liệu
+Core đã có, nhắc quan trọng, consent/quyền, dữ liệu gốc và xuất gốc trong quyền vẫn tách khỏi Plus. Gói đổi không tự xóa dữ liệu; đọc/tải báo cáo đã tạo theo policy Flow12. Mỗi API dữ liệu kiểm grant riêng; giao dịch không tạo membership hay consent. Chưa chốt billing không chặn công việc dữ liệu/report độc lập, nhưng phần mua thật chờ điều kiện phát hành.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+35/36 là HM-SCR. Một callback hoặc việc quay về từ màn checkout/quản lý chưa đủ kết luận đã mua/hủy. Các nhánh khôi phục, sự kiện và đối soát dùng nguồn thẩm quyền của kênh được chọn, không tạo giao dịch mới tự động.
+
+III Flow chi tiết
+1 Mở gói và tải catalog
+a Account gia đình và điều kiện
+Từ 19 hoặc tính năng nâng cao mở 35. Ghi account mua và gia đình hưởng theo policy đã duyệt; không dùng người đang xem sức khỏe làm chủ giao dịch ngầm. Tải product/offer/giá/tiền tệ/kỳ và điều kiện theo kênh/cấu hình hiện hành. Chưa rõ gia đình hưởng hoặc đã có gói cần kiểm trước, không tự cấp thêm hoặc chuyển gói sang gia đình mới.
+b Catalog lỗi hoặc thay đổi
+Loading/lỗi/không khả dụng khác giá0. Không điền giá dự kiến hoặc giá cache như giá chắc chắn. Có đường dùng core, quản lý giao dịch cũ36 và trợ giúp 20. Giá/kỳ/offer đổi trước checkout cần hiển thị lại điều kiện thực và xác nhận theo kênh, không tự giữ giá cũ như cam kết. T01/T02 chốt trường thông tin và quy tắc tương thích app cũ.
+2 Xem lại và bắt đầu mua
+35 nêu quyền lợi được hưởng, tổng giá/tiền tệ/kỳ, gia hạn nếu có, cách quản lý/hủy/khôi phục, người hưởng và điều khoản thật. Không dùng nỗi sợ sức khỏe, giấu đường core/export hoặc biến mua thành đồng ý chia sẻ. Người dùng quay lại trước gọi kênh thì không tạo giao dịch. Chỉ tiếp tục khi đủ account/catalog/kênh theo T03; không tự chọn payment method thay người mua.
+3 Kênh thanh toán và phản hồi
+Giao diện thật do kênh được duyệt cung cấp. App không xin mật khẩu thanh toán trong form tự chế. Bỏ qua/hủy không báo đã mua; pending thanh toán khác pending xác minh; lỗi hoặc mất callback có thể chưa rõ kết quả. 36 có kiểm tra trạng thái và đường dùng core. SDK/API cụ thể, bước acknowledge/finish và nghĩa từng callback phải map theo kênh tại T03/T06, không dùng chung một thuật toán cho mọi nền tảng.
+4 Xác minh và cấp quyền lợi
+Server xác minh bằng cơ chế chính thức, kiểm môi trường/product/transaction và ràng buộc account/family, không tin cờ client đã thanh toán hoặc ảnh chụp. Kết quả hợp lệ cập nhật giao dịch/subscription/entitlement nhất quán theo contract. Client lấy lại quyền lợi server trước hiển thị đã hiệu lực. Nếu mất phản hồi sau thanh toán, mở lại 36/đối soát nguồn trước mời mua lại; thao tác lặp không nhân quyền lợi hoặc giao dịch nội bộ.
+
+5 Quản lý gia hạn và hết hiệu lực
+36 hiển thị quyền lợi, khoảng hiệu lực, gia hạn và ngày liên quan từ nguồn đã xác minh. Mở đúng kênh quản lý theo T03; quay về refresh nguồn, không coi đã hủy chỉ vì đóng màn ngoài. Hủy gia hạn, hết hạn, renewal lỗi, grace/hold nếu có và refund/revoke là trạng thái riêng theo kênh/policy. Không cắt quyền tùy tiện khi kỳ vẫn có hiệu lực; hủy gia hạn không tự là hoàn tiền.
+Hết Plus đổi quyền tính năng nâng cao theo ma trận; giữ core, dữ liệu gốc/export. Báo cáo đã tạo, job đang chạy và người hưởng khi gia đình thay đổi theo T04/T05 cùng Flow12. Không tự đổi chủ dữ liệu, chuyển gói hoặc tạo grant để giữ người trả tiền. Thời điểm hiển thị lấy từ nguồn, không suy từ giờ máy.
+6 Khôi phục và đổi thiết bị
+a Xác minh lại quyền hiện có
+36 cho khôi phục/kiểm quyền lợi qua khả năng kênh hỗ trợ. Kiểm account app và liên kết billing; giao dịch còn hợp lệ mới tạo/khôi phục entitlement đúng policy. Không có giao dịch hợp lệ, bị thu hồi, đang chờ xác minh hoặc không khớp liên kết có kết quả riêng, không báo khôi phục thành công chung. Restore không phải thao tác mua mới hoặc đảm bảo mọi giao dịch cũ đều còn quyền.
+b Account và gia đình khác
+A đăng xuất rồi B đăng nhập không nhận callback/cache/giao dịch của A trong B. Thông tin từ account store không tự chứng minh ai sở hữu account HealMata. Xung đột binding phải có hướng hỗ trợ an toàn và người được phân quyền xử lý; không tự chuyển subscription vì cùng email hiển thị. Đổi máy/reinstall/restore từ backup phải đối soát quyền lợi hiện hành, không dùng bản cache cũ cấp lại quyền đã thu hồi.
+7 Sự kiện refund và đối soát
+Server nhận sự kiện qua cơ chế kênh hỗ trợ, xác thực, chống trùng/replay và đối soát nguồn đủ thông tin. Event cũ không hồi sinh entitlement sau hết hạn/refund/revoke. Mất event hoặc lỗi cấp quyền có tác vụ reconcile và owner. W1–W4 là tài liệu kỹ thuật tham khảo theo nền tảng; không xác nhận kênh đã chọn hoặc chính sách thương mại của HealMata.
+OPS06/Finance xử lý lệch giao dịch–quyền lợi trong quyền và audit, không sửa trực tiếp lịch sử tiền hoặc tự refund từ ảnh chụp. Chưa rõ refund thì báo chờ đối soát, không khẳng định tiền đã về. Tiền giao dịch, phí/thuế và settlement chỉ báo khi có nguồn, không lấy dữ liệu sandbox làm doanh thu. Nhánh này không phải đối soát/chi trả bác sĩ của Flow18.
+8 Kết thúc và khôi phục lỗi
+Người dùng trở lại 36/điểm vào với kết quả thật, core luôn có đường tiếp tục trong quyền. Trợ giúp 20 nhận mã tham chiếu an toàn; không yêu cầu gửi token/receipt bí mật. Kênh không truy cập được giữ trạng thái kiểm tra theo contract; chưa biết khác chắc thất bại. Offline access Plus, retention và timeout do T04/T05 chốt, không tự có quyền vô hạn từ cache.
+
+IV Layout sơ bộ
+1 Giới thiệu và xem lại trước mua
+
+a Biến thể và giới hạn
+35 cần loading/lỗi/không đủ điều kiện/đã có gói và giá đổi. Không có giá minh họa thành giá thật. Nội dung gia hạn/điều khoản được duyệt theo thị trường/kênh; khung phải không mô phỏng checkout thật.
+
+2 Chờ xác minh và quyền lợi hiệu lực
+
+a Biến thể và giới hạn
+36 tách pending thanh toán, đang verify, unknown và đã xác minh. Hiệu lực/gia hạn lấy nguồn; quyền sức khỏe kiểm riêng. Không báo mọi người trong kết nối đã được chia sẻ dữ liệu.
+
+3 Hủy gia hạn và khôi phục
+
+a Biến thể và giới hạn
+Chỉ hiển thị hủy/gia hạn theo kết quả xác minh. Khôi phục có chờ, không có giao dịch hợp lệ, xung đột account và lỗi kênh. Các nhãn/trạng thái không hỗ trợ phải loại theo T03.
+
+4 Catalog chưa có và gói đổi hiệu lực
+
+a Biến thể và giới hạn
+Core/export gốc không bị ép mua. Hết hạn/refund/revoke/unknown không phải cùng nghĩa; khung phải là nhóm biến thể cần tách trong UI thực. Báo cáo cũ theo policy đọc/lưu, không xóa vì hết gói.
+
+V Trạng thái và hợp đồng quyền lợi
+1 Các lớp cần tách
+Lớp
+Nguồn và ý nghĩa
+Không được suy
+Catalog offer
+Sản phẩm giá/kỳ điều kiện hiện hành
+Giá cache không chắc là giá checkout
+Giao dịch
+Kết quả thanh toán qua kênh
+Tap hoặc callback client chưa là verify
+Subscription
+Vòng đời hiệu lực/gia hạn theo nguồn
+Hủy gia hạn không tự là refund
+Entitlement
+Quyền dùng tính năng theo account/family
+Không tự cấp grant sức khỏe
+Data access
+Grant/consent hiện hành
+Người trả tiền không sở hữu dữ liệu khác
+Đối soát tiền
+Giao dịch refund settlement theo chứng cứ
+Sandbox không phải doanh thu thực
+2 Nhãn UI và thời gian
+Trạng thái
+Cách hiểu
+Bước tiếp
+Chưa khả dụng
+Catalog/kênh chưa đủ thông tin
+Thử lại hoặc dùng core
+Chờ thanh toán
+Kênh chưa hoàn tất thanh toán
+Theo dõi, chưa cấp mới
+Đang xác minh hoặc unknown
+Kết quả chưa đủ tin cậy
+Đối soát trước mua lại
+Đang hiệu lực
+Nguồn xác minh quyền và khoảng hiệu lực
+Dùng trong phạm vi; quản lý nếu muốn
+Đã tắt gia hạn
+Nếu được nguồn xác nhận
+Theo dõi mốc hết quyền theo policy
+Hết hạn refund revoke
+Trạng thái riêng theo nguồn
+Đổi entitlement; giữ core/dữ liệu
+Restore chưa thấy quyền
+Không có quyền hợp lệ hoặc cần xử lý liên kết
+Nêu kết quả cụ thể và trợ giúp
+
+3 Hợp đồng định danh và nguồn
+a Binding và chống trùng
+Đề xuất catalog/offer version, platform/channel/environment, product ID, transaction/subscription lineage theo kênh, app account ID, family beneficiary/version, effective interval, verification status và entitlement version. Server xác thực liên kết, không dùng client khai account/family để chuyển giao dịch. Same transaction/event không cấp lặp; cùng operation khác nội dung xử lý theo contract; callback cũ không ghi sang phiên mới.
+b Event và đối soát
+T06 chốt authenticity/replay/dedup/order và truy vấn nguồn, retry/backoff, audit và lỗi. Entitlement đọc hiệu lực theo trạng thái đã xác minh, không last event arrival wins. Grant tính năng, ghi xác minh và bước hoàn tất giao dịch theo kênh phải phục hồi được qua crash. Giữ lịch sử bằng event/điều chỉnh có dấu vết; không xóa giao dịch gốc để giả như chưa xảy ra refund.
+c Handoff quyền lợi cho Flow12
+API check feature trả phạm vi, account/family, status/effective time/version cần thiết. T04 định nghĩa tạo/publish/đọc/tải report khi gói đổi; data access vẫn gate riêng. Đổi người trả tiền/rời nhóm/đổi gia đình không tự chuyển subscription hoặc dữ liệu. Mô hình gia đình trong app phải được định nghĩa trước, không suy từ family sharing của store.
+4 Kênh nền tảng và quy tắc vận hành
+W1 minh họa purchase flow Google Play có verify và acknowledge; W2 nêu notification là tín hiệu thay đổi, cần lấy đầy đủ trạng thái từ API nguồn. W3/W4 là tham khảo Apple cho In App Purchase và đồng bộ transaction/status. T03 phải chọn SDK/API, xác minh/finish/acknowledge và mapping lifecycle đúng phiên bản/kênh; không áp một sơ đồ API chung cho mọi nền tảng.
+Review yêu cầu billing hiện hành theo thị trường/nền tảng/kênh tại T03 trước mở bán; tài liệu kỹ thuật không thay phê duyệt offer hoặc quy định áp dụng. Không tự đặt giá, tỷ lệ phí/thuế, thời hạn refund, grace hay deadline xử lý giao dịch khi chưa có policy/capability. Nguồn và ngày đối chiếu kỹ thuật ở VIII.
+5 Cache bảo mật và vận hành
+Token/receipt/secrets chỉ đi đúng đường xác minh được bảo vệ, không đưa vào analytics/log/support chat không cần. Cache gói, giao dịch và account cô lập; outage/offline có policy giới hạn rõ. Upgrade/restore phải lấy lại nguồn hiện hành; core không bị gate Plus. Finance/support thao tác theo vai trò, có chứng cứ và audit; không tự thu tiền/mua lại/hoàn tiền chỉ để xử lý lỗi UI.
+
+VI Task triển khai
+1 T01 Chốt Free Plus offer và người hưởng
+a Mục tiêu  Có phạm vi thương mại rõ trước khi làm màn mua.
+b Phụ trách và đầu vào  Product/Finance với Privacy PM; cần V2.0 và nền thực.
+c Điểm cần xác nhận trong task  Chốt gói, tính năng, giá/tiền tệ/kỳ/gia hạn, ai mua, ai hưởng và điều khoản; chưa tự thêm gifting hoặc mua report lẻ.
+d Công việc  Lập feature/offer matrix; giữ core/export gốc; chỉ ghi số có nguồn và quyết định.
+e Đầu ra  Offer spec có version và người duyệt.
+f Tiêu chí nghiệm thu  Trước mua đủ giá/kỳ/quyền lợi/tác động; trả tiền không thay consent dữ liệu.
+g Khi thiếu đầu vào  Thiếu giá/kênh giữ phương án cần kiểm; không mở bán bằng giá giả.
+h Liên kết  HM-V2-T01 T02; nối Flow10 12
+2 T02 Chốt account gia đình và binding giao dịch
+a Mục tiêu  Giao dịch không bị chuyển hoặc cấp nhầm quyền giữa người/gia đình.
+b Phụ trách và đầu vào  Product/Backend với Privacy Security Finance; cần T01.
+c Điểm cần xác nhận trong task  Chốt app account, store identity, người trả tiền, beneficiary, đổi/rời gia đình và xung đột restore.
+d Công việc  Lập matrix A/B/nhiều gia đình/đổi thiết bị; quy tắc liên kết/di chuyển nếu hỗ trợ, không dựa email trùng.
+e Đầu ra  Binding contract và family lifecycle policy.
+f Tiêu chí nghiệm thu  Giao dịch A không tự cấp B; gói không tạo membership hoặc grant sức khỏe.
+g Khi thiếu đầu vào  Có thể làm cơ chế cô lập trước; nhánh chuyển gói chưa duyệt thì không tự hỗ trợ.
+h Liên kết  HM-V2-T11 T14 T17
+
+VI Task triển khai tiếp theo
+3 T03 Chọn nền tảng kênh và review billing
+a Mục tiêu  Có cơ chế mua verify quản lý restore đúng kênh.
+b Phụ trách và đầu vào  Tech lead với Product/reviewer billing Finance; cần T01 T02.
+c Điểm cần xác nhận trong task  Chốt thị trường/platform/channel/SDK, capability pending/cancel/restore/refund và yêu cầu phát hành hiện hành.
+d Công việc  Đối chiếu tài liệu chính thức; map verify, event, acknowledge/finish và quản lý; tách sandbox/production.
+e Đầu ra  Channel decision và capability matrix có nguồn/ngày.
+f Tiêu chí nghiệm thu  Không form mật khẩu thanh toán tự chế; API mapping có reviewer; không ngầm áp mọi chính sách store.
+g Khi thiếu đầu vào  Làm contract/sandbox trước; chưa đủ review không bật mua thật.
+h Liên kết  HM-V2-T02 T12 T13 T14; W1–W4
+4 T04 Chốt lifecycle và quyền lợi theo thời gian
+a Mục tiêu  Entitlement phản ánh đúng hiệu lực từ nguồn đã xác minh.
+b Phụ trách và đầu vào  Product/Backend với Finance App QA; cần T01–T03.
+c Điểm cần xác nhận trong task  Chốt pending/active/hủy gia hạn/hết hạn/refund/revoke/grace nếu có; report đã tạo/job đang chạy và outage.
+d Công việc  Lập transition/feature matrix; tách renewal và quyền dữ liệu; đối soát event muộn.
+e Đầu ra  Lifecycle oracle và entitlement contract.
+f Tiêu chí nghiệm thu  Không cắt quyền tùy tiện khi tắt gia hạn; không xóa dữ liệu/khóa core/export khi hết Plus.
+g Khi thiếu đầu vào  Trạng thái kênh không hỗ trợ ghi không áp dụng; không tự đặt grace hoặc deadline.
+h Liên kết  HM-V2-T11 T15 T17; nối Flow12
+
+VI Task triển khai tiếp theo
+5 T05 Chốt restore lỗi và hỗ trợ đối soát
+a Mục tiêu  Người dùng có đường kiểm lại trước mua mới.
+b Phụ trách và đầu vào  App/Backend với Support Finance; cần T02–T04.
+c Điểm cần xác nhận trong task  Chốt kết quả không có giao dịch hợp lệ, binding conflict, unknown và hành động support được phép.
+d Công việc  Thiết kế resume/reconcile sau app đóng; queue sự cố; role/audit cho OPS06 và tham chiếu an toàn.
+e Đầu ra  Recovery flow, reconciliation runbook và error map.
+f Tiêu chí nghiệm thu  Không đề nghị mua lại khi nguồn chưa rõ; không tự refund/cấp gói từ ảnh chụp hoặc sửa lịch sử tiền.
+g Khi thiếu đầu vào  Chuẩn bị fixtures và tài khoản sandbox; settlement chưa có ghi chưa có dữ liệu.
+h Liên kết  HM-V2-T14 T16 T22
+6 T06 Xây catalog adapter verify và event server
+a Mục tiêu  Nguồn giao dịch và quyền lợi nhất quán qua retry/crash.
+b Phụ trách và đầu vào  Backend lead với QA Finance; cần T01–T05.
+c Điểm cần xác nhận trong task  Chốt product mapping, event auth/dedup/order, reconcile, effective time và bước hoàn tất kênh.
+d Công việc  Làm catalog/verify/event/lifecycle/feature check; kiểm binding/environment; bảo vệ token/secrets; audit tối thiểu.
+e Đầu ra  API/schema/adapter, kết quả sandbox và logs an toàn.
+f Tiêu chí nghiệm thu  Client success giả không cấp Plus; event cũ không hồi sinh quyền; crash phục hồi không grant lặp.
+g Khi thiếu đầu vào  Có thể mock contract cho app; kết quả mock không chứng minh thanh toán thật.
+h Liên kết  HM-V2-T11 T13 T15 T16 T17
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế màn mua quản lý và khôi phục
+a Mục tiêu  Người mua hiểu giá điều kiện và kết quả thực.
+b Phụ trách và đầu vào  Designer với Product Finance App/reviewer billing; cần T01–T05.
+c Điểm cần xác nhận trong task  Duyệt35/36, review trước checkout, loading/unavailable/pending/unknown/cancel/error/restore và hỗ trợ.
+d Công việc  Hoàn thiện 8 khung IV; dùng giá/nhãn nguồn; đường core/export luôn rõ; chữ lớn và đọc màn hình.
+e Đầu ra  Layout/copy/state map được review theo kênh.
+f Tiêu chí nghiệm thu  Không báo mua/hủy chỉ vì đóng màn ngoài; không dùng nỗi sợ sức khỏe để bán.
+g Khi thiếu đầu vào  Giữ placeholder chưa chốt; native checkout là chuyển giao, không giả thành UI app.
+h Liên kết  HM-V2-T12 T14 T22
+8 T08 Triển khai app mua quản lý và restore
+a Mục tiêu  Có flow tích hợp giữ đúng account và quyền lợi.
+b Phụ trách và đầu vào  App với Backend; cần T06 T07 và sandbox/quyền kênh.
+c Điểm cần xác nhận trong task  Chốt callback/resume, tra quyền lợi, cách mở quản lý và restore theo capability.
+d Công việc  Nối35/36/kênh, refresh server, pending/unknown, đổi máy/account và cleanup cache giao dịch.
+e Đầu ra  Build tích hợp và bằng chứng client/server/nguồn.
+f Tiêu chí nghiệm thu  Không tự mua lại hoặc chuyển giao dịch A sang B; dùng entitlement server cho feature gate.
+g Khi thiếu đầu vào  Có thể tích hợp sandbox; chưa mở production khi điều kiện liên quan chưa đạt.
+h Liên kết  HM-V2-T14 T17 T18
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm luồng mua quyền và giao diện
+a Mục tiêu  Có bằng chứng cho trạng thái chức năng và binding.
+b Phụ trách và đầu vào  QA/Design QA với Finance Security; cần T01–T08.
+c Điểm cần xác nhận trong task  Chốt test account/environment/product/offer, expected và thời điểm hiệu lực.
+d Công việc  Chạy TC01–TC12; đối chiếu catalog/callback/verify/entitlement/data access; hồi quy core/export/report.
+e Đầu ra  Kết quả build/OS/kênh/policy, defect và bằng chứng.
+f Tiêu chí nghiệm thu  Không Pass từ callback client hoặc ảnh chụp; sandbox ghi rõ môi trường.
+g Khi thiếu đầu vào  Thiếu account/quyền/contract ghi Not run hoặc Blocked cùng owner.
+h Liên kết  HM-V2-T20; T12 T17 hỗ trợ
+10 T10 Kiểm event lỗi restore đối soát và phát hành
+a Mục tiêu  Không grant sai hoặc mất dấu vết khi kênh/app gián đoạn.
+b Phụ trách và đầu vào  QA/Backend/App/Finance/vận hành; cần T04 T05 T08 T09.
+c Điểm cần xác nhận trong task  Chốt fault/race matrix, device/OS, đối soát, rollback/restore và điều kiện mở bán.
+d Công việc  Chạy TC13–TC24, event lặp/đảo/crash, refund/restore/binding; diễn tập hỗ trợ và kiểm secret.
+e Đầu ra  Bằng chứng thực, known limits, runbook và release packet.
+f Tiêu chí nghiệm thu  Không hồi sinh quyền cũ, không lộ giao dịch khác account, settlement có nguồn; go/no go có reviewer.
+g Khi thiếu đầu vào  Thiếu môi trường đánh Blocked; chưa đủ điều kiện mua thật chỉ hoàn tất phần độc lập.
+h Liên kết  HM-V2-T20 T21 T22 T23 T24
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA ghi build, OS/thiết bị, kênh/environment, account/family, product/offer/policy version và nguồn đối chiếu an toàn. Case không áp dụng cần lý do theo capability; thiếu đầu vào ghi Blocked. Không dùng kết quả sandbox làm giao dịch hoặc doanh thu production.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+13-01
+Mở35 từ19 hoặc tính năng Plus
+Đúng account/gia đình hưởng/offer; không ngầm dùng chủ thể sức khỏe làm chủ giao dịch.
+T01 T02
+13-02
+Catalog không tải được hoặc giá đổi trước mua
+Không điền giá giả/cũ chắc chắn; xem lại điều kiện thật; core vẫn dùng.
+T01 T07
+13-03
+Xem lại rồi quay lại trước gọi checkout
+Không tạo giao dịch; đủ giá/tiền tệ/kỳ/gia hạn/người hưởng/điều khoản.
+T01 T07
+13-04
+Checkout thật hủy lỗi hoặc pending thanh toán
+Không báo đã mua/cấp quyền từ callback chưa verify; hiển thị đúng lớp.
+T03 T08
+13-05
+Giao dịch hợp lệ verify rồi refresh entitlement
+Đúng product/environment/account/family/effective time; quyền lợi nguồn khớp app.
+T02 T06
+13-06
+Client giả success hoặc đổi transaction/product
+Server từ chối dữ liệu chưa xác minh; không cấp gói từ cờ client.
+T03 T06
+13-07
+Người mua không có grant sức khỏe B
+Không đọc report/chart B; Plus không tạo consent/membership.
+T02 T04
+13-08
+Hủy gia hạn qua kênh rồi quay về
+Đối soát trạng thái; xử lý hiệu lực theo nguồn, không cắt ngay tùy tiện hoặc tự refund.
+T03 T04
+13-09
+Gói hết hạn nhưng mở core/export/report cũ
+Core/export trong quyền còn dùng; report cũ theo policy đọc/lưu, không tự xóa dữ liệu.
+T01 T04
+13-10
+Restore đúng account có giao dịch còn hợp lệ
+Verify và binding đúng; không tạo mua mới, không nhân entitlement.
+T02 T05
+13-11
+Restore không có giao dịch hoặc không khớp binding
+Nêu kết quả riêng và hướng hỗ trợ; không báo khôi phục thành công chung.
+T02 T05
+13-12
+Đóng app sau checkout rồi mở lại 36
+Tìm/đối soát nguồn trước đề nghị mua lại; state server/app nhất quán.
+T05 T08
+
+VII Ca kiểm thử lỗi sự kiện và khôi phục
+Toàn bộ ca hiện là Not run. QA ghi build, OS/thiết bị, kênh/environment, account/family, product/offer/policy version và nguồn đối chiếu an toàn. Case không áp dụng cần lý do theo capability; thiếu đầu vào ghi Blocked. Không dùng kết quả sandbox làm giao dịch hoặc doanh thu production.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+13-13
+Kênh đã nhận thanh toán nhưng callback mất
+Unknown có đường reconcile; không thu/cấp quyền mới tùy tiện để chữa UI.
+T05 T06
+13-14
+Event verify/grant hoặc hoàn tất kênh bị gián đoạn
+Phục hồi theo adapter contract; không grant lặp hoặc bỏ quên bước hoàn tất bắt buộc.
+T03 T06
+13-15
+Event lặp hoặc replay không hợp lệ
+Xác thực và dedup; một cập nhật hợp lệ, không nhân lịch sử/quyền.
+T03 T06
+13-16
+Event cũ tới sau hết hạn/refund/revoke
+Đối soát nguồn theo lifecycle; không hồi sinh quyền hoặc xóa lịch sử gốc.
+T04 T06
+13-17
+Mất event hoặc billing outage
+Có hàng chờ/owner reconcile; state chưa rõ thật, core không bị khóa bởi Plus.
+T04 T05
+13-18
+Renewal lỗi grace/hold nếu kênh hỗ trợ
+Theo capability/oracle đã duyệt; không tự áp cùng trạng thái cho mọi kênh.
+T03 T04
+13-19
+Refund chưa rõ kết quả hoặc báo hai lần
+Không khẳng định tiền đã về; điều chỉnh theo nguồn, không hai điều chỉnh sai.
+T04 T05
+13-20
+Login B sau A hoặc đổi máy với account store khác
+Không lộ/cấp giao dịch A cho B; binding conflict cần xử lý an toàn.
+T02 T08
+13-21
+Người trả tiền rời/đổi gia đình hoặc hai gói giao nhau
+Theo policy; không chuyển dữ liệu/entitlement hoặc cấp hai gói ngầm.
+T02 T04
+13-22
+Restore từ backup cũ sau entitlement đã thu hồi
+Tra nguồn hiện hành; cache cũ không tự cấp lại quyền hoặc grant sức khỏe.
+T04 T10
+13-23
+OPS06/support xem giao dịch đối soát
+Vai trò/audit đúng; không sửa tiền trực tiếp; sandbox không gọi doanh thu/settlement thật.
+T05 T06
+13-24
+Kiểm logs secrets release và hồi quy Flow12
+Không token/receipt nhạy cảm; gate tính năng/data riêng, chưa đủ review không bật mua thật.
+T03 T04 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+SCR35
+Offer xem lại và gọi kênh mua
+Giá/điều kiện thật từ nguồn
+Kênh thanh toán
+Checkout quản lý và restore nếu hỗ trợ
+Native UI ngoài app; capability T03
+SCR36
+State quản lý khôi phục kiểm quyền lợi
+Verify khác callback; không mua lại để chữa UI
+SCR20 OPS06
+Hỗ trợ và đối soát Family Plus
+Role audit owner; dùng công cụ có sẵn nếu đủ
+Flow06 07
+Grant và ngữ cảnh sức khỏe
+Trả tiền không tạo quyền dữ liệu
+Flow10 12
+Export gốc và report
+Core/export giữ; report theo policy gói đổi
+Flow09
+Offline queue/account
+Không chuyển giao dịch/cache A sang B
+2 Điều kiện đóng flow
+T01–T05 có offer/policy/channel và người duyệt; T06 server/adapter có bằng chứng; T07 đủ trạng thái; T08 build; T09–T10 có kết quả. Product/Finance/reviewer kênh chốt phần thương mại và điều kiện mở bán. Không coi tạo tài liệu hoặc có sandbox là chứng cứ được phát hành mua thật.
+3 Nguồn sản phẩm
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026: SCR35/36 trang 13, FLOW13 trang 26, Q10 trang 29 và OPS06 trang 20. HealMata V2.0 VI bản 0.1 ngày 18/10/2026: phần I–II, task 02 trang 8 và task 11–17 trang 17–23 cung cấp offer, binding/quyền lợi, verify, restore, lifecycle và đối soát. Các lựa chọn mới vẫn là đề xuất cần duyệt.
+T01–T10 là nhóm công việc Flow13 liên kết HM-V2-T01–T24, không thay mã nguồn. Flow12 cần nhận cùng entitlement contract và policy report khi gói đổi; Flow10 giữ export gốc. Thay kênh/offer/gia đình hưởng cần cập nhật contract, layout, expected và điều kiện release, không chỉ đổi nội dung màn bán.
+
+4 Nguồn kỹ thuật chính thức
+Đối chiếu ngày 24/10/2026. Đây là tài liệu tham khảo khi chọn nền tảng; không xác nhận HealMata đã chọn Android/iOS, SDK cụ thể hoặc đủ điều kiện billing theo thị trường. T03 xem lại tài liệu hiện hành đúng cấu hình trước triển khai/phát hành.
+W1 Google Play Billing integration
+https://developer.android.com/google/play/billing/integrate
+Tham khảo vòng mua, verify và acknowledge; mapping trạng thái và bước xử lý phụ thuộc kênh/cấu hình được chọn.
+W2 Google Play Real time developer notifications
+https://developer.android.com/google/play/billing/rtdn-reference
+Thông báo là tín hiệu thay đổi; cần truy vấn API nguồn lấy trạng thái đầy đủ trước cập nhật backend.
+W3 Apple In App Purchase
+https://developer.apple.com/documentation/storekit/in-app-purchase
+Tham khảo StoreKit và cơ chế xác minh giao dịch; T03 chọn mô hình tích hợp và server contract phù hợp.
+W4 Apple AppStore sync
+https://developer.apple.com/documentation/storekit/appstore/sync()
+Tham khảo khả năng đồng bộ transaction/status; không coi restore là mua mới hoặc chuyển giao dịch giữa account app.
+5 Cách sử dụng nguồn
+Nguồn nền tảng giải thích cơ chế kỹ thuật, không tự quyết định Free/Plus, giá, refund, người hưởng hoặc quyền dữ liệu của sản phẩm. Thông tin không áp dụng cần đánh rõ trong capability matrix. Không sao chép deadline/fee/ngoại lệ kênh vào policy khi chưa được reviewer kiểm theo thị trường và phiên bản triển khai.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng app/backend/kênh.
+HM
+HealMata
+Tiền tố flow màn task và case.
+ID
+Identifier
+Định danh account product transaction family.
+OPS
+Operations
+Mã công cụ vận hành theo quyền.
+OS
+Operating System
+Hệ điều hành của thiết bị.
+PM
+Project Manager
+Điều phối phạm vi và đầu vào.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và nguồn.
+RTDN
+Real Time Developer Notifications
+Cơ chế thông báo của Google Play nếu áp dụng.
+SDK
+Software Development Kit
+Bộ tích hợp kênh/nền tảng được chọn.
+SCR
+Screen
+Mã màn trong Master Screen List.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ thương mại và quyền
+Catalog là danh mục sản phẩm; offer là điều kiện chào bán; checkout là bước xác nhận thanh toán qua kênh. Transaction là giao dịch; subscription là vòng đời gói; entitlement là quyền lợi tính năng. Binding là ràng buộc giao dịch với account/family theo policy; beneficiary là bên hưởng. Grant/consent là quyền dữ liệu/đồng ý, khác entitlement.
+Pending là đang chờ; unknown là chưa rõ; verify là xác minh nguồn; restore là khôi phục/kiểm quyền hợp lệ. Refund là hoàn tiền; revoke là thu hồi; grace/hold chỉ áp dụng nếu kênh hỗ trợ. Reconcile là đối soát; settlement là tiền thực nhận theo chứng từ. Acknowledge/finish là bước xử lý giao dịch theo API riêng của kênh, không đồng nghĩa nhau trên mọi nền tảng. Sandbox là môi trường thử; production là môi trường thật; oracle là quy tắc kết quả chuẩn; baseline là bộ quyết định hiện hành.

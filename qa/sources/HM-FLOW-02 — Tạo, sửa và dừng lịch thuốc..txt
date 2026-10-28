@@ -1,0 +1,412 @@
+HM FLOW 02 Tạo sửa và dừng lịch thuốc
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  23/10/2026
+Tài liệu mô tả hành trình xem, tạo mới, sửa và dừng lịch thuốc trong HealMata. Mỗi thao tác giữ rõ người được ghi, nội dung nhập, thời gian, quyền và trạng thái lưu. Flow này kế thừa phiên đăng nhập từ Flow 01 và bàn giao từng lần dùng/lịch sử ghi nhận cho Flow 03.
+Bố cục giữ cùng cấu trúc với Flow 01 đã được người dùng đánh giá phù hợp. Các kiểu lặp, trường bắt buộc, thời điểm hiệu lực, offline và kiến trúc nhắc vẫn là phương án cần quyết định; việc chấp nhận hình thức tài liệu không tự phê duyệt các chính sách này. Câu hỏi được đặt ngay trong task ở phần VI.
+I Phạm vi và kết quả cần đạt
+1 Đầu vào và người sử dụng
+Đầu vào: phiên hợp lệ, hồ sơ đang xem và quyền hiện tại từ Backend. Chủ hồ sơ thao tác theo ma trận quyền được duyệt; người thân chỉ quản lý lịch khi được cấp đúng quyền. Quyền xem lịch, quản lý lịch và ghi nhận lần dùng là các quyền cần phân biệt, không tự suy từ quan hệ gia đình.
+2 Phạm vi của luồng
+Bao gồm HM-SCR-10 Danh sách lịch thuốc, HM-SCR-11 Tạo/sửa/xem lại và HM-SCR-28 Chi tiết lịch. POP-04 dùng xác nhận lưu/dừng; POP-07 bỏ nháp; POP-11 xung đột; POP-12 lỗi mạng/kết quả chưa rõ. Không tạo thêm mã màn chính cho các bước con của form.
+3 Điểm kết thúc và ranh giới
+Thành công khi Backend xác nhận một kết quả hợp lệ cho operation, phiên bản và hiệu lực được trả về, danh sách/chi tiết phản ánh đúng kết quả; trạng thái cập nhật nhắc hiển thị riêng. Hủy trước gửi không thay lịch. Timeout là kết quả chưa rõ, cần đối soát trước khi kết luận hoặc gửi lại.
+Flow 03 xử lý HM-SCR-12/13, xác nhận lần dùng và hiệu chỉnh ghi nhận; sửa lịch không thay việc sửa lịch sử. Flow 08 nhận cơ chế nhắc/quyền thông báo; Flow 09 nhận chính sách đồng bộ chung. Flow 02 vẫn phải có xử lý quyền, lỗi và đồng thời ngay trong mỗi thao tác.
+4 Giới hạn nội dung
+App ghi lại thông tin do người dùng cung cấp, không tự suy liều từ tên thuốc, không tự tối ưu giờ hoặc đề xuất ngừng điều trị. “Dừng lịch trong app” là thao tác quản lý bản ghi; câu chữ cuối cần reviewer nội dung duyệt.
+
+II Sơ đồ luồng tổng thể
+
+1 Quy tắc đọc
+10, 11 và 28 là mã HM-SCR; 04/16 là các góc nhìn Hôm nay. Ba nhánh cùng dùng một quy tắc kiểm quyền, phiên bản và chống lặp. Sơ đồ mô tả đường đi đề xuất; chính sách hiệu lực và offline trong task phải được chọn trước khi khóa hành vi triển khai.
+
+III Flow chi tiết
+1 Mở danh sách và chi tiết
+a Điểm vào và tải dữ liệu
+Từ 04 Hôm nay của tôi, 16 Hôm nay người thân hoặc điều hướng Thuốc, mở 10 với subject_id rõ. Backend lọc theo quyền trước trả dữ liệu. Hiện tên hồ sơ, ngày chăm sóc, múi giờ và trạng thái cập nhật. Danh sách rỗng có đường Tạo lịch khi được phép; không có quyền không được hiển thị như “chưa có lịch”.
+b Mở và chuyển ngữ cảnh
+Chọn lịch → 28; chỉ hiện Sửa/Dừng nếu được quyền và trạng thái cho phép. Danh sách theo lịch khác danh sách occurrence; chạm một lần dùng → 12 trong Flow 03. Khi đổi người/ngày, bỏ phản hồi cũ, không chuyển nháp đang sửa sang hồ sơ mới. Deep link luôn kiểm lại quyền và phiên bản hiện tại.
+2 Tạo lịch mới
+a Nhập và kiểm tra
+Từ 10 chọn Tạo lịch → 11. Giữ subject_id từ điểm vào và hiển thị trên form/xem lại. Đề xuất các trường tên thuốc, hướng dẫn do người nhập cung cấp, kiểu lặp, giờ, ngày bắt đầu/kết thúc nếu có và múi giờ hồ sơ; trường cuối cùng được chốt tại T01. Ghi chú/nguồn chỉ định là ứng viên, không mặc định bắt đính ảnh đơn.
+Đề xuất V1.0 hỗ trợ một lần, hằng ngày hoặc ngày trong tuần, một/nhiều giờ cố định. Các kiểu mỗi X giờ, theo chu kỳ, giảm liều hoặc dùng khi cần chưa được tự đưa vào bản này; T01 quyết định có hỗ trợ hay không. Không âm thầm chuyển một kiểu chưa hỗ trợ thành hằng ngày.
+b Xem lại và gửi
+Xem lại đúng người, nội dung đã nhập, ngày/giờ/múi giờ và hiệu lực đề nghị. Quay lại sửa không gửi request lưu. Xác nhận lưu tạo một operation ổn định theo contract; trong khi gửi chặn submit trùng. Backend kiểm quyền, validation, định danh và tạo lịch/phiên bản nhất quán.
+c Kết quả
+Đã chấp nhận → nhận schedule_id, version và effective_at thực → mở 28 hoặc về 10 theo UX đã duyệt. Không báo đã nhắc thành công từ việc lưu lịch. Bị từ chối → giữ nháp trong phạm vi chính sách, nêu lỗi có thể sửa. Timeout → giữ trạng thái chưa rõ, tra operation theo T06/T07 trước tạo lần mới. Bỏ dở xử lý theo T03; không lưu credential hoặc nháp sang tài khoản khác.
+
+3 Sửa lịch đã có
+a Tải bản nguồn và chỉnh sửa
+Mở 28, chọn Sửa → 11 với schedule_id và expected_version. Hiển thị người được ghi và bản đang sửa. Đề xuất không cho đổi người được ghi trong thao tác sửa; muốn lịch cho người khác phải tạo riêng sau xác nhận. Chỉ cho thay các trường được duyệt tại T01; nội dung không chỉnh sửa được cần có nhãn rõ.
+b Xem lại hiệu lực
+Hiện trước/sau và thời điểm hiệu lực. Đề xuất chỉ đổi các lần dùng chưa đến tại effective_at do server chấp nhận; lịch sử và mọi lần đã có ghi nhận được giữ. Đây là policy đề xuất tại T02; không lấy đồng hồ thiết bị làm thẩm quyền. Nếu effective_at người dùng xem lại đã qua khi gửi, trả yêu cầu xem lại hoặc cách xử lý được duyệt, không âm thầm áp thời điểm mới.
+c Gửi và xung đột
+Backend kiểm quyền và version tại lúc ghi. Version đã đổi → không ghi đè; POP-11 cho tải/so sánh bản hiện tại và chỉnh lại có chủ ý. Nếu đã mất quyền, không trả nội dung bản mới để so sánh. Khi thành công, ghi phiên bản mới, tác giả và hiệu lực; occurrence/lời nhắc tương lai cập nhật theo contract. Sửa không tạo lại lịch sử như thể người dùng chưa từng ghi nhận.
+4 Dừng lịch trong app
+a Xem lại tác động
+Từ 28 chọn Dừng → POP-04. Hiện tên hồ sơ, lịch, thời điểm dừng đề nghị và tác động tới các lần dùng tương lai. Câu chữ giải thích đây là dừng lịch trong app. “Giữ lịch hiện tại” đóng xác nhận, không gửi lệnh. Nếu phiên bản đã dừng/hết hiệu lực, tải trạng thái hiện tại và chỉ cho hành động hợp lệ.
+b Lưu và trường hợp đã dừng
+Gửi operation kèm expected_version. Đề xuất lưu dấu dừng và hiệu lực, giữ lịch sử, không xóa cứng từ UI. Cùng operation phải trả cùng kết quả; operation khác trên lịch đã dừng phải có phản hồi rõ, không sửa lùi hiệu lực. Chưa đưa nút tạm dừng/tự tiếp tục hoặc khôi phục lịch vào V1.0 khi T02 chưa chọn.
+5 Nhánh ngoại lệ xuyên suốt
+Mất phiên chuyển qua Flow 01 nhưng bảo vệ nháp đúng tài khoản; không gửi lại bằng phiên người khác. Mất quyền chặn thao tác và che nội dung cần thiết. Mất mạng trước gửi: theo đề xuất T03, chưa tạo/sửa/dừng trên server, có thể giữ nháp nếu được duyệt. Mất mạng sau gửi: kết quả chưa rõ, không tự báo thất bại. Thu hồi quyền và xác nhận một lần dùng diễn ra đồng thời cần quy tắc giao dịch/định danh có thể kiểm chứng tại T06/T07 và Flow 03.
+
+IV Layout sơ bộ
+1 Danh sách và chi tiết lịch
+Wireframe đen trắng dùng review bố cục, chưa phải UI cuối hoặc thông số nền tảng. Màn ngắn/chữ lớn cần cuộn; việc xem nhiều giờ hay nội dung hướng dẫn dài không được cắt mất nghĩa.
+
+a Biến thể cần có
+10: đang tải, có dữ liệu, rỗng, lỗi, không quyền và dữ liệu cũ theo policy. 28: chưa bắt đầu, đang hiệu lực, có thay đổi tương lai, đã dừng hoặc kết thúc tự nhiên nếu được chọn. Trạng thái lịch tách khỏi tự báo đã dùng ở Flow 03.
+
+2 Form nội dung và giờ
+
+a Hành vi trường
+Nhãn rõ và không dùng placeholder thay nhãn. Không nhận tên thuốc để tự điền liều/hướng dẫn. Giờ trùng trong cùng lịch, ngày kết thúc trước bắt đầu và trường bắt buộc thiếu phải có lỗi cụ thể. Không tự sửa/cắt giá trị để form hợp lệ. Nếu gộp A/B thành một form cuộn, giữ cùng thứ tự và đường xem lại.
+
+3 Xem lại lịch mới và thay đổi
+
+a Hiệu lực và xác nhận
+Màn xem lại là bước trong 11 hoặc dạng mở rộng của POP-04, giữ cùng mã tham chiếu. Giá trị trước/sau phải lấy từ đúng version nguồn; không so với một bản đã bị thay âm thầm. Khi server không nhận được hiệu lực đã xem lại, yêu cầu người dùng review theo T02 thay vì tự dời.
+
+4 Dừng lịch và xung đột
+
+a Cách thể hiện
+Khung trái minh họa nội dung popup xác nhận, không bắt buộc là trang toàn màn hình. Khung phải minh họa POP-11. Trạng thái pending/lỗi/success sử dụng cùng khung với nội dung phù hợp; nếu quyền bị thu hồi thì che dữ liệu trước khi cho tải lại. Dừng lịch xong vẫn cho xem lịch sử khi quyền còn hiệu lực.
+
+V Trạng thái và quy tắc dữ liệu
+1 Ma trận trạng thái
+Tình huống
+Hành vi UI
+Điều kiện giữ đúng
+Đang tải / rỗng
+Phân biệt chờ tải với không có dữ liệu; chỉ hiện Tạo khi có quyền.
+Không biến bị từ chối quyền thành danh sách rỗng.
+Form sai dữ liệu
+Lỗi tại trường, focus phù hợp; giữ giá trị để sửa.
+Không gửi payload sai hoặc âm thầm cắt bớt giờ.
+Xem lại / đang gửi
+Đúng hồ sơ, version, hiệu lực; khóa submit tương ứng.
+Chỉ gửi operation của đúng lượt xác nhận.
+Đã lưu
+Hiện kết quả server và phiên bản; nêu trạng thái nhắc riêng.
+Lưu lịch khác đã đồng bộ nhắc/đã nhận thông báo.
+Lỗi trước gửi
+Nêu chưa gửi; cho quay lại/giữ nháp trong policy.
+Không báo lịch đã cập nhật trên server.
+Timeout sau gửi
+Chưa rõ kết quả; tra nguồn trước retry.
+Không tạo lịch hoặc version thứ hai để chữa lỗi hiển thị.
+Xung đột version
+Không áp thay đổi; tải lại/so sánh trong quyền.
+Không last write wins cho lịch thuốc.
+Mất quyền / hết phiên
+Dừng gửi, che dữ liệu; đăng nhập lại nếu cần.
+Đăng nhập lại không tự cấp lại grant bị thu hồi.
+Nhắc chưa cập nhật
+Hiện đang chờ/lỗi cập nhật có bước xử lý.
+Không che giới hạn thiết bị offline.
+Hủy / đổi hồ sơ
+Xác nhận bỏ nháp khi cần, quay đúng ngữ cảnh.
+Không chuyển nháp hoặc response sang người khác.
+2 Mô hình dữ liệu tối thiểu đề xuất
+schedule_id, subject_id, actor_id, version, expected_version, operation_id, trạng thái, nội dung thuốc/hướng dẫn do người dùng nhập, quy tắc lặp/giờ/ngày, múi giờ, effective_at và audit. Server chấp nhận là căn cứ thứ tự lưu. Định dạng schema/API và giá trị enum phải được chốt trong T06; tên ở đây là khái niệm đề xuất, không phải database đã có.
+3 Thời gian và vòng đời lịch
+Đề xuất dùng múi giờ chăm sóc của hồ sơ làm chuẩn ngày; thiết bị người xem khác múi giờ không tự đổi lịch. Giữ thời điểm tuyệt đối cùng nguồn múi giờ phù hợp để truy nguyên. Lịch bắt đầu quá khứ, đổi múi giờ, ngày kết thúc có bao gồm ngày cuối và DST phải có quyết định tại T02. Không tự sinh nhắc bù hoặc dịch giờ không tồn tại/lặp hai lần.
+
+1 Hợp đồng với lần dùng và lời nhắc
+a Occurrence và lịch sử
+Flow 02 thay đổi lịch nguồn; Flow 03 ghi nhận theo occurrence có định danh ổn định. Đề xuất không tái sinh toàn bộ lịch sử khi đổi lịch. Các lần dùng tương lai bị thay thế cần dấu vết theo policy; dữ liệu đã ghi không được chuyển ngầm sang một lần dùng mới. T06/T07 xác định xử lý khi người dùng ghi nhận sớm một lần tương lai rồi có sửa/dừng trùng thời điểm.
+b Ví dụ ranh giới để quyết định
+Ví dụ minh họa xử lý dữ liệu: người dùng chọn hiệu lực E. Một lần dùng ở trước E, đúng bằng E, sau E hoặc đã có ghi nhận phải có kết quả được định nghĩa riêng. Đề xuất bảo vệ mọi bản ghi đã xác nhận; điều kiện trước/đúng/sau E và ý nghĩa “chưa đến” cần chọn rõ tại T02. Không tự dùng ký hiệu ≥ hay > khi policy chưa được duyệt.
+c Cập nhật nhắc
+Sau khi lịch được chấp nhận, tạo công việc cập nhật/hủy nhắc gắn schedule_id/version và occurrence tương ứng. Cơ chế local/server/hybrid thuộc quyết định Flow 08; không giả đã có push hoặc thiết bị chính. Nếu thiết bị nhắc offline có thể còn lịch cũ, app hiển thị giới hạn. Khi mở thông báo phải tải/kiểm trạng thái hiện tại trước cho hành động.
+d Đồng thời và quyền
+Hai người sửa cùng bản, sửa/dừng đồng thời, thu hồi quyền khi gửi và xác nhận occurrence trong lúc đổi lịch đều phải có một kết quả nhất quán. Kiểm quyền và expected_version tại thời điểm commit thích hợp. Cùng operation và payload trả lại kết quả cũ; cùng operation nhưng payload khác bị từ chối theo contract; không dùng giao diện khóa nút thay cho chống trùng Backend.
+2 Quan sát và chẩn đoán
+Đo lượt tạo/sửa/dừng, kết quả lưu và trạng thái cập nhật nhắc bằng metadata cần thiết. Không đưa tên thuốc, liều/hướng dẫn hoặc tên hồ sơ vào analytics/log lỗi không cần thiết. Log cập nhật nhắc không chứng minh thông báo đã đến hoặc người dùng đã dùng thuốc.
+3 Quản lý thay đổi
+Nếu T01–T03 chọn policy khác, sửa flow, layout, contract và case cùng version trước bàn giao. Tài liệu không khóa việc tạo/sửa/dừng khi offline chỉ vì mẫu form có nút; đề xuất cần mạng phải được duyệt. Các nhánh chưa chốt có thể làm wireframe/fixture nhưng chưa được coi là hành vi production đã chấp nhận.
+
+VI Task triển khai và điểm cần chốt
+HM-F02-T01–T10 là mã gói việc tổng hợp cho Flow 02; task V1.0 gốc được ghi trong mục h để tránh tạo hai backlog trùng. Vai trò là đề xuất, chưa gán tên người/ngày. Các mục a–h có cùng cấu trúc Flow 01. Thông số chưa duyệt không được dùng làm điều kiện đạt/không đạt cuối cùng.
+1 HM F02 T01 Chốt nội dung lịch và ma trận quyền
+a Mục tiêu  Chốt nội dung lịch và ma trận quyền; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product cùng Design, Backend và reviewer nội dung. Nguồn V1.0 T02/T10; Master Q04/Q05.
+c Cần xác nhận trong task  Chọn trường bắt buộc, hướng dẫn dạng text hay cấu trúc, kiểu lặp, số giờ tối đa nếu cần, ghi chú/nguồn, quyền chủ hồ sơ/người thân. Đề xuất một lần/hằng ngày/ngày trong tuần; chưa coi tối đa 8 giờ/ngày là yêu cầu. Chốt có đổi subject_id khi sửa hay không; đề xuất không đổi.
+d Công việc thực hiện  Lập danh mục field/rule, ví dụ hợp lệ/sai và quyền tạo/sửa/dừng/xem từng nhóm; reviewer duyệt copy để không thành hướng dẫn điều trị.
+e Đầu ra  Field specification và ma trận quyền có version; câu chữ được review.
+f Nghiệm thu  Mỗi field/kiểu lặp có giới hạn và cách báo lỗi; chưa chọn không tự mặc định thành đã duyệt.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T02/T07–T12; giao T04–T10.
+2 HM F02 T02 Chốt hiệu lực ngày giờ và vòng đời lịch
+a Mục tiêu  Chốt hiệu lực ngày giờ và vòng đời lịch; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product cùng Backend, QA và reviewer nội dung. T01; quy tắc thời gian và nguồn lịch.
+c Cần xác nhận trong task  Chọn thời điểm áp dụng khi tạo/sửa/dừng, E đúng bằng occurrence, lịch quá khứ, ngày cuối, sửa sát giờ, lịch đã dừng/hết hạn và ghi nhận sớm. Chốt múi giờ chăm sóc, thay múi giờ/DST; đề xuất chỉ đổi tương lai, giữ lịch sử và không nhắc bù. Chốt dừng hay có tạm dừng/khôi phục.
+d Công việc thực hiện  Lập bảng trước/bằng/sau E và có/chưa ghi nhận; xác định authoritative time, effective_at trả về và trường hợp bắt xem lại khi E đã qua.
+e Đầu ra  Bảng chuyển trạng thái cùng fixtures ranh giới; không tự đặt hiệu lực hoặc giới hạn thời gian.
+f Nghiệm thu  Lịch sử không bị đổi do sửa nguồn; mọi ô ranh giới có kết quả cụ thể hoặc còn chờ, không ghi đè ngầm.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T10/T11/T13/T21; giao T06–T10 và Flow 03/08.
+
+3 HM F02 T03 Chốt offline nháp và cập nhật nhắc
+a Mục tiêu  Chốt offline nháp và cập nhật nhắc; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product và kỹ thuật cùng Privacy, QA. Flow 01 session; Master Q06/Q07; T01/T02.
+c Cần xác nhận trong task  Đề xuất tạo/sửa/dừng cần mạng. Chốt cho xem snapshot nào, có lưu nháp bền hay không, logout/mất phiên/đổi người; TTL nếu chọn có người duyệt. Chốt trạng thái cập nhật nhắc, route xử lý lỗi và giới hạn thiết bị offline, không mặc định cửa sổ 7 ngày hoặc một thiết bị chính.
+d Công việc thực hiện  Viết trước gửi/sau gửi/timeout/retry, giữ nháp và xóa/khóa theo tài khoản. Định nghĩa cách mở thông báo lịch cũ và bàn giao Flow 08/09.
+e Đầu ra  Policy nháp/offline và contract trạng thái nhắc theo version.
+f Nghiệm thu  Lưu trên máy, lưu server và đồng bộ nhắc tách biệt; không gửi nháp của A bằng phiên B hoặc hứa hủy nhắc offline tức thì.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T13–T16/T25; giao T05/T08–T10.
+4 HM F02 T04 Hoàn thiện layout và nội dung của luồng
+a Mục tiêu  Hoàn thiện layout và nội dung của luồng; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Design phối hợp Product và QA. Có thể review cấu trúc ngay; bản cuối phụ thuộc T01–T03.
+c Cần xác nhận trong task  Chốt gộp/tách bước 11, trạng thái 28, nội dung nút dừng, cách xem trước/sau, trường nguồn và nhắc. Nền tảng/đơn vị và ngôn ngữ kế thừa lựa chọn Flow 01, chưa mặc định Android.
+d Công việc thực hiện  Hoàn thiện 8 wireframe và biến thể phần IV/V; keyboard, chữ lớn, lịch nhiều giờ/nội dung dài, chỉ xem, mất quyền và conflict. Không dùng chỉ màu để biểu đạt trạng thái.
+e Đầu ra  Layout/UI/copy versioned khi được thực hiện; mapping màn và component/state.
+f Nghiệm thu  Tất cả hành động tới được, tên hồ sơ rõ và không cắt hướng dẫn; prototype review chưa thay kết quả app thực.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T10/T20/T24; giao T05/T09.
+
+5 HM F02 T05 Xây danh sách chi tiết và form trên app
+a Mục tiêu  Xây danh sách chi tiết và form trên app; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Dev App phối hợp Backend. T04; contract T06; các policy áp dụng đã chọn.
+c Cần xác nhận trong task  Chốt route mở lại sau lưu, truyền subject_id và giữ nháp theo T03; chỉ hiển thị hành động hợp quyền.
+d Công việc thực hiện  Xây 10/28 và 11 tạo/sửa/xem lại; POP-04/07/11/12; validation, diff và hiệu lực. Hủy không gửi; phản hồi trễ bị bỏ khi đổi người; timeout không tạo operation mới tùy tiện.
+e Đầu ra  Build client tích hợp, trạng thái và ví dụ retry/resume.
+f Nghiệm thu  Đúng ngữ cảnh; không submit trùng; hiển thị version/effective_at từ server; liên kết 12/13 bàn giao Flow 03.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T09/T12/T16/T22; giao T09/T10.
+6 HM F02 T06 Định nghĩa API và fixtures độc lập
+a Mục tiêu  Định nghĩa API và fixtures độc lập; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend Lead cùng Dev App và QA. T01–T03; xác thực/quyền nền từ Flow 01.
+c Cần xác nhận trong task  Chốt schema/enums, operation id, expected_version, trả trạng thái và kiểm quyền; xác định boundary occurrence/version và giao dịch với Flow 03. Không giả URL endpoint production.
+d Công việc thực hiện  Đặc tả list/detail/create/update/stop/operation status/history theo nhu cầu. Mô tả conflict, forbidden, not found và unknown; thiết kế fixtures E và đồng thời, same key khác payload.
+e Đầu ra  Contract có ví dụ request/result và oracle QA độc lập; App/Backend cùng bản.
+f Nghiệm thu  Có đường tra kết quả timeout; không rò nội dung ngoài quyền; mỗi thay đổi nêu version và hiệu lực thực.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T08/T11/T13/T21; giao T05/T07–T10.
+
+7 HM F02 T07 Xây dịch vụ lịch và bảo toàn lịch sử
+a Mục tiêu  Xây dịch vụ lịch và bảo toàn lịch sử; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend cùng reviewer kỹ thuật. T06; policy T01/T02 đã chốt cho nhánh.
+c Cần xác nhận trong task  Chốt cách sinh và thay thế occurrence, audit, retention và thứ tự giao dịch khi sửa/dừng/ghi nhận đồng thời. Không tái dùng định danh theo cách làm đổi ý nghĩa bản ghi lịch sử.
+d Công việc thực hiện  Kiểm quyền/version ở lúc ghi; xử lý operation lặp; tạo phiên bản thay đổi và hiệu lực. Giữ dữ liệu lịch sử, chặn client cũ ghi đè, không xóa cứng từ UI; rollback theo contract.
+e Đầu ra  Service lịch, audit, migration nếu có và kết quả kiểm đồng thời.
+f Nghiệm thu  Retry không tạo lịch/version thừa; chỉ mutation được phép được commit; trường hợp xác nhận sớm hoặc đua ghi có kết quả phù hợp fixtures.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T11/T25; giao T08–T10 và Flow 03.
+8 HM F02 T08 Tích hợp cập nhật lần dùng và lời nhắc
+a Mục tiêu  Tích hợp cập nhật lần dùng và lời nhắc; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend và Dev App phối hợp đầu mối nhắc. T03/T06/T07; kiến trúc nhắc Flow 08 được chọn cho triển khai thật.
+c Cần xác nhận trong task  Chốt khi nào báo đã đồng bộ, retry và nguồn thẩm quyền; không coi server lưu lịch là thiết bị đã thay/hủy local. Không tự cộng cả local và push thành hai nguồn nhắc.
+d Công việc thực hiện  Gắn thay đổi với schedule/version/occurrence; cập nhật hoặc vô hiệu nhắc tương lai theo policy; client offline nêu trạng thái, open notification tải lại trước hành động; kiểm lệnh cũ không ghi đè version mới.
+e Đầu ra  Integration nhắc và ma trận trạng thái cập nhật; API tổng hợp 04/16/10 nhất quán.
+f Nghiệm thu  Nhắc không tồn tại ngoài policy mà không được báo; nhắc cũ mở đúng trạng thái mới trong quyền. Không kết luận đã nhận/đọc/dùng thuốc từ log.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T13–T16/T21/T22; giao T09/T10 và Flow 08.
+
+9 HM F02 T09 Kiểm chức năng hiệu lực và trải nghiệm
+a Mục tiêu  Kiểm chức năng hiệu lực và trải nghiệm; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  QA phối hợp Design, Backend và Dev App. Có thể lập case ngay; chạy sau build/contract và policy liên quan.
+c Cần xác nhận trong task  Chốt thiết bị/ngôn ngữ và expected của case ranh giới từ T01–T03. Nhánh chưa quyết định ghi Blocked, chưa có app ghi Not run.
+d Công việc thực hiện  Chạy TC01–TC12 và TC19–TC22; kiểm data, form, before/after, hiệu lực, history và giao diện. So với fixtures độc lập; retest theo đúng build.
+e Đầu ra  Kết quả Pass/Fail/Blocked/Not run, defect và bằng chứng version.
+f Nghiệm thu  Không dùng expected tạo từ chính code triển khai; hướng dẫn dài, chữ lớn và keyboard không chặn thao tác; chưa chạy không báo đạt.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T23/T24; giao T10 và reviewer.
+10 HM F02 T10 Kiểm quyền đồng thời và bàn giao
+a Mục tiêu  Kiểm quyền đồng thời và bàn giao; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  QA cùng Backend, Privacy và vận hành liên quan. T05–T08 có build; contract và policy đã đủ cho nhánh được kiểm.
+c Cần xác nhận trong task  Chốt tiêu chí chặn release, phạm vi thiết bị thật và người nhận lỗi nhắc/operation treo. Không suy người thân có quyền quản lý từ việc có kết nối.
+d Công việc thực hiện  Chạy TC13–TC18 và TC23–TC24; API trực tiếp, account switch, revoke, stop/edit/confirm race, nhắc offline và log. Rà mã màn/flow/task/contract; ghi known gaps và người xử lý.
+e Đầu ra  Gói bàn giao Flow 02, phiên bản, kết quả review và tác động tới Flow 03/08/09.
+f Nghiệm thu  Không lỗi sai người/ghi đè lịch sử hoặc mutation trái quyền trong phạm vi kiểm. Tách duyệt tài liệu khỏi code/test/release; chưa tự cập nhật Master thành Đã duyệt.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T23/T25/T26/T28; chuyển Flow 03 cùng contract occurrence đã chốt.
+
+VII Ca kiểm thử đề xuất
+Mã đầy đủ HM-F02-TC01–TC24. Trạng thái ban đầu Not run. Khi thực hiện ghi build/API/config, thiết bị, precondition, bước, expected/actual và bằng chứng; nếu policy còn mở ghi Blocked cùng task. Các case hiệu lực theo fixtures đã được duyệt, không tự đặt > hoặc ≥ E.
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+01
+Mở 10 với đúng tôi/người thân
+Đúng subject, quyền và múi giờ; không trộn phản hồi người trước.
+T05/T09
+02
+Danh sách rỗng, loading và bị từ chối
+Ba trạng thái khác nhau; chỉ có quyền tạo mới được Tạo.
+T04/T09
+03
+Tạo từng kiểu lặp được chọn
+Xem lại đúng và server lưu một lịch; kiểu ngoài scope không tự chuyển đổi.
+T01/T09
+04
+Thiếu trường, giờ trùng, ngày kết thúc trước bắt đầu
+Lỗi đúng trường; không cắt bớt giá trị hay gửi sai.
+T01/T09
+05
+Quay lại từ xem lại rồi hủy/bỏ nháp
+Không gửi mutation; giữ/bỏ nháp theo policy và đúng tài khoản.
+T03/T09
+06
+Tạo có ngày bắt đầu quá khứ
+Kết quả theo T02; không tự sinh nhắc bù.
+T02/T09
+07
+Sửa tên/hướng dẫn/giờ/ngày trong quyền
+Diff đúng version; effective_at thật; chỉ occurrence thuộc phạm vi thay đổi.
+T02/T09
+08
+Sửa với occurrence trước/đúng/sau E
+Mỗi ranh giới khớp fixtures; lịch sử giữ theo policy.
+T02/T09
+09
+Occurrence đã xác nhận, kể cả xác nhận sớm
+Không mất/chuyển ngầm ghi nhận khi sửa lịch; kết quả theo contract Flow 03.
+T06/T09
+10
+Dừng rồi mở lại chi tiết và lịch sử
+Dấu dừng/hiệu lực đúng; lịch sử vẫn trong quyền; không xóa cứng.
+T07/T09
+11
+Dừng lịch đã dừng hoặc đã kết thúc
+Trả trạng thái hiện tại hoặc conflict theo contract; không sửa lùi hiệu lực.
+T02/T09
+12
+E xem lại đã qua trước khi server nhận
+Bắt xem lại hoặc xử lý được duyệt; không âm thầm đổi E.
+T02/T09
+
+1 Ca kiểm thử tiếp theo
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+13
+Gửi lại cùng operation cùng/khác payload
+Cùng nội dung trả kết quả cũ; nội dung khác bị từ chối; không tạo thừa.
+T06/T10
+14
+Mất phản hồi ngay sau commit
+Tra kết quả đúng operation trước retry; chỉ một kết quả hợp lệ.
+T06/T10
+15
+Hai người sửa cùng expected_version
+Không ghi đè âm thầm; bản thua nhận conflict và được xem lại trong quyền.
+T07/T10
+16
+Sửa và dừng đồng thời
+Một thứ tự hợp lệ có version; kết quả không vừa báo thành công hai trạng thái mâu thuẫn.
+T07/T10
+17
+Thu hồi quyền khi form mở/đang gửi
+Mutation kiểm quyền tại điểm commit; từ chối không lộ bản mới trái quyền; trace kết quả race.
+T07/T10
+18
+Đăng xuất A, vào B khi có nháp/request A
+Không hiện hoặc gửi dữ liệu A dưới B; callback cũ bị bỏ.
+T03/T10
+19
+Thiết bị/người xem khác múi giờ, qua nửa đêm
+Cùng ngày chăm sóc/occurrence theo policy; không đổi lịch từ đồng hồ máy.
+T02/T09
+20
+Giờ DST thiếu/lặp, đổi múi giờ hồ sơ
+Có quyết định/khôi phục rõ; không tự dịch giờ hoặc tạo hai lần dùng.
+T02/T09
+21
+Tên/hướng dẫn dài, nhiều giờ, chữ lớn, keyboard
+Đọc đủ nghĩa; cuộn/focus/nút chính tới được; lỗi không chỉ bằng màu.
+T04/T09
+22
+Mất mạng trước gửi và mở lại app
+Không báo đã lưu; nháp/snapshot theo T03; không đổi hồ sơ của nháp.
+T03/T09
+23
+Sửa/dừng khi thiết bị nhắc offline; mở nhắc cũ
+Lịch server và nhắc tách trạng thái; mở tải trạng thái mới/kiểm quyền; không hứa hủy tức thì.
+T08/T10
+24
+Ghi nhận Flow 03 đồng thời sửa/dừng và rà log
+Một kết quả theo oracle; không mất lịch sử, không đưa nội dung thuốc/credential vào log.
+T06/T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Danh mục màn và liên kết liên luồng
+Mã
+Trách nhiệm trong Flow 02
+Điểm bàn giao
+HM-SCR-10
+Danh sách lịch, chọn ngày/người và trạng thái
+Nhận 04/16; đi 11/28 hoặc lần dùng 12.
+HM-SCR-11
+Nhập, sửa và xem lại trước lưu
+Cùng mã cho các bước A/B/review; tới 28 hoặc 10 khi thành công.
+HM-SCR-28
+Chi tiết, lịch sử thay đổi, sửa/dừng
+Tới 11; xem bản ghi 12/13 ở Flow 03.
+HM-POP-04/07/11/12
+Lưu/dừng, bỏ nháp, conflict, lỗi mạng
+Không tạo mã màn chính mới.
+HM-SCR-18
+Lời nhắc/quyền thông báo
+Flow 08 nhận cơ chế và cấu hình; Flow 02 nhận trạng thái cập nhật.
+HM-SCR-38 và trạng thái nền
+Đồng bộ khi được chọn
+Flow 09 nhận policy chung; không dời xử lý timeout ra khỏi Flow 02.
+HM-STA-04/05
+Mất phiên/quyền và xung đột
+Flow 01 xác thực lại; grant vẫn kiểm riêng.
+2 Điều kiện review và nghiệm thu
+Review tài liệu: T01–T03 xác định policy, mỗi nút/nhánh có layout hoặc mô tả, các E boundary và occurrence có oracle. Review triển khai: đúng contract/build/config, kiểm quyền và đồng thời có kết quả, biết lịch đã lưu và nhắc có cập nhật hay không. Lỗi còn mở có mức tác động và người xử lý. Chưa chạy kiểm trên app không ghi Pass hoặc hoàn thành release.
+3 Nguồn được dùng
+Master Screen List V1.0–V3.1 bản 0.1 ngày 23/10/2026 cung cấp mã và FLOW-02; HM_Flow_01_VI_v0_1.docx cung cấp cấu trúc tài liệu, session và ranh giới account. HealMata_V1_0_30_Tasks_Detailed.docx đặc biệt HM-V1-T02/T08/T10–T16/T21–T25 là nguồn task. HealMata_V1_0_Clarifications_and_Recommendations_VI.docx mục cấu trúc lịch, hiệu lực, múi giờ, nhắc và offline cung cấp phương án để review, không được coi đã duyệt.
+Tài liệu này là bản nháp thiết kế Flow 02 mới; chưa có người phê duyệt, endpoint/build hoặc kết quả production được xác nhận. Không thay đổi bản Master hoặc Flow 01 trong lần tạo này. Sau review mới cập nhật trạng thái Có bản nháp/Đã duyệt theo bằng chứng thực tế; nếu thay contract occurrence cần thông báo tác động sang Flow 03/08/09.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa trong tài liệu
+API
+Application Programming Interface
+Hợp đồng trao đổi giữa app và dịch vụ.
+DST
+Daylight Saving Time
+Thay đổi giờ theo mùa; xử lý giờ thiếu/lặp nếu phạm vi hỗ trợ có.
+E
+Effective time
+Ký hiệu thời điểm hiệu lực trong ví dụ, không phải giá trị cố định.
+HM
+HealMata
+Tiền tố mã flow, màn, task và case.
+IANA
+Internet Assigned Numbers Authority
+Tên thường dùng cho cơ sở dữ liệu múi giờ; lựa chọn kỹ thuật cần chốt.
+ID
+Identifier
+Định danh lịch, hồ sơ, operation hoặc occurrence.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và tiêu chí cụ thể.
+SCR
+Screen
+Mã màn hình trong danh mục Master.
+STA
+State
+Mã trạng thái giao diện dùng chung.
+TC
+Test Case
+Mã ca kiểm thử.
+TTL
+Time To Live
+Thời gian giữ dữ liệu nếu policy chọn; chưa tự đặt số.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+UX
+User Experience
+Trải nghiệm và hành trình sử dụng.
+1 Thuật ngữ dữ liệu cần thống nhất
+Schedule: lịch nguồn. Occurrence: một lần dùng theo lịch, khác lịch nguồn. Version: phiên bản dữ liệu. Operation: một thao tác có định danh để theo dõi kết quả và thử lại. Effective at: thời điểm thay đổi có hiệu lực do contract xác định. Audit: dấu vết ai đã thực hiện gì và khi nào. Các tên field/schema phải được chốt trong T06.

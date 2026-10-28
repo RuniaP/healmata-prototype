@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "name": "Multiple schedules preserve separate history",
+      "result": "PASS"
+    },
+    {
+      "name": "Export health-only snapshot respects category and remains immutable",
+      "result": "PASS"
+    },
+    {
+      "name": "No new operation while same result is unknown",
+      "result": "PASS"
+    },
+    {
+      "name": "Own profile isolation and representative gate",
+      "result": "PASS"
+    },
+    {
+      "name": "Search empty state and minimum demo password",
+      "result": "PASS"
+    },
+    {
+      "name": "18 clickable handoff links in local start page",
+      "result": "PASS"
+    },
+    {
+      "name": "All 18 branched diagrams open every referenced screen and popup",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

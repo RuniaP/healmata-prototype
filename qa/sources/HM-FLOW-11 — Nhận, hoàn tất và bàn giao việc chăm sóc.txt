@@ -1,0 +1,391 @@
+HM FLOW 11 Nhận hoàn tất và bàn giao việc chăm sóc
+HealMata V1.2  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Design, App, Backend, QA và vận hành để triển khai vòng phối hợp: tạo việc đúng người được chăm sóc, mời nhận, nhận hoặc từ chối, hoàn tất hoặc hủy và bàn giao có xác nhận. Người dùng cần thấy rõ trạng thái việc, người nhận hiện hành và yêu cầu bàn giao còn chờ.
+Chờ nhận không phải đã chịu trách nhiệm; gửi bàn giao chưa đổi người hiện hành; hoàn tất việc không xác nhận đã dùng thuốc. V1.2 và mô hình một người nhận hiện hành là phạm vi đề xuất từ nguồn, cần chốt trong task. Tài liệu chưa chứng minh build nền hoặc tính năng đã được triển khai/kiểm thử.
+I Phạm vi và kết quả cần đạt
+1 Vai trò và quyền
+Tách người được chăm sóc, người tạo/quản lý việc, người được mời và người nhận hiện hành. Quyền tạo, sửa/hủy, xem, nhận, hoàn tất và bàn giao được kiểm theo hành động; quyền việc không tự cấp quyền sức khỏe. Người thân có kết nối không mặc định quản lý mọi việc. T01/T02 chốt ma trận quyền và đồng ý.
+2 Màn hình
+40 Việc của tôi; 41 tạo/sửa; 42 chi tiết; 43 phản hồi lời mời, có thể gộp trong 42; 44 bảng gia đình; 45 yêu cầu bàn giao; 46 phản hồi; 47 timeline có thể gộp; 48 nhắc phối hợp có thể gộp trong 18. POP16 xác nhận hoàn tất/hủy, POP17 gửi/nhận bàn giao; 04/06 và thông báo là điểm vào.
+3 Phạm vi đề xuất
+Việc đơn lẻ với một người nhận hiện hành; nhận/từ chối, hoàn tất/hủy, cần phân công lại và bàn giao có chấp nhận. Chưa tự thêm lịch trực lặp, nhiều người đồng chịu trách nhiệm, tự phân công, xếp hạng hoặc chuyển cấp nhắc thuốc. Thời hạn mời/bàn giao, thay đổi cần nhận lại và cách lưu/xóa nằm ở T02–T04.
+4 Kết quả và ranh giới
+Một thay đổi chỉ được báo server đã nhận khi có kết quả đúng operation/version; các danh sách, tổng số và lịch sử khớp trong quyền. Nội dung việc là phối hợp, không kê đơn hoặc chẩn đoán. Link tới thuốc/sức khỏe mở nguồn hiện có và kiểm quyền riêng. Quá hạn hoặc im lặng không phải bằng chứng sức khỏe xấu hay vi phạm trách nhiệm.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+Mã số là HM-SCR. Bàn giao có lifecycle riêng với việc; không dùng trạng thái bàn giao chờ để thay người nhận. Nhánh hoàn tất/hủy có thể từ 42, không cần đi qua bàn giao. Điều kiện từng hành động phải được chốt tại T02–T04.
+
+III Flow chi tiết
+1 Mở danh sách và tạo việc
+a Điểm vào và ngữ cảnh
+Từ 04 vào 40 hoặc 06 vào 44; thông báo mở 42/43/46 theo loại. Kiểm account, người được chăm sóc và quyền hiện hành. Danh sách, tổng số, preview và bộ lọc đều trong quyền. Loading, chưa tải được và không có việc là các trạng thái khác nhau; callback chậm của người A không gắn vào góc nhìn B.
+b Tạo và mời nhận
+Người được quyền mở 41, chọn đúng chủ thể, nội dung trung tính, thời hạn/timezone và người được mời đủ điều kiện. Ví dụ nội dung: Gọi hỏi thăm, Hỗ trợ ghi nhận, Xem lại lịch đã có. Chỉ tham chiếu dữ liệu sức khỏe trong quyền; không chép dữ liệu riêng vào nội dung để vượt gate. Xem lại rồi gửi online theo policy, quay lại trước gửi không tạo việc. Receipt hợp lệ mới báo tạo xong/chờ nhận.
+2 Nhận hoặc từ chối
+Người được mời mở 43 với nội dung tối thiểu được phép, người mời, chủ thể và hạn. Mở thông báo không tự nhận. Nhận/từ chối cần server kiểm người được mời, hiệu lực, trạng thái/version và quyền tại thời điểm xử lý. Trong mô hình đề xuất: nhận → Đã nhận và có người hiện hành; từ chối lưu sự kiện rồi Cần phân công lại. Lời mời cũ/đã hủy/hết hiệu lực không còn CTA thực thi; tải trạng thái thật.
+3 Chi tiết sửa và hủy
+42 hiển thị trạng thái việc, người hiện hành, thời hạn/timezone, bàn giao chờ và lịch sử trong quyền. Sửa ở 41 theo quyền và expected version; T03 chốt trường nào đổi cần người nhận chấp nhận lại, cách xử lý bàn giao cũ và nhắc. Không tự giữ xác nhận cũ cho nội dung đã đổi đáng kể. Hủy dùng POP16, nêu tác động và gửi có kiểm version; không xóa lịch sử để làm việc như chưa từng tồn tại.
+4 Hoàn tất việc
+Người đủ quyền theo T02 mở xác nhận POP16 từ 42, xem đúng việc/chủ thể và nội dung hoàn tất nếu có. Server kiểm người hiện hành/trạng thái/version và quyền; kết quả được chấp nhận mới hiển thị hoàn tất server. Hoàn tất không tạo xác nhận thuốc, số đo hoặc bản ghi sức khỏe. Muốn ghi các dữ liệu đó phải mở Flow03/04 trong quyền và thao tác riêng.
+
+5 Gửi yêu cầu bàn giao
+a Chọn người nhận mới
+Người có quyền mở 45 từ 42; chỉ chọn người còn đủ điều kiện và đồng ý theo policy. Xem lại việc, chủ thể, người hiện hành và người được mời mới qua POP17. Gửi yêu cầu tạo trạng thái bàn giao chờ riêng; A tiếp tục là người hiện hành nếu còn đủ điều kiện. Không gửi hoặc bàn giao cho chính mình ngoài policy; T04 chốt số yêu cầu chờ, hủy/thay yêu cầu và thời hạn.
+b Người mới phản hồi
+B mở 46, đọc thông tin tối thiểu và nhận/từ chối. Server kiểm account, quyền, version việc/yêu cầu và người hiện hành tại commit. Chấp nhận hợp lệ mới chuyển người hiện hành A → B nhất quán. Từ chối giữ A nếu A còn đủ điều kiện. Nếu việc đã hoàn tất/hủy hoặc yêu cầu vô hiệu, báo trạng thái hiện tại, không nhận theo notification cũ.
+6 Mất điều kiện đồng thời và phân công lại
+A mất quyền hoặc rời kết nối: không giữ trách nhiệm giả, chuyển Cần phân công lại theo policy; không tự chọn B hoặc bất kỳ người thay thế nào. Quyền của B cũng được kiểm lại lúc nhận. Chấp nhận bàn giao đang chờ có còn được phép sau A mất điều kiện phải theo T04; không ngầm coi yêu cầu cũ là một lần phân công mới. Người quản lý đủ quyền phải chủ động xử lý theo vòng mời đã duyệt.
+Hoàn tất/hủy trước khi nhận bàn giao làm yêu cầu còn chờ không còn áp dụng theo contract. Nếu nhận/hoàn tất/hủy/mất quyền đồng thời, backend tạo một kết quả hợp lệ theo version/gate, trả xung đột cho phần còn lại; không tạo hai người hiện hành. Timeout giữ kết quả chưa rõ, tra/retry cùng operation; không dùng thao tác lặp để đoán đã nhận.
+7 Bảng gia đình timeline và nhắc
+Sau thay đổi, 40/42/44/47 đối chiếu nguồn; timeline tách loại sự kiện, actor, thời điểm, nguồn và version theo policy. Tổng số lọc quyền trước hiển thị, không xếp hạng người chăm sóc. 48 cấu hình riêng lời mời, việc tới hạn, bàn giao, giờ yên tĩnh và đồng ý. Hoàn tất/hủy/thu hồi/bàn giao cập nhật hoặc dừng nhắc đúng người; không tự chuyển nhắc thuốc sang người nhận việc.
+8 Offline hết phiên và quay lại
+V1.2 đề xuất chỉ cache xem trong quyền và queue hoàn tất việc đã nhận; đây là mở rộng cần T05 duyệt cùng Flow09, không tự kế thừa quyền cache người thân. Tạo/nhận/từ chối/bàn giao/đổi quyền cần online trong phương án này. Lưu local khác server đã nhận; khi gửi lại kiểm actor, người hiện hành, quyền và version. Hết phiên khóa queue theo account; đổi account không chuyển queue/cache/callback. Notification cũ luôn kiểm nguồn trước thao tác.
+
+IV Layout sơ bộ
+1 Danh sách và tạo sửa việc
+
+a Biến thể và giới hạn
+40 đủ chờ nhận/đã nhận/hoàn tất/hủy/cần phân công lại; quá hạn là nhãn thời gian riêng. 41 có validation và xem lại đúng chủ thể; mẫu trường chỉ là sơ bộ để chốt T03.
+
+2 Phản hồi lời mời và chi tiết
+
+a Biến thể và giới hạn
+43 có thể gộp vào 42. Cần biến thể lời mời vô hiệu, version cũ, thiếu quyền, loading và unknown. POP16 cho hoàn tất/hủy nêu đúng tác động và không tự xác nhận thuốc.
+
+3 Yêu cầu và phản hồi bàn giao
+
+a Biến thể và giới hạn
+POP17 xem lại trước gửi/nhận trong đúng account. 45/46 có chờ, từ chối, hết hiệu lực, đã được xử lý và xung đột; người mới chưa nhận không thay A nếu A vẫn đủ điều kiện.
+
+4 Bảng timeline và nhắc phối hợp
+
+a Biến thể và giới hạn
+Khung trái minh họa 44 cùng vùng timeline47 nếu gộp; không mặc định hai route. Khung phải là 48, có thể gộp 18. Quyền OS và kết quả gửi nhắc tách khỏi lựa chọn app như Flow08.
+
+V Trạng thái quyền và hợp đồng
+1 Vòng đời việc đề xuất
+Trạng thái việc
+Ý nghĩa
+Điểm cần bảo đảm
+Chờ nhận
+Có người được mời chưa chấp nhận
+Không hiển thị như đã chịu trách nhiệm
+Đã nhận
+Có người hiện hành đủ điều kiện
+Một người hiện hành theo phương án nguồn
+Cần phân công lại
+Từ chối hoặc người nhận mất điều kiện
+Có sự kiện; không tự chọn thay thế
+Hoàn tất
+Thao tác hoàn tất được chấp nhận
+Không tạo xác nhận thuốc/sức khỏe
+Đã hủy
+Hủy được chấp nhận trong quyền
+Giữ lịch sử theo retention; ngừng hành động mới
+Quá hạn là nhãn
+So thời hạn theo timezone và trạng thái áp dụng
+Không tự hoàn tất/hủy hoặc kết luận y tế
+2 Bàn giao và bằng chứng lưu là hai lớp riêng
+Yêu cầu bàn giao có trạng thái chờ/đã nhận/từ chối/hủy/hết hiệu lực theo T04, không thay trạng thái việc. Đã nhận bàn giao và đã nhận việc cần phân biệt rõ nguồn sự kiện. Bằng chứng thao tác tách chưa gửi, đã lưu máy nếu cho phép, đang gửi, unknown, server chấp nhận, xung đột và từ chối. Không dùng một badge thành công để gộp các lớp.
+3 Các quyền phải kiểm riêng
+Xem việc, xem liên kết sức khỏe, tạo/quản lý, nhận, hoàn tất và bàn giao không tự kéo theo nhau. Người tạo, người quản lý, người hiện hành và người được mời có thể khác nhau. Server kiểm từng API, danh sách/tổng/preview, nguồn link và event recipient; UI ẩn nút chưa đủ chứng minh phân quyền.
+
+4 Hợp đồng dữ liệu và đồng thời
+a Dữ liệu đề xuất
+work_id, subject_id, creator/manager theo policy, invited_recipient, current_assignee, work_state, due_at/timezone, version và nguồn. Handoff có request_id/version, người gửi, người được mời mới, trạng thái/hiệu lực và tham chiếu work version. Actor lấy từ phiên server; client không tự khai để cấp quyền. Nội dung và link nguồn cần tối thiểu, không sao chép dữ liệu sức khỏe vượt quyền.
+b Command receipt và thứ tự
+Mỗi ý định có operation_id; retry cùng ý định giữ khóa, cùng khóa khác nội dung bị xử lý theo contract. Kiểm quyền/trạng thái/version và ghi người hiện hành, work/handoff, audit cùng event trong ranh giới nhất quán được T06 thiết kế. Event cũ không ghi đè mới; consumer retry không tạo chuyển người hoặc nhắc trùng ngoài policy. Lỗi timeout không được tự tạo operation mới cho ý định chưa rõ kết quả.
+c Oracle cạnh tranh
+T04/T06 định nghĩa kết quả accept–accept, accept–complete, accept–cancel, edit–accept và revoke–accept; chỉ một kết quả hợp lệ cho cùng version. Có thể trả xung đột và tải lại hiện tại trong quyền. Không báo A hết trách nhiệm trước commit chuyển B; nếu A mất điều kiện thì có trạng thái rõ. Undo/reopen sau hoàn tất hoặc hủy chưa mặc định có, cần policy và lịch sử riêng nếu bổ sung.
+5 Cache queue và nhắc
+T05 chốt data lifecycle V1.2 cùng Flow06–10: cache xem dữ liệu việc khác với dữ liệu sức khỏe của người thân; phạm vi lưu, khóa, purge, backup và restore phải rõ. Queue hoàn tất phải kiểm người hiện hành lúc gửi lại; nếu đã bàn giao không tự hoàn tất thay B. Nhắc phối hợp có recipient/đồng ý/cấu hình riêng và kiểm nguồn khi mở; scheduler accepted không chứng minh người nhận đã thấy hoặc nhận trách nhiệm.
+6 Lịch sử đo lường và hỗ trợ
+Timeline người dùng và audit nội bộ có quyền/retention riêng. Giữ sự kiện/actor/thời điểm/nguồn tối thiểu, không để notes chứa dữ liệu nhạy cảm ngoài scope. Đếm gửi mời, nhận, từ chối, bàn giao và hoàn tất theo định nghĩa rõ; không suy chất lượng chăm sóc hoặc sức khỏe từ số việc. Support có đường phục hồi, không tự nhận/bàn giao hộ ngoài quyền.
+
+VI Task triển khai
+1 T01 Chốt scope nền vai trò và đồng ý
+a Mục tiêu  Mỗi hành động có actor và điều kiện rõ, không tự cấp quyền sức khỏe.
+b Phụ trách và đầu vào  Product/PM với Privacy Backend; cần Master Q09, V1.2 và build nền nếu có.
+c Điểm cần xác nhận trong task  Chốt việc đơn lẻ/một người hiện hành, ai tạo/xem/quản lý/nhận/hoàn tất/bàn giao và consent chủ thể.
+d Công việc  Lập scope/action matrix; đối chiếu nền thực; quyết định phần thiếu và giới hạn dữ liệu.
+e Đầu ra  Baseline phạm vi và quyền có version.
+f Tiêu chí nghiệm thu  Grant gia đình không tự thành quyền việc; quyền việc không mở link sức khỏe ngoài quyền.
+g Khi thiếu đầu vào  Có thể làm contract/layout với dữ liệu thử; chưa khẳng định V1.1 đã chạy.
+h Liên kết  HM-V12-T01 T02; nối Flow06 07
+2 T02 Chốt vòng đời việc và quyền thao tác
+a Mục tiêu  Người dùng biết khi nào đã nhận và ai hiện hành.
+b Phụ trách và đầu vào  Product với Backend/App/QA; cần T01.
+c Điểm cần xác nhận trong task  Chốt trạng thái, nhận/từ chối, hoàn tất/hủy, cần phân công lại; quá hạn là nhãn, không tự đổi trạng thái.
+d Công việc  Lập transition matrix theo actor/version và dữ liệu/notes được phép; định nghĩa preview trước nhận.
+e Đầu ra  State machine, permission table và ví dụ.
+f Tiêu chí nghiệm thu  Từ chối có sự kiện; chưa nhận không coi đã chịu trách nhiệm; hoàn tất không xác nhận thuốc.
+g Khi thiếu đầu vào  Nhánh chưa chốt giữ blocked; vẫn làm danh sách và state độc lập.
+h Liên kết  HM-V12-T02 T04 T06 T07
+
+VI Task triển khai tiếp theo
+3 T03 Chốt tạo sửa hủy và mô hình thời gian
+a Mục tiêu  Thay đổi nội dung không giữ cam kết cũ ngoài ý định.
+b Phụ trách và đầu vào  Product/Design với Backend; cần T01 T02.
+c Điểm cần xác nhận trong task  Chốt trường/mẫu việc, timezone/hạn, thay đổi cần nhận lại, tác động sửa tới bàn giao và nhắc.
+d Công việc  Lập field contract và edit matrix; xem lại chủ thể/người mời; giữ lịch sử, chặn dữ liệu ngoài quyền.
+e Đầu ra  Schema việc và oracle sửa/hủy.
+f Tiêu chí nghiệm thu  Không tự chép nội dung chỉ định hoặc xóa lịch sử; hủy không tạo xác nhận thuốc.
+g Khi thiếu đầu vào  Mẫu việc trung tính có thể review trước; không tự thêm lịch trực lặp.
+h Liên kết  HM-V12-T02 T04 T05
+4 T04 Chốt bàn giao mất điều kiện và race
+a Mục tiêu  Không có hai người hiện hành hoặc khoảng trống bị che bằng nhãn sai.
+b Phụ trách và đầu vào  Product/Backend với Privacy QA; cần T01–T03.
+c Điểm cần xác nhận trong task  Chốt người gửi/nhận, số yêu cầu chờ, hủy/thay/hết hạn, A mất quyền và điều kiện phân công lại.
+d Công việc  Lập oracle accept/reject/complete/cancel/edit/revoke; chỉ chuyển A sang B khi commit hợp lệ.
+e Đầu ra  Handoff state machine và race matrix.
+f Tiêu chí nghiệm thu  B từ chối giữ A nếu còn đủ điều kiện; A mất điều kiện không tự chuyển B; việc đóng vô hiệu yêu cầu chờ.
+g Khi thiếu đầu vào  Chưa chốt TTL hoặc xử lý yêu cầu cũ thì để mở trong task, không tự đặt số.
+h Liên kết  HM-V12-T02 T06 T08 T09
+
+VI Task triển khai tiếp theo
+5 T05 Chốt offline cache nhắc và thu hồi
+a Mục tiêu  V1.2 mở rộng đúng phạm vi mà không làm lẫn account hoặc loại nhắc.
+b Phụ trách và đầu vào  App/Backend với Privacy Product; nhận Flow07–10 và T01–T04.
+c Điểm cần xác nhận trong task  Duyệt cache việc, queue hoàn tất đã nhận, thao tác cần online, đồng ý/giờ yên tĩnh/giới hạn nhắc.
+d Công việc  Phân biệt dữ liệu việc với sức khỏe; kiểm quyền/người hiện hành khi sync; map event → recipient/cancel/update.
+e Đầu ra  Offline matrix và reminder policy V1.2.
+f Tiêu chí nghiệm thu  Queue A không sang B; đã bàn giao không tự gửi hoàn tất thay B; không tự chuyển nhắc thuốc.
+g Khi thiếu đầu vào  Chưa duyệt offline thì cần mạng cho mutation; vẫn dựng state pending/unknown.
+h Liên kết  HM-V12-T10 T11 T14; nối Flow08 09
+6 T06 Thiết kế API dữ liệu sự kiện và lịch sử
+a Mục tiêu  Có nguồn nhất quán cho việc người nhận và bàn giao.
+b Phụ trách và đầu vào  Backend lead với App/QA; cần T02–T05.
+c Điểm cần xác nhận trong task  Chốt operation/version/receipt, audit, hiệu lực event, snapshot/count và retention.
+d Công việc  Làm create/edit/cancel/accept/reject/complete/handoff; kiểm quyền từng gate, commit nhất quán và retry.
+e Đầu ra  Contract/API/error map cùng dữ liệu kiểm.
+f Tiêu chí nghiệm thu  Race chỉ một kết quả đúng; event cũ không hồi sinh yêu cầu; count/timeline đều lọc quyền.
+g Khi thiếu đầu vào  Dựng contract và fake adapter trước; không coi mock là bằng chứng tích hợp.
+h Liên kết  HM-V12-T04 T06 T08 T12 T14
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế layout và nội dung thao tác
+a Mục tiêu  Người dùng hiểu đúng trạng thái trách nhiệm và bước tiếp theo.
+b Phụ trách và đầu vào  Designer với Product App Privacy; cần T01–T06.
+c Điểm cần xác nhận trong task  Duyệt 40–48 gộp/tách, POP16/17, state thiếu quyền/cũ/unknown, chữ lớn và nội dung notification.
+d Công việc  Hoàn thiện wireframe và các biến thể; 42 luôn rõ chủ thể/người hiện hành; preview không lộ dữ liệu.
+e Đầu ra  Layout/copy/state map được review.
+f Tiêu chí nghiệm thu  Chờ bàn giao không hiển thị như đã chuyển; quá hạn không trách móc; nút hiển thị đúng quyền.
+g Khi thiếu đầu vào  Dùng 8 khung IV để review; chưa xem là UI cuối cùng.
+h Liên kết  HM-V12-T03 T05 T07 T09 T11 T13
+8 T08 Triển khai app backend và nhắc phối hợp
+a Mục tiêu  Có flow tích hợp từ tạo việc đến nhận/bàn giao và cập nhật nguồn.
+b Phụ trách và đầu vào  App/Backend với đầu mối nhắc; cần T06 T07.
+c Điểm cần xác nhận trong task  Chốt adapter/công cụ, invalidation, deep link và handling lỗi theo contract.
+d Công việc  Làm 40–48, API/event, queue nếu duyệt, count/timeline, nhắc; bảo vệ account/context và link nguồn.
+e Đầu ra  Build tích hợp, audit/log tối thiểu và hướng phục hồi.
+f Tiêu chí nghiệm thu  Tác động đúng work/handoff version; hoàn tất không mutation thuốc; notification tap không tự nhận.
+g Khi thiếu đầu vào  Có thể tích hợp staging; giữ danh sách giới hạn và không suy delivery từ API.
+h Liên kết  HM-V12-T04–T14; T15 T18 cho đo/hỗ trợ
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm luồng quyền và giao diện
+a Mục tiêu  Có bằng chứng cho các nhánh chức năng trước fault test.
+b Phụ trách và đầu vào  QA/Design QA với Product; cần build T08 và baseline T01–T07.
+c Điểm cần xác nhận trong task  Chốt expected, account/subject/role, loại event, bộ lọc và dữ liệu đối chiếu.
+d Công việc  Chạy TC01–TC12, API trực tiếp, tổng/preview/timeline, chữ lớn và hồi quy Flow02–09.
+e Đầu ra  Kết quả build/OS/case/defect có bằng chứng.
+f Tiêu chí nghiệm thu  Không pass chỉ vì UI ẩn nút; quyền server và tác động dữ liệu kiểm riêng.
+g Khi thiếu đầu vào  Chưa có build/đầu vào ghi Not run hoặc Blocked cùng owner.
+h Liên kết  HM-V12-T16; T03 T15 T18 hỗ trợ
+10 T10 Kiểm race offline khôi phục và phát hành
+a Mục tiêu  Biết giới hạn thật và không mất trách nhiệm/lịch sử qua lỗi.
+b Phụ trách và đầu vào  QA/Security/App/Backend/vận hành; cần T04 T05 T08 T09.
+c Điểm cần xác nhận trong task  Chốt device/OS, ma trận race, upgrade/restore, ngưỡng chấp nhận và support.
+d Công việc  Chạy TC13–TC24; kiểm người hiện hành, quyền, cache/queue, event cũ; diễn tập phục hồi.
+e Đầu ra  Báo cáo thực, known limits, runbook và release packet.
+f Tiêu chí nghiệm thu  Không hai người hiện hành; không hồi sinh quyền/việc; không log sức khỏe ngoài scope; blocker có kết luận.
+g Khi thiếu đầu vào  Thiếu môi trường đánh Blocked; không coi chưa tái hiện hoặc backup tồn tại là pass.
+h Liên kết  HM-V12-T16 T17 T18 T19 T20
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA ghi build, OS/thiết bị, account/subject, quyền, work/handoff version và policy được duyệt. Case chưa đủ oracle hoặc môi trường ghi Blocked với owner. Đối chiếu trạng thái server, UI, audit và nhắc riêng; không suy Pass từ một lớp.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+11-01
+Mở 40/44 và đổi người khi mạng chậm
+Danh sách/count/preview đúng người và quyền; callback cũ không lẫn dữ liệu.
+T01 T06
+11-02
+Tạo việc đúng quyền rồi quay lại hoặc gửi
+Quay lại không tạo; receipt mới báo chờ nhận; chủ thể/người mời đúng.
+T03 T08
+11-03
+Tạo/sửa có link sức khỏe hoặc nội dung ngoài quyền
+Không mở link hoặc chép dữ liệu vượt quyền; quyền việc không cấp quyền sức khỏe.
+T01 T03
+11-04
+Mở lời mời 43 nhưng chưa chọn nhận
+Không có người hiện hành do tap/open; preview chỉ nội dung được phép.
+T02 T07
+11-05
+Đúng người nhận lời mời còn hiệu lực
+Server kiểm trạng thái/version; chuyển Đã nhận với một người hiện hành.
+T02 T06
+11-06
+Từ chối lời mời còn hiệu lực
+Lưu sự kiện rồi Cần phân công lại theo policy; không tự mời người khác.
+T02 T06
+11-07
+Sửa nội dung/hạn sau đã nhận
+Theo edit matrix: cần nhận lại khi áp dụng; cập nhật bàn giao/nhắc có version.
+T03 T04
+11-08
+Hoàn tất hoặc hủy qua POP16
+Đúng actor/version, giữ lịch sử; không thay xác nhận thuốc hoặc sức khỏe.
+T02 T03
+11-09
+A gửi bàn giao cho B
+Có yêu cầu chờ riêng; A còn hiện hành nếu đủ điều kiện, chưa coi B đã nhận.
+T04 T06
+11-10
+B chấp nhận hoặc từ chối bàn giao
+Nhận hợp lệ mới chuyển; từ chối giữ A nếu đủ điều kiện, có sự kiện đúng.
+T04 T08
+11-11
+Quá hạn lọc bảng và mở timeline
+Quá hạn là nhãn; count/event nguồn khớp trong quyền, không xếp hạng.
+T02 T06
+11-12
+Cấu hình48 và mở thông báo phối hợp
+Đồng ý/giờ yên tĩnh đúng loại; tap không tự nhận; không chuyển nhắc thuốc.
+T05 T07
+
+VII Ca kiểm thử đồng thời và khôi phục
+Toàn bộ ca hiện là Not run. QA ghi build, OS/thiết bị, account/subject, quyền, work/handoff version và policy được duyệt. Case chưa đủ oracle hoặc môi trường ghi Blocked với owner. Đối chiếu trạng thái server, UI, audit và nhắc riêng; không suy Pass từ một lớp.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+11-13
+Hai thiết bị cùng nhận hoặc cùng nhận bàn giao
+Một kết quả hợp lệ theo version; không hai người hiện hành.
+T04 T06
+11-14
+B nhận bàn giao đồng thời A hoàn tất việc
+Theo oracle commit; việc đóng làm yêu cầu chờ vô hiệu; không đổi owner sai.
+T04 T06
+11-15
+B nhận bàn giao đồng thời quản lý hủy/sửa
+Xung đột theo policy; không dùng version/đồng ý cũ cho nội dung mới.
+T03 T04
+11-16
+A mất quyền/rời kết nối khi chờ B
+Cần phân công lại theo T04; không giữ trách nhiệm giả hoặc tự chọn B.
+T01 T04
+11-17
+B mất điều kiện trước khi chấp nhận
+Server từ chối hành động không đủ quyền; UI tải trạng thái trong quyền.
+T01 T06
+11-18
+Lời mời hoặc bàn giao cũ đã hết hiệu lực
+Link/notification cũ không thực thi; có nhánh đã xử lý/vô hiệu.
+T04 T08
+11-19
+Server commit rồi mất phản hồi và retry
+Unknown; tra/retry cùng operation, không nhân sự kiện/chuyển người.
+T06 T08
+11-20
+Queue hoàn tất offline rồi việc được bàn giao
+Chỉ nếu T05 duyệt queue; sync kiểm người hiện hành/version, không hoàn tất thay B.
+T04 T05
+11-21
+Logout A login B rồi callback/queue A tới
+Không lộ/gửi dữ liệu A trong B; reauth không tự phục hồi grant đã thu hồi.
+T05 T08
+11-22
+Event đảo thứ tự hoặc notification tới sau hủy
+Consumer/version không hồi sinh việc/yêu cầu; nguồn quyết định khi mở.
+T05 T06
+11-23
+Upgrade restore hoặc crash giữa commit và refresh
+Đối chiếu receipt/nguồn; giữ lịch sử, không tạo việc/quyền ngầm.
+T06 T10
+11-24
+Rà API trực tiếp log support và nhắc máy offline
+Không lộ payload/quyền; giới hạn hủy nhắc nêu thật; số việc không suy sức khỏe.
+T01 T05 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+SCR40 41
+Việc của tôi và tạo/sửa
+Đúng chủ thể, quyền và edit matrix
+SCR42 43 POP16
+Chi tiết nhận/từ chối hoàn tất/hủy
+Không thay xác nhận thuốc
+SCR45 46 POP17
+Gửi và phản hồi bàn giao
+Chỉ đổi người sau chấp nhận hợp lệ
+SCR44 47
+Bảng gia đình và timeline
+Count/event lọc quyền; có thể gộp
+SCR48 18
+Nhắc phối hợp và quyền OS
+Cấu hình riêng với nhắc thuốc
+Flow03 04 06 07
+Ghi nhận sức khỏe và quyền nguồn
+Quyền việc không cấp quyền sức khỏe
+Flow08 09 10
+Nhắc queue lifecycle dữ liệu
+V1.2 phải duyệt phần mở rộng offline
+2 Điều kiện đóng flow
+T01–T05 có quyết định và người duyệt; T06 có contract/oracle; T07 đủ trạng thái; T08 có build; T09–T10 có bằng chứng. Nhận/bàn giao/mất quyền và race phải cùng baseline, không mỗi đội tự hiểu trách nhiệm khác nhau. Việc nào ngoài scope đánh rõ, không đóng flow bằng số lượng màn đã vẽ.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026, trang 11–12, 23, 26 và 29: SCR40–48, POP16/17, FLOW11 và Q09. HealMata V1.2 VI bản 0.1 ngày 18/10/2026, phần I–II và bảng task trang 1–5: vòng đời đề xuất, một người hiện hành, bàn giao có xác nhận, nhắc phối hợp, offline giới hạn; HM-V12-T01–T20 là mã task nguồn.
+Phạm vi và quy tắc mới trong nguồn vẫn là đề xuất để duyệt theo task. Flow11 bổ sung flow/layout chi tiết, không xác nhận code, QA hoặc phiên bản nền đã hoàn tất. T01–T10 trong tài liệu là nhóm giao việc của Flow11, không thay mã HM-V12. Khi đổi policy, cập nhật contract/layout/case và tài liệu flow nền chịu ảnh hưởng.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng giao tiếp app và dịch vụ.
+CTA
+Call To Action
+Nút hoặc hành động tiếp theo.
+HM
+HealMata
+Tiền tố mã flow màn task và case.
+ID
+Identifier
+Định danh work handoff operation subject.
+OS
+Operating System
+Hệ điều hành trong ma trận kiểm.
+PM
+Project Manager
+Người điều phối dự án và đầu vào.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và expected.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+TTL
+Time To Live
+Thời hạn hiệu lực nếu policy chọn; chưa đặt số.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ trách nhiệm và dữ liệu
+Work là việc chăm sóc; assignee là người nhận hiện hành; invited recipient là người được mời chưa nhận. Handoff là yêu cầu bàn giao có vòng đời riêng. Subject là người được chăm sóc; actor là người thực hiện thao tác. Consent là sự đồng ý theo phạm vi. Grant là quyền đã được cấp; revoke là thu hồi. Scope là phạm vi đã duyệt; baseline là bộ quyết định hiện hành.
+Operation là một ý định gửi có định danh; receipt là kết quả theo nguồn; commit là điểm thay đổi được chấp nhận. Idempotency giúp retry cùng ý định không tạo tác động lặp ngoài thiết kế. Unknown là chưa rõ kết quả; queue là hàng đợi; cache là dữ liệu đã tải. Oracle là quy tắc kết quả chuẩn cho kiểm thử; race là các hành động cạnh tranh; restore là khôi phục. Timeline là dòng sự kiện trong quyền, khác bản ghi xác nhận thuốc.

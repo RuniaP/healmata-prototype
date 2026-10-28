@@ -1,0 +1,425 @@
+HM FLOW 16 Chuẩn bị tham gia phiênvà nhận tài liệu
+HealMata V3.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Design, App, Backend, bác sĩ/đối tác, chuyên môn, Privacy, vận hành và QA để triển khai từ lịch hiện hành tới chia sẻ dữ liệu chuẩn bị, kiểm thiết bị, tham gia/nối lại và xem tài liệu sau phiên. Bao gồm luồng bác sĩ tối thiểu để nhận lịch, xem packet và soạn/review/công bố tài liệu có nguồn.
+Quyền packet, quyền join, trạng thái kết nối, xác nhận dịch vụ, tài liệu và điều kiện khoản phải trả là các lớp riêng. Rời phòng không chứng minh dịch vụ hoàn tất. Kênh phiên, đối tượng, consent/retention và quy trình chuyên môn vẫn cần chốt trong task; tài liệu chưa xác nhận nền hoặc đối tác đã triển khai thật.
+I Phạm vi và kết quả cần đạt
+1 Bề mặt và đường đi
+56 → 59 chuẩn bị/POP19 chia sẻ hoặc thu hồi → 60 precheck → 61 phiên → 62 sau phiên → 63 tài liệu. Phía bác sĩ: DOC03 lịch → DOC05 chi tiết/packet → DOC06 tham gia/kết thúc → DOC07 nháp/review/công bố/amendment. DOC01/02 là điều kiện xác thực/eligibility đầu vào, không tự dùng form bệnh nhân. Công cụ đối tác có thể thay UI nếu đủ capability được xác nhận.
+2 Người và quyền
+Patient/đại diện hợp lệ chọn dữ liệu trong quyền; bác sĩ được phân công xem theo grant phiên; người thân tham gia cần consent riêng. Payer hoặc người đặt không tự có quyền hồ sơ/join/tài liệu. Provider eligibility, booking/version, role, consent và token được kiểm tại gate, không chỉ lúc mở màn. Nội dung công cụ bác sĩ cũng lọc đúng lịch và người.
+3 Phạm vi đề xuất
+Packet có nguồn/kỳ/snapshot/recipient/hiệu lực, phiên qua kênh được review và tài liệu do tác giả có thẩm quyền. Không mặc định video, SDK, portal, recording/transcription, AI viết chỉ định hoặc kê đơn điện tử. Không tự sửa lịch thuốc từ tài liệu. Core dữ liệu gốc cần thiết cho phiên không bị ép mua Plus trong phạm vi quyền đã duyệt.
+4 Handoff và kết quả
+Flow14/15 cung cấp booking hiện hành; đổi/hủy làm cập nhật quyền/tác vụ tương lai theo policy. Flow17 nhận phản ánh; Flow18 nhận điều kiện tiền riêng. Kết quả cần đúng phòng/người/role, trạng thái trung thực qua lỗi và tài liệu có tác giả/time/version. Bản chia sẻ thu hồi truy cập khác hồ sơ phải lưu hoặc file đã ra ngoài app.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+Số59–63 là HM-SCR; DOC là bề mặt bác sĩ. 59 không tự cấp quyền join và 61 không tự tạo tài liệu đã công bố. Kênh có thể là SDK hoặc công cụ đối tác; mọi nhánh đều phải giữ booking và quyền hiện hành.
+
+III Flow chi tiết
+1 Mở lịch và chuẩn bị dữ liệu
+a Đúng lịch hiện hành
+Từ 56 hoặc nhắc mở bước phù hợp sau kiểm account, booking/version, patient, giờ/timezone và quyền hiện hành. Lịch đã đổi/hủy theo Flow15 phải tải lại, không join từ link cũ. Mở sớm/muộn, chưa đủ eligibility hoặc provider bị dừng có đường xử lý theo T01/T04, không tự chuyển sang phòng công khai hoặc bác sĩ khác.
+b Chọn packet trong quyền
+59 chọn nguồn thuốc/sức khỏe/report gốc được phép, kỳ và dữ liệu cần cho phiên; preview có chủ thể, nguồn/đơn vị, mốc snapshot, dữ liệu thiếu và người nhận cụ thể. Tách dữ liệu nguồn đã đồng bộ với phần local chưa gửi theo Flow09. Không chép nội dung ngoài grant để lách kiểm quyền, không bù khoảng trống bằng chỉ số suy diễn. Dữ liệu gốc cần thiết không bắt mua Plus; báo cáo nâng cao vẫn theo phạm vi Flow12.
+2 Chia sẻ xem lại và thu hồi
+POP19 nêu đúng booking/patient/recipient, loại/kỳ/mốc và hiệu lực cùng tác động thu hồi. Quay lại trước xác nhận không tạo grant. Server kiểm quyền chọn/chia sẻ, provider được phân công và version rồi lưu receipt; timeout là chưa rõ, tra cùng operation. Tạo packet hoặc gửi chia sẻ không tự tạo consent cho người thân join hoặc mở toàn bộ hồ sơ gia đình.
+59 có danh sách chia sẻ hiện hành và thao tác thu hồi theo policy/POP19. Thu hồi toàn bộ hoặc một phần nếu scope chọn tác động truy cập tương lai tại gate; hồ sơ đã lưu hợp lệ theo yêu cầu chuyên môn và file ngoài app có lifecycle riêng. Không hứa thu hồi được mọi bản sao hoặc xóa hồ sơ phải lưu; phần giữ lại/cơ sở/thời hạn phải được T02/T05 duyệt và giải thích trước chia sẻ.
+3 Precheck và quyền thiết bị
+60 hiển thị đúng lịch, patient/provider, giờ và người tham gia trong quyền. Kiểm kết nối và thiết bị phù hợp kênh; mic/camera chỉ nếu cần. Giải thích rồi gọi permission thật theo nền tảng chọn, không giả đã cấp hoặc xin mọi quyền không cần. Từ chối/bị tắt có hướng khắc phục hoặc lựa chọn kênh đã được duyệt; không tự coi đã tham gia hay tự chuyển sang kênh chưa review. Đạt precheck kỹ thuật chưa là đủ eligibility/join hoặc hoàn tất dịch vụ.
+
+4 Vào đúng phiên và theo dõi kết nối
+a Quyền vào
+Trước cấp/join token kiểm booking/state/window, role, provider eligibility, consent và người tham gia theo T01/T04. Link phòng không thay xác thực. 61 hoặc kênh đối tác mở đúng room/session gắn booking; người ngoài có link, payer thiếu quyền hoặc tài khoản khác bị chặn. Token có hiệu lực/phạm vi theo contract, không log hoặc đưa vào analytics. Không mặc định nhiều participant/khách mời được phép.
+b Trạng thái trung thực
+Tách chờ bác sĩ/chờ đủ điều kiện, đang kết nối, đã vào, gián đoạn, đang nối lại, đã rời và ended theo bằng chứng kênh/server. Không có event không đồng nghĩa chưa tham gia; rời app không mặc định cả phiên đã kết thúc. Giao diện luôn rõ booking/người, trạng thái mic/camera nếu dùng và điều khiển rời/kết thúc theo vai trò. Recording/transcription không bật mặc định; capability không dùng phải bị cấu hình đúng và kiểm.
+5 Gián đoạn và nối lại
+Mạng chập chờn/app vào nền/bị đóng/quyền thiết bị đổi: giữ trạng thái thật và hướng phục hồi. Rejoin tra đúng booking/session hiện hành, kiểm lại role/provider/consent/token, không mở phòng hoặc tạo participant/phí mới ngoài contract. Token hết hạn chỉ refresh sau gate; phiên ended không được nối lại như đang hoạt động. Revoke trong lúc mất mạng không được vượt bằng cache/link cũ.
+Nếu không nối lại được, nêu giới hạn và chuyển hỗ trợ theo kênh/policy; không tự kết luận no show, dịch vụ complete, payable hoặc thu thêm để nối. Provider bị dừng giữa phiên cần quyết định xử lý phiên đang diễn ra từ T01/T04, không tự hứa ngắt tức thì nếu kênh chưa chứng minh. Không tự chuyển sang link công khai để tiếp tục.
+6 Sau rời hoặc kết thúc phiên
+62 hiển thị sự kiện kỹ thuật đã rời/ended, trạng thái xác nhận dịch vụ và tài liệu riêng. Dịch vụ chờ xác nhận hoặc tài liệu chưa có phải có trạng thái/owner, không dựng file hoàn tất giả. Bằng chứng session, xác nhận dịch vụ, review no show/interruption và điều kiện tiền theo policy riêng; leave/join/end không tự tạo quyền chi trả. 56 là đường quay về;64/Flow17 cho phản ánh và Flow15/58 cho ngoại lệ tiền nếu có.
+
+7 Phía bác sĩ và công bố tài liệu
+a Nhận lịch và đọc packet
+Sau xác thực miền bác sĩ DOC01 và eligibility DOC02 hợp lệ, DOC03 chỉ liệt kê lịch được giao trong quyền. DOC05 nêu patient/booking/giờ, consent/packet còn hiệu lực và dữ liệu nguồn/đơn vị/mốc/thiếu. Link/tổng/preview/file đều kiểm quyền; expired/revoke ngừng truy cập tương lai theo policy. Không tự truy toàn bộ hồ sơ gia đình, nhận lịch người khác hoặc tự duyệt hồ sơ provider.
+b Phiên bác sĩ
+DOC06 precheck/join/rejoin/end dùng cùng booking/session và gate role/provider. Quyền kết thúc phòng, rời phòng và xác nhận dịch vụ khác nhau, do T04 chốt. Công cụ đối tác chỉ được coi đáp ứng khi có bằng chứng mapping danh tính/quyền/sự kiện; không giả đã có portal hoặc SDK. Sự cố có nguồn/time/reference an toàn và owner, không dùng trạng thái UI bác sĩ như chứng cứ tiền đã đủ điều kiện.
+c Nháp review và công bố
+DOC07 do tác giả có thẩm quyền tạo tài liệu đúng bệnh nhân/booking. Mẫu/trường bắt buộc, bước review/ký/xác nhận và quyền công bố theo quy trình được duyệt tại T05. Lưu nháp không công bố cho patient; draft chỉ cho vai trò có quyền. Trước công bố kiểm author/reviewer/eligibility, completeness/version và điều kiện access. POP20 xác nhận công bố nếu dùng theo Master; không dùng cùng hành động với duyệt chi tiền.
+Không AI tự viết chỉ định, phát hành đơn điện tử hoặc sửa lịch thuốc trong scope nguồn. Người dùng muốn cập nhật thuốc cần Flow02/03 với quyền/thao tác riêng. Xác nhận dịch vụ là bước/quyền riêng, không tự đặt hoàn tất chỉ vì tài liệu đã sẵn sàng. Lỗi lưu/publish hoặc kết quả chưa rõ có receipt/query/retry ổn định, không tạo bản công bố lặp.
+8 Xem tải và bổ sung tài liệu
+63 chỉ hiển thị bản công bố trong quyền với tác giả/nguồn/thời điểm phiên/thời điểm công bố/version. Tách chưa có/chờ, draft trong quyền, ready, amended, hết quyền/hết hạn và lỗi tải. Đóng app/notification cũ không đổi account/phiên bản ngầm; thông báo chỉ mở sau gate, không auto gửi file. Payer không được chia sẻ thì không mở tài liệu, thumbnail hoặc URL cũ.
+Sửa sau công bố theo amendment: giữ trace bản cũ và liên kết bản bổ sung, thời điểm/tác giả/lý do nếu policy yêu cầu; không ghi đè. Xem/tải kiểm quyền hiện hành và retention, file temp/cache theo policy. Bản ngoài app có giới hạn thu hồi; hồ sơ phải lưu không bị xóa chỉ vì thu hồi packet. Nội dung tài liệu không tự sửa thuốc hay kết luận điều trị trong app. 64/Flow17 nhận phản ánh theo miền và quyền bằng chứng.
+
+IV Layout sơ bộ
+1 Chọn dữ liệu và xác nhận chia sẻ
+
+a Biến thể và giới hạn
+59 có tạo/xem/thu hồi trong quyền, pending/unknown, hết hiệu lực và thiếu nguồn. POP19 dùng cho chia sẻ hoặc thu hồi với nội dung tác động tương ứng; nhãn/mức quyền do T02 duyệt.
+
+2 Precheck và trạng thái phiên
+
+a Biến thể và giới hạn
+60 xin quyền thật theo nền tảng/kênh chọn. 61 là khung chức năng, không tự giả định video UI. Cần biến thể từ chối quyền, chờ, lỗi, reconnect và ended; không gộp đang kết nối với đã tham gia.
+
+3 Sau phiên và tài liệu người dùng
+
+a Biến thể và giới hạn
+62 giữ ba lớp kết nối/dịch vụ/tài liệu. 63 cần ready/amended/chưa có/mất quyền/lỗi; author/time/version phải đọc được. Không tự công bố draft hoặc suy thiếu file là không có phiên.
+
+4 Công cụ bác sĩ tối thiểu
+
+a Biến thể và giới hạn
+Khung trái là DOC05 sau lịch DOC03. Khung phải gom các vùng trách nhiệm DOC06/DOC07 để review, không bắt buộc một route. Cần layout nháp/review/publish/amend và POP20 theo quy trình T05/T07 hoặc mapping công cụ đối tác thật.
+
+V Trạng thái quyền phiên và tài liệu
+1 Các lớp quyền và kết quả
+Lớp
+Bằng chứng và phạm vi
+Không được suy
+Booking/eligibility
+Lịch hiện hành patient/provider/state
+Paid hoặc payer không tự có join
+Packet grant
+Loại dữ liệu recipient hiệu lực/version
+Chia sẻ không mở toàn bộ hồ sơ
+Join access
+Role consent window token kênh
+Có link không thay xác thực
+Kết nối kỹ thuật
+Waiting/connect/join/rejoin/leave/end theo nguồn
+Mất mạng không tự no show/complete
+Dịch vụ
+Xác nhận theo quy trình và chứng cứ
+Join/end hoặc file ready không tự là hoàn tất
+Tài liệu
+Author/review/publish/amend và access
+Nháp không phải công bố, không tự sửa thuốc
+Tiền/payable
+Điều kiện theo miền Finance/Flow18
+Phiên mở không tự tạo quyền chi trả
+2 Các trạng thái tài liệu
+Trạng thái
+Ý nghĩa
+Bước tiếp
+Chưa có hoặc chờ
+Chưa có bản công bố trong quyền
+Owner/tiến độ, không dựng file giả
+Nháp/review
+Tài liệu chưa công bố
+Chỉ vai trò được phép xem/sửa
+Ready
+Bản đủ điều kiện đã công bố
+Kiểm quyền rồi xem/tải
+Amended
+Có bản bổ sung có trace
+Xem version/nguồn cũ mới trong quyền
+Không còn truy cập/lỗi
+Quyền/hạn/file cần xử lý
+Chặn hoặc retry đúng nguyên nhân
+
+3 Hợp đồng nguồn và vòng đời
+a Định danh đề xuất
+booking/patient/provider/participant/role, consent/grant ID/version, packet/source snapshot/scope/recipient/expiry, room/session ID/generation, token audience/scope/expiry theo kênh, operation ID, technical event/source/time; service confirmation ID/state; document ID/author/reviewer/template/version/publish/amendment references. Actor từ phiên server, không client tự khai để cấp quyền.
+b Gate và thay đổi
+T01/T04/T06 chốt checks tại tạo/xem/tải packet, token/join/rejoin, review/publish và xem/tải tài liệu. Revoke, provider suspend, booking đổi/hủy và consent đổi có tác động API/token/cache/jobs theo capability đã kiểm. Phiên đang diễn ra cần quy tắc và bằng chứng thực thi riêng; chặn truy cập mới không được trình bày như mọi bản sao/participant đã biến mất tức thì.
+c Tính nhất quán và recovery
+Operation/receipt/query/retry ổn định; cùng khóa khác payload theo contract. Event trễ/đảo thứ tự không hồi sinh phòng ended, grant revoked hoặc tài liệu draft thành ready. Rejoin dùng session hiện hành, không tạo participant/room hoặc phí trùng. Publisher retry không tạo hai bản công bố không kiểm soát. Event kỹ thuật không dùng làm nguồn duy nhất cho no show/dịch vụ/payable.
+4 Snapshot lưu hồ sơ và amendment
+Packet chỉ chứa nguồn/kỳ đã chọn, mốc/đơn vị/version và missingness thật. Bản chia sẻ, dữ liệu đã được ghi vào hồ sơ chuyên môn, audit và file đã tải có retention/quyền khác nhau. T02/T05 cần review phần giữ lại, thời hạn/cơ sở, điều kiện xóa và thông báo thu hồi; chưa tự đặt ngày hoặc hứa xóa hồ sơ phải lưu. Restore áp lại trạng thái quyền/xóa trước mở truy cập.
+Tài liệu sau phiên có tác giả/thẩm quyền, timestamp, mẫu và version. Review nội dung/mẫu không được giả thành mọi tài liệu đã được chuyên gia duyệt. Amendment giữ provenance và đường truy vết theo policy; không âm thầm sửa bản đã công bố hoặc thêm AI/kê đơn ngoài scope. Nguồn/phiên thay đổi phải tạo xử lý có chủ ý trong quyền, không tự chỉnh lịch thuốc.
+5 Kênh bảo mật và vận hành
+T03 chọn kênh/hình thức/SDK hoặc công cụ đối tác bằng capability/dataflow/review hiện hành. Kiểm quyền OS đúng nhu cầu nếu dùng mic/camera; recording/transcription không mặc định bật. Log không nội dung khám, packet, token/link riêng hoặc file nhạy cảm. Cache/preview/temp theo account; support không mở toàn bộ hồ sơ để xử lý lỗi thiết bị. SLA/device thresholds chưa có nguồn phải chốt theo năng lực, không tự hứa luôn nối được.
+
+VI Task triển khai
+1 T01 Chốt dịch vụ vai trò và điều kiện phiên
+a Mục tiêu  Mỗi người vào/xem/soạn theo đúng thẩm quyền và lịch hiện hành.
+b Phụ trách và đầu vào  Product/Privacy/chuyên môn với Backend/đối tác; cần Q12/Q13 và Flow14/15.
+c Điểm cần xác nhận trong task  Chốt patient/đại diện/caregiver/provider, booking window, eligibility và tác động suspend/revoke giữa phiên.
+d Công việc  Lập role/action matrix cho app và DOC; phân biệt packet/join/document/service/payable; rà nền thực.
+e Đầu ra  Baseline scope/access và domain owner.
+f Tiêu chí nghiệm thu  Payer/booker không tự join/xem tài liệu; không claim đối tác đủ điều kiện từ tài liệu.
+g Khi thiếu đầu vào  Thiếu đại diện/kênh chỉ chặn phần phụ thuộc; vẫn làm contract/fixture.
+h Liên kết  HM-V3-T02 T03 T16; HM-V31-T04
+2 T02 Chốt packet consent thu hồi và dữ liệu giữ lại
+a Mục tiêu  Chia sẻ tối thiểu đúng phiên và hiểu giới hạn thu hồi.
+b Phụ trách và đầu vào  Product/Privacy với chuyên môn Data App; cần T01 và nguồn Flow02–12.
+c Điểm cần xác nhận trong task  Chốt loại/kỳ/snapshot/recipient/expiry, thu hồi toàn bộ/một phần nếu có và hồ sơ cần lưu.
+d Công việc  Thiết kế59/POP19, source/missingness và grant; phân biệt local chưa gửi, bản chia sẻ, hồ sơ lưu và file ngoài app.
+e Đầu ra  Packet/data lifecycle policy cùng consent copy.
+f Tiêu chí nghiệm thu  Không mở hồ sơ gia đình toàn phần; không ép Plus cho dữ liệu gốc cần thiết; không hứa xóa bản sao ngoài app.
+g Khi thiếu đầu vào  Chưa duyệt retention giữ trường cần chốt; không tự đặt thời hạn pháp lý.
+h Liên kết  HM-V3-T03 T15; HM-V31-T09
+
+VI Task triển khai tiếp theo
+3 T03 Chọn kênh và ma trận precheck thiết bị
+a Mục tiêu  Có cơ chế phiên và điều kiện thiết bị thực tế được review.
+b Phụ trách và đầu vào  Tech lead/đối tác với Privacy chuyên môn App QA; cần T01.
+c Điểm cần xác nhận trong task  Chốt hình thức/kênh/SDK/công cụ, permission nếu dùng, dataflow, recording mặc định tắt và fallback được phép.
+d Công việc  Review tài liệu hiện hành kênh chọn; lập capability/test matrix; mapping identity/events và quyền thật OS.
+e Đầu ra  Channel decision/precheck contract và giới hạn.
+f Tiêu chí nghiệm thu  Không giả có portal/video sẵn; không tự chuyển public link/kênh chưa review khi lỗi.
+g Khi thiếu đầu vào  Có thể dùng adapter/mock cho thiết kế; chưa đủ review không mở phiên thật.
+h Liên kết  HM-V3-T16 T17; HM-V31-T08
+4 T04 Chốt session lifecycle nối lại và xác nhận dịch vụ
+a Mục tiêu  Trạng thái kỹ thuật không tự biến thành kết quả dịch vụ hoặc tiền.
+b Phụ trách và đầu vào  Product/chuyên môn với Backend/App/QA; cần T01 T03.
+c Điểm cần xác nhận trong task  Chốt waiting/join/rejoin/leave/end, role end quyền window/token, revoke/suspend và service confirmation.
+d Công việc  Lập state/race matrix, event authority và bằng chứng no show/interruption; handoff Flow15/17/18.
+e Đầu ra  Session/service oracle và recovery policy.
+f Tiêu chí nghiệm thu  Mất mạng không tự no show/complete/payable; ended không rejoin; không phòng/participant/phí mới tùy tiện.
+g Khi thiếu đầu vào  Thiếu oracle để trạng thái chưa xác định có owner; không suy từ event thiếu.
+h Liên kết  HM-V3-T04 T16 T17; HM-V31-T08
+
+VI Task triển khai tiếp theo
+5 T05 Chốt tài liệu tác giả review và amendment
+a Mục tiêu  Tài liệu có nguồn thẩm quyền version và lifecycle rõ.
+b Phụ trách và đầu vào  Chuyên môn/Product với Privacy Design Backend; cần T01 T02 T04.
+c Điểm cần xác nhận trong task  Chốt mẫu/trường/author/reviewer/quy trình công bố, đọc/tải/retention và xác nhận dịch vụ riêng.
+d Công việc  Định nghĩa nháp/review/ready/amended; giữ trace bản cũ; không AI chỉ định/kê đơn hoặc tự đổi thuốc.
+e Đầu ra  Document spec/template và publication policy.
+f Tiêu chí nghiệm thu  Draft không lộ cho vai trò không được phép; sửa sau publish không ghi đè ngầm; tài liệu ready không tự payable.
+g Khi thiếu đầu vào  Nội dung chưa review chỉ dựng cấu trúc có nhãn; không giả đã duyệt chuyên môn.
+h Liên kết  HM-V3-T18; HM-V31-T09
+6 T06 Xây API packet session tài liệu và công cụ bác sĩ
+a Mục tiêu  Có nguồn quyền/sự kiện/kết quả nhất quán cho cả hai phía.
+b Phụ trách và đầu vào  Backend với App/đối tác QA; cần T02–T05.
+c Điểm cần xác nhận trong task  Chốt IDs/version/operation/receipt, token scope, event order và gates create/publish/download.
+d Công việc  Làm grant/revoke, room/join/rejoin/end, DOC schedule/packet/draft/review/publish/amend; recovery và audit tối thiểu.
+e Đầu ra  Contract/adapter/API/DOC mapping và dữ liệu kiểm.
+f Tiêu chí nghiệm thu  Wrong booking/role bị chặn; event cũ không hồi sinh quyền/phòng; publish retry không tạo bản trùng.
+g Khi thiếu đầu vào  Dùng sandbox/fixture trước; mock không chứng minh dịch vụ thật hoặc quyền kênh thực.
+h Liên kết  HM-V3-T15 T16 T18; HM-V31-T04 T08 T09
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế app và công cụ bác sĩ theo trạng thái
+a Mục tiêu  Người dùng/bác sĩ biết đang chia sẻ kết nối và công bố ở bước nào.
+b Phụ trách và đầu vào  Designer với Product/Privacy/chuyên môn/đối tác App; nhận T01–T05.
+c Điểm cần xác nhận trong task  Duyệt 59–63, DOC03/05/06/07, POP19/20 hoặc mapping công cụ thật, chữ lớn và privacy copy.
+d Công việc  Hoàn thiện 8 khung IV và các biến thể; quay lại đúng lịch, trạng thái lớp riêng và hướng recovery.
+e Đầu ra  Layout/copy/state map app/DOC và file.
+f Tiêu chí nghiệm thu  Không nhãn hoàn tất chung cho leave/service/file; không giả native permission hoặc draft thành ready.
+g Khi thiếu đầu vào  Giữ placeholder kênh/quy trình chưa chốt; không coi wireframe là UI cuối cùng.
+h Liên kết  HM-V3-T15–T18; HM-V31-T03 T15
+8 T08 Triển khai client bác sĩ và handoff tài liệu
+a Mục tiêu  Có hành trình hai phía giữ đúng booking patient version và quyền.
+b Phụ trách và đầu vào  App/Backend/đối tác với vận hành; cần T06 T07.
+c Điểm cần xác nhận trong task  Chốt resume/deep link/native handoff, participant controls và nhận trạng thái công bố.
+d Công việc  Nối 59–63 và DOC, precheck/rejoin, source/version/file gates, cleanup account và trợ giúp đúng miền.
+e Đầu ra  Build tích hợp và bằng chứng kênh/server/client.
+f Tiêu chí nghiệm thu  Không join/share/download tự động từ notification; không file/token account cũ; không đổi lịch thuốc từ tài liệu.
+g Khi thiếu đầu vào  Nếu dùng portal đối tác cần mapping/bằng chứng thật; không giả định đã tích hợp.
+h Liên kết  HM-V3-T15–T18 T22; HM-V31-T10
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm hành trình quyền và nội dung hai phía
+a Mục tiêu  Có expected chung cho consent session và publication.
+b Phụ trách và đầu vào  QA/Design QA với Privacy/chuyên môn/chủ kênh; cần T01–T08.
+c Điểm cần xác nhận trong task  Chốt tài khoản/role/booking/grant, mẫu tài liệu, dataset thiếu/sửa và device matrix.
+d Công việc  Chạy TC01–TC12, API trực tiếp, app/DOC/file render, chữ lớn và hồi quy quyền Flow06–15.
+e Đầu ra  Báo cáo build/policy/kênh/fixture với defect.
+f Tiêu chí nghiệm thu  Không Pass từ ảnh UI hoặc join callback; quyền, trạng thái dịch vụ và tài liệu kiểm độc lập.
+g Khi thiếu đầu vào  Thiếu oracle/build/quyền kênh ghi Not run/Blocked cùng owner.
+h Liên kết  HM-V3-T25; HM-V31-T16
+10 T10 Kiểm revoke reconnect recovery và phát hành
+a Mục tiêu  Không lộ quyền hoặc hồi sinh phiên/tài liệu qua lỗi.
+b Phụ trách và đầu vào  QA/Security/App/Backend/đối tác/vận hành; cần T02–T06 T08 T09.
+c Điểm cần xác nhận trong task  Chốt fault/race, thiết bị/mạng, retention/restore và readiness từng miền.
+d Công việc  Chạy TC13–TC24; network/background/token/revoke/publish crash/restore; diễn tập hỗ trợ và audit.
+e Đầu ra  Bằng chứng thực, known limits, runbook và release packet.
+f Tiêu chí nghiệm thu  Không ended rejoin, không file trái quyền/draft leak; no show/payable không suy từ kỹ thuật; giới hạn được ghi thật.
+g Khi thiếu đầu vào  Thiếu môi trường ghi Blocked; sandbox không thay điều kiện mở dịch vụ thật.
+h Liên kết  HM-V3-T23 T25 T27 T28; HM-V31-T17 T18 T19 T20
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA ghi build/OS/device/network, kênh và environment, booking/session/grant/document version, role và policy/oracle. Không áp dụng cần lý do capability; thiếu đầu vào ghi Blocked có owner. Kết quả kỹ thuật, quyền, nội dung và tiền kiểm riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+16-01
+Mở56/59/60 từ lịch hoặc nhắc cũ
+Đúng booking/patient/role/provider/state; đổi/hủy không join bằng dữ liệu cũ.
+T01 T08
+16-02
+Chọn packet loại/kỳ/source snapshot
+Chỉ dữ liệu trong quyền; nguồn/đơn vị/missingness đúng, local chưa gửi không giả đã có.
+T02 T06
+16-03
+POP19 quay lại/chia sẻ/thu hồi nếu được phép
+Chưa xác nhận không tạo grant; đúng recipient/expiry/scope, thu hồi nói rõ giới hạn.
+T02 T07
+16-04
+Không Plus hoặc payer không có grant
+Dữ liệu gốc cần thiết chia sẻ trong quyền; payer không tự mở packet/join/document.
+T01 T02
+16-05
+Precheck quyền thiết bị từ chối hoặc chưa đủ kết nối
+Theo capability; không giả đã cấp/đã vào, không xin quyền không cần hoặc fallback chưa duyệt.
+T03 T07
+16-06
+Người ngoài có link hoặc sai booking/role
+Gate server/kênh chặn; link/token không thay đúng danh tính và consent.
+T01 T06
+16-07
+Waiting connecting joined leave end ở61/62
+Các trạng thái đúng nguồn, không leave là complete/document ready/payable.
+T04 T08
+16-08
+DOC03/05 bác sĩ mở lịch và packet
+Chỉ lịch được giao và nguồn còn quyền; không toàn bộ hồ sơ gia đình hoặc preview ngoài quyền.
+T01 T06
+16-09
+DOC07 lưu nháp hoặc gọi publish không đủ quyền
+Nháp chỉ đúng vai trò; thiếu author/review/eligibility/completeness bị chặn.
+T05 T06
+16-10
+Công bố tài liệu hợp lệ rồi63 xem/tải
+Author/source/time/version đúng; chỉ bản được phép, gate tải hiện hành.
+T05 T08
+16-11
+Amend sau công bố hoặc nguồn packet được sửa
+Giữ trace/version cũ mới theo policy; không ghi đè hoặc tự đổi thuốc.
+T02 T05
+16-12
+Phiên đã rời nhưng dịch vụ/tài liệu đang chờ
+62 nêu lớp riêng với owner; không dựng file giả hoặc tự đủ điều kiện tiền.
+T04 T05
+
+VII Ca kiểm thử thu hồi kết nối và khôi phục
+Toàn bộ ca hiện là Not run. QA ghi build/OS/device/network, kênh và environment, booking/session/grant/document version, role và policy/oracle. Không áp dụng cần lý do capability; thiếu đầu vào ghi Blocked có owner. Kết quả kỹ thuật, quyền, nội dung và tiền kiểm riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+16-13
+Revoke packet trong lúc tạo/xem/tải
+Gate ngừng truy cập tương lai đúng policy; không hứa xóa file ngoài hoặc hồ sơ phải lưu.
+T02 T06
+16-14
+Provider suspend trước join hoặc giữa phiên
+Chặn truy cập mới, xử lý ongoing theo oracle/capability; không giữ trạng thái đủ quyền giả.
+T01 T04
+16-15
+Rejoin khi phiên ended hoặc consent đã revoke
+Không nối lại phòng cũ bằng cache; kiểm booking/role/provider/consent hiện hành.
+T04 T06
+16-16
+Token hết hạn hoặc giả token sai audience/booking
+Refresh chỉ sau gate; không bypass hoặc lộ token vào log/analytics.
+T03 T06
+16-17
+Mạng mất app vào nền/đóng rồi mở lại
+Rejoin đúng session nếu còn quyền; không phòng/participant/phí mới tùy tiện, không tự no show.
+T03 T04
+16-18
+Đổi mic/camera permission hoặc lỗi SDK/kênh
+State và hướng xử lý thật; không ghi âm/ghi hình/transcription mặc định.
+T03 T08
+16-19
+Booking đổi/hủy trong lúc chuẩn bị hoặc nối lại
+Dùng phiên hiện hành/gate; không join nhầm giờ/phòng hoặc người được khám.
+T01 T04
+16-20
+Event kỹ thuật trễ/lặp/đảo thứ tự
+Không hồi sinh ended/grant revoked; không dùng event thiếu làm complete/no show/payable.
+T04 T06
+16-21
+Crash/timeout sau lưu hoặc publish tài liệu
+Tra cùng operation/version; không mất nháp đã báo lưu hoặc tạo bản công bố trùng.
+T05 T06
+16-22
+Logout A login B hoặc link file/notification cũ
+Không lộ packet/report/thumbnail/temp/token A; file download kiểm đúng quyền.
+T01 T08
+16-23
+Restore từ backup cũ hoặc hồ sơ đến hạn lưu/xóa
+Áp lifecycle/grant hiện hành trước mở; không hồi sinh file/quyền đã vô hiệu hoặc xóa trái policy.
+T02 T05
+16-24
+Kiểm hỗ trợ/domain/readiness và hồi quy core
+Owner đúng miền; log không nội dung khám/secrets; không giả review chuyên môn hoặc điều kiện chi trả.
+T01 T05 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+SCR59 POP19
+Chọn chia sẻ xem/thu hồi packet
+Scope/recipient/time/source và giữ hồ sơ theo policy
+SCR60 61 DOC06
+Precheck join/rejoin/end
+Role/booking/channel/token hiện hành
+SCR62
+Sau phiên ba lớp trạng thái
+Leave khác service complete và file ready
+SCR63 DOC07 POP20
+Nháp/review/publish/amend và đọc
+Tác giả/time/version/gate; không tự đổi thuốc
+DOC03 DOC05
+Lịch được giao và packet bác sĩ
+Công cụ thật hoặc mapping đối tác được xác nhận
+Flow14 15
+Booking và thay đổi lịch
+Đúng phiên/version sau đổi/hủy
+Flow17 SCR64 65
+Phản ánh hỗ trợ theo miền
+Quyền bằng chứng và owner
+Flow18
+Finance/payable theo điều kiện
+Không suy từ kỹ thuật hoặc file đã công bố
+2 Điều kiện đóng flow
+T01–T05 có policy/capability/reviewer; T06 contract/adapter/DOC; T07 đủ layout/state/file; T08 build; T09–T10 có bằng chứng hai phía. Chuyên môn/Privacy/chủ kênh/vận hành nhận phần tương ứng. Readiness dịch vụ, kỹ thuật và tiền tách riêng; mock hoặc tài liệu không thay điều kiện mở phiên thật.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026 trang 16–19,23,26: SCR59–63, DOC03/05/06/07, POP19/20 và FLOW16. HealMata V3.0 VI bản 0.1 ngày 18/10/2026 task 15–18 trang 21–24: packet, session, precheck/rejoin và tài liệu. HealMata V3.1 VI bản 0.1 ngày 18/10/2026 task 08–09 trang 13–14: reconnect, provenance/version, revoke/cache và giới hạn file ngoài app.
+T01–T10 là nhóm việc Flow16 liên kết HM-V3/HM-V31, không thay mã nguồn. Các lựa chọn mới vẫn cần chốt; chưa xác nhận code, kênh hoặc nội dung đã được review thực tế. Thay provider/kênh/consent/retention cần cập nhật contract, layout, expected và handoff Flow14–18, không chỉ đổi UI phòng phiên.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+AI
+Artificial Intelligence
+Không tự sinh chỉ định/tài liệu ngoài scope.
+API
+Application Programming Interface
+Hợp đồng app/backend/đối tác.
+DOC
+Doctor tools
+Tiền tố công cụ bác sĩ trong Master.
+HM
+HealMata
+Tiền tố flow màn task và case.
+ID
+Identifier
+Định danh booking grant session document.
+OS
+Operating System
+Hệ điều hành thiết bị.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và oracle.
+SDK
+Software Development Kit
+Bộ tích hợp kênh được chọn.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+SLA
+Service Level Agreement
+Cam kết dịch vụ; chưa tự đặt số.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ quyền phiên và tài liệu
+Packet là tập dữ liệu chuẩn bị được chọn; snapshot là mốc chụp nguồn; consent/grant là đồng ý/quyền theo phạm vi. Eligibility là điều kiện được phục vụ/cung cấp; precheck là kiểm tra trước vào; join/rejoin/leave/end là vào/nối lại/rời/kết thúc kỹ thuật. Token là thông tin truy cập theo kênh; room/session là phòng/phiên gắn booking.
+Draft/review/publish/amendment là nháp/kiểm/công bố/bổ sung tài liệu. Provenance là nguồn gốc tác giả/thời gian/version. Retention là chính sách lưu; payable là khoản phải trả đủ điều kiện riêng. Operation/receipt là ý định có định danh/kết quả theo nguồn; unknown là chưa rõ; idempotency giúp retry không tạo tác động lặp. Oracle là quy tắc chuẩn; baseline là bộ quyết định; restore là khôi phục; audit là dấu vết được bảo vệ.

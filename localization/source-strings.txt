@@ -1,0 +1,1506 @@
+1	. Không cần cài phần mềm hoặc chạy server. Dữ liệu và giao dịch đều được mô phỏng trên trình duyệt.
+2	10 bước review · mở để test ↗
+3	102 màn/trạng thái và 25 popup. Art từ bộ thiết kế HealMata, dựng lại thành thành phần tương tác trên khung iPhone 393 × 852.
+4	18 hành trình, một bản app bấm được.
+5	5 bước review · mở để test ↗
+6	6 bước review · mở để test ↗
+7	7 bước review · mở để test ↗
+8	8 bước review · mở để test ↗
+9	; mật khẩu từ 6 ký tự. Mã xác minh/khôi phục:
+10	App bên trái, flow bên phải
+11	BÀN GIAO PROTOTYPE · V1.0 · 27.10.2026
+12	Chuyển vai ở thanh ngoài khi hành trình bàn giao cho người thân, bác sĩ hoặc vận hành. Các ô trên sơ đồ có bước đổi đúng vai.
+13	Chọn flow bên trái, bấm nút và điền form trong màn điện thoại. Nội dung dài cuộn bên trong màn.
+14	Chọn tình huống mất mạng, mất phản hồi, xung đột hoặc mất quyền để thử nhánh. “Đặt lại flow” nạp fixture ban đầu và xóa tiến độ test hiện có.
+15	Cách review cùng team
+16	Giải nén cả folder rồi mở
+17	HealMata · Hướng dẫn prototype
+18	Mở một trong 18 flow
+19	Mở prototype
+20	Những gì đang mô phỏng
+21	Thiết kế nguồn: Screen và PSD do bạn cung cấp. Nội dung nghiệp vụ: HM-FLOW-01…18. Bản này phục vụ review UI/flow; kiểm trên thiết bị thật và hệ thống tích hợp là bước triển khai tiếp theo.
+22	Xem ảnh kiểm tra
+23	báo cáo QA
+24	hiển thị cùng lúc. Bấm ô trên sơ đồ để mở màn/popup trong app. Khi thao tác trong app, sơ đồ đánh dấu vị trí hiện tại và tự chuyển theo flow.
+25	hoặc
+26	hướng dẫn đầy đủ
+27	và
+28	Đã kiểm 18/18 hành trình UI trên Edge, cùng 22 nhóm kiểm logic và viewport. Xem
+29	Đăng nhập mẫu:
+30	Đăng nhập, quyền iOS, đồng bộ, thanh toán, job, cuộc gọi, xóa dữ liệu và chi trả. JSON và HTML tải xuống là tệp thật. Giá, thời hạn giữ chỗ và điều kiện đổi/hủy là fixture để review; chưa phải chính sách vận hành đã duyệt. Các file minh chứng chỉ lưu tên file. Không có backend hoặc giao dịch tiền thật.
+31	Đối chiếu flow
+32	18 hành trình
+33	27.10.2026 · Mở trực tiếp, dùng offline
+34	393 × 852 CSS px
+35	App ↔ Flow · Đồng bộ hai chiều
+36	Art từ thiết kế gốc · Dữ liệu giả lập
+37	Bấm một ô để mở màn hình hoặc popup bên trái.
+38	Chọn flow
+39	Chữ, form và biểu đồ là thành phần tương tác; logo, mascot và ảnh lấy từ PSD của bạn.
+40	Các nút trên màn có thao tác hoặc đích đến. Chọn tình huống ở thanh ngoài để thử mất mạng, chưa rõ kết quả, xung đột và mất quyền.
+41	Các thao tác lưu, đồng bộ, quyền iOS, thanh toán, phiên gọi và chi trả dùng dữ liệu giả lập trên trình duyệt. Các mức giá và thời hạn hiển thị là fixture để test.
+42	Danh mục hành trình
+43	Ghi chú bản prototype
+44	Gửi xong, mất phản hồi
+45	Hướng dẫn màn hiện tại
+46	Màn hình iPhone HealMata
+47	Mở danh mục flow
+48	PROTOTYPE V1.0
+49	Quyền bị thu hồi
+50	SƠ ĐỒ TƯƠNG TÁC
+51	Sơ đồ luồng tương tác
+52	Trong hành trình này
+53	Tình huống
+54	Tín hiệu và pin
+55	Vai đang xem
+56	iPhone 16
+57	ĐANG XEM
+58	Điều hướng ứng dụng
+59	Đặt lại flow
+60	Đặt lại toàn bộ
+61	12 năm kinh nghiệm
+62	15 năm kinh nghiệm
+63	9 năm kinh nghiệm
+64	Biểu đồ cơ bản
+65	Bác sĩ
+66	Bình thường
+67	Bảng gia đình
+68	Chi tiết lần dùng
+69	Chi tiết lịch
+70	Chi tiết lịch hiện hành
+71	Chi tiết snapshot
+72	Chi tiết việc
+73	Chi tiết và nguồn
+74	Chia sẻ lời mời
+75	Chuẩn bị đề nghị
+76	Chuẩn bị, tham gia và tài liệu
+77	Chăm sóc ban đầu
+78	Chưa xác nhận khác chưa uống. Ghi nhận là thông tin tự báo; sửa bằng phiên bản mới có tác giả.
+79	Chỉnh sửa lịch
+80	Chọn bác sĩ và đặt lịch
+81	Chọn dữ liệu chia sẻ
+82	Chọn giảm quyền
+83	Chọn hồ sơ
+84	Chọn loại ghi nhận
+85	Chọn lịch mới chưa làm mất lịch cũ. Hủy lịch chưa là tiền đã hoàn hoặc đã ghi có.
+86	Chọn lịch thay thế
+87	Chọn phạm vi xuất
+88	Chọn quyền chia sẻ
+89	Chọn và xem lại báo cáo
+90	Chờ nhận
+91	Chủ hồ sơ xác nhận
+92	Cài đặt lời nhắc
+93	Công bố tài liệu
+94	Cảm nhận
+95	Danh mục bác sĩ
+96	Danh sách job báo cáo
+97	Danh sách lịch
+98	Danh sách lịch thuốc
+99	Danh sách thao tác chờ
+100	DỮ LIỆU HẰNG NGÀY
+101	Dữ liệu thiếu không bằng 0. Báo cáo giữ snapshot; quyền dữ liệu và quyền lợi Plus kiểm riêng.
+102	Dữ liệu và tài khoản
+103	Family Plus và khôi phục gói
+104	Finance · Chuẩn bị
+105	Finance · Phê duyệt
+106	Finance · Thực hiện chi
+107	GIA ĐÌNH
+108	Ghi lại nội dung trao đổi trong buổi tư vấn theo mẫu.
+109	Ghi nhận khi offline
+110	Ghi nhận sức khỏe
+111	Ghi nhận thuốc hộ
+112	Ghi nhận và hiệu chỉnh thuốc
+113	Giải thích quyền
+114	Giữ chỗ khác booking confirmed. Nếu đã trả nhưng chưa có lịch, có trạng thái xử lý và hoàn tiền riêng.
+115	Giữ nhiều lượt/ngày. Bỏ qua, dữ liệu thiếu và giá trị 0 là các trạng thái khác nhau.
+116	Góc nhìn sau mất quyền
+117	Gọi hỏi thăm mẹ
+118	Gửi bàn giao chưa đổi người nhận. Hoàn tất việc không tạo ghi nhận thuốc hay dữ liệu sức khỏe.
+119	Gửi kháng nghị
+120	Gửi phản ánh
+121	Gửi yêu cầu bàn giao
+122	Hiệu chỉnh
+123	Hiệu chỉnh số đo
+124	Hoàn tất việc
+125	Huyết áp
+126	Hôm nay
+127	Hôm nay của người thân
+128	Hằng ngày
+129	Hồ sơ bác sĩ
+130	Khoản phải trả
+131	Khôi phục giao dịch
+132	Khôi phục tài khoản
+133	Không có Welcome. Google, Facebook và email; trùng email cần chứng minh tài khoản trước khi liên kết.
+134	Khởi động và tài khoản
+135	Kiểm tra thiết bị
+136	Kênh mua giả lập
+137	Kết nối gia đình
+138	Kết quả sau phiên
+139	Kết quả tiền và lịch
+140	Kết quả đặt nhắc
+141	Lan · Người nhận mới
+142	Liên kết danh tính
+143	Lịch phía bác sĩ
+144	Lịch sử ghi nhận
+145	Lịch sử sức khỏe
+146	Lịch thuốc tách khỏi lần dùng. Sửa hoặc dừng lịch vẫn giữ lịch sử ghi nhận.
+147	Lịch đã xác nhận
+148	Mai tạo việc và mời Minh
+149	Minh nhận lời mời rồi Mai xác nhận đúng người. Quyền chỉ có hiệu lực sau bước kích hoạt, theo một chiều.
+150	Minh · Người thân
+151	Mời và kết nối người thân
+152	Mở đúng lần dùng
+153	Người khám và khung giờ
+154	Người mới phản hồi
+155	Người nhận phản hồi
+156	Người nhận rời kết nối
+157	Ngọc Mai
+158	Ngọc Mai · Chủ hồ sơ
+159	Ngừng chia sẻ
+160	Nhận hoặc từ chối
+161	Nhận tài liệu
+162	Nhập lịch mới
+163	Nhập số đo
+164	Nhập số đo hộ
+165	Nhắc phối hợp
+166	Nhắc thuốc
+167	NỀN TẢNG
+168	Nội tổng quát
+169	Offline, đồng bộ và đổi tài khoản
+170	PHỐI HỢP & BÁO CÁO
+171	Packet được chia sẻ
+172	Packet, quyền join, kết nối, xác nhận dịch vụ và tài liệu là các lớp riêng. Phiên gọi được mô phỏng.
+173	Phân tuyến ca
+174	Phân tích theo thời gian
+175	Phân tích và tạo báo cáo
+176	Phê duyệt
+177	Phản ánh phía bác sĩ
+178	Phản ánh, hỗ trợ và kháng nghị
+179	Privacy
+180	Queue gắn tài khoản. Kết quả chưa rõ phải tra cùng operation; bỏ local không có nghĩa xóa server.
+181	Quyền hiện tại
+182	Quyền lợi và offer
+183	Quản lý gia hạn
+184	Review và quyết định
+185	Sao kê nhà cung cấp
+186	Soạn và review tài liệu
+187	Support
+188	Sổ và đối soát
+189	Tham gia và nối lại
+190	Thanh toán giả lập
+191	Thanh toán, xác minh và entitlement tách riêng. Gói trả phí không tự tạo quyền xem hồ sơ.
+192	Theo dõi hoàn tiền
+193	Theo dõi và bổ sung
+194	Theo dõi và tải tệp
+195	Theo dõi yêu cầu xóa
+196	Theo hướng dẫn bạn đã nhập
+197	Thiết bị nhận nhắc
+198	Thiết lập hồ sơ
+199	Thu hồi quyền và rời kết nối
+200	Thu hồi truy cập giữ nguyên dữ liệu gốc. Phân biệt hiệu lực trên server giả lập và thiết bị chưa cập nhật.
+201	Thuốc A
+202	Thực hiện và tra kết quả
+203	Timeline
+204	Tiếp nhận chưa là kết luận. Quyết định biện pháp chưa chứng minh refund hoặc amendment đã hoàn tất.
+205	Trao đổi về những việc cần hỗ trợ hôm nay
+206	Truy dữ liệu nguồn
+207	Trả lời câu hỏi
+208	Tuần
+209	Tác động xóa tài khoản
+210	Tách chuẩn bị, duyệt và thực hiện chi. Unknown tra cùng tham chiếu; không tạo lệnh chi mới.
+211	Tóm tắt buổi tư vấn
+212	Tùy chọn app, quyền iOS, request đã đặt và thông báo đã nhìn thấy là các kết quả riêng.
+213	TƯ VẤN & VẬN HÀNH
+214	Tạo việc
+215	Tạo, sửa và dừng lịch thuốc
+216	Tự báo
+217	Tự nhập
+218	Việc chăm sóc
+219	Việc chăm sóc và bàn giao
+220	Xem lại dữ liệu
+221	Xem lại ghi nhận
+222	Xem lại giảm quyền
+223	Xem lại hiệu chỉnh
+224	Xem lại lịch
+225	Xem lại lời mời
+226	Xem lại packet
+227	Xem lại quote
+228	Xem lại thay đổi
+229	Xem lại tải/chia sẻ
+230	Xem lại xung đột
+231	Xem phạm vi được cấp
+232	Xem và nhập hộ trong quyền
+233	Xuất dữ liệu và xóa tài khoản
+234	Xuất gốc khác báo cáo phân tích. Tiếp nhận yêu cầu xóa khác hoàn tất xử lý các kho dữ liệu.
+235	Xác minh bên nhận
+236	Xác minh email
+237	Xác minh quyền lợi
+238	Xác nhận dừng
+239	Xác nhận hủy
+240	Xác nhận xuất
+241	Xác nhận xóa
+242	Xử lý riêng tư
+243	Xử lý sai lệch
+244	Y học gia đình
+245	draft
+246	executor
+247	finance
+248	iPhone của tôi
+249	inactive
+250	none
+251	privacy
+252	reviewer
+253	waiting
+254	Điều kiện và ảnh hưởng tiền
+255	Đúng người thao tác và đúng hồ sơ. Dùng chung màn Thuốc/Sức khỏe với kiểm quyền riêng theo hành động.
+256	Đăng ký email
+257	Đăng nhập
+258	Đăng nhập tài khoản khác
+259	Đăng xuất còn dữ liệu
+260	Đọc kết quả
+261	Đối soát Family Plus
+262	Đối soát và chi trả
+263	Đồng bộ và kiểm kết quả
+264	Đổi, hủy lịch và hoàn tiền
+265	+ Ghi nhận mới
+266	+ Tạo lịch thuốc
+267	Báo cáo HealMata
+268	Báo cáo chưa sẵn sàng.
+269	Bản trước:
+270	Bằng chứng dịch vụ
+271	Chưa có bằng chứng xác nhận dịch vụ.
+272	Chưa có dữ liệu
+273	Chưa có ghi nhận trong kỳ này.
+274	Chưa kết nối để kiểm tra phiên. Phiên chưa bị coi là hết hạn.
+275	Chưa xác nhận trong phiên test
+276	Các tùy chọn phối hợp được lưu riêng với lời nhắc thuốc.
+277	Cần quyền đại diện đặt dịch vụ
+278	Dữ liệu minh họa, giữ nguyên dữ liệu thiếu.
+279	Flow 18 có sẵn khoản đủ điều kiện để thử chi trả. Nếu đi từ Flow 16, cần review riêng ở bước này.
+280	Ghi nhận mới
+281	Ghi nhận tự báo
+282	Giá trị
+283	Giá trị mới
+284	Giờ
+285	Giờ yên tĩnh từ
+286	Giữ chia sẻ
+287	HealMata đang chuẩn bị đúng tài khoản của bạn.
+288	Hiệu chỉnh dữ liệu
+289	Hãy tạo yêu cầu xuất dữ liệu trước.
+290	Hồ sơ cá nhân này chưa có dữ liệu trong bộ mẫu. Chọn mẹ để xem phần được chia sẻ.
+291	Hồ sơ của tôi
+292	Hợp đồng
+293	Không có kết quả phù hợp
+294	Không tạo bản sửa khi bản nguồn không có.
+295	Khởi động và kiểm tra phiên
+296	Kiểm tra phiên
+297	Loại thông báo
+298	Lý do
+299	Lưu hiệu chỉnh
+300	Lưu tùy chọn
+301	Lịch
+302	Lịch sử ghi nhận của lịch đang xem
+303	Lịch đang quản lý
+304	Lời mời chưa có hoặc không còn hiệu lực.
+305	Lời mời nhận việc
+306	Lời mời đã được chấp nhận. Chờ chủ hồ sơ xác nhận.
+307	Mật khẩu mẫu cần từ 6 ký tự.
+308	Nguồn
+309	Người review
+310	Ngọc Mai ·
+311	Ngừng quyền xem packet cho lịch này. Bản đã tải ngoài app và hồ sơ phải lưu có vòng đời riêng.
+312	Phiên bản
+313	Quay lại chọn người
+314	Quyền chia sẻ gia đình và việc thanh toán không tự cấp quyền đặt hộ. Trong fixture này, chỉ Ngọc Mai đặt cho chính mình. Chọn lại người được tư vấn để tiếp tục.
+315	Review và xác nhận đủ điều kiện
+316	Review điều kiện khoản phải trả
+317	Sức khỏe
+318	Thu hồi quyền xem packet?
+319	Thuốc theo dữ liệu tự nhập
+320	Thuốc và ghi nhận
+321	Thuốc · Snapshot
+322	Thêm một ghi nhận để xem nguồn và lịch sử.
+323	Thời điểm
+324	Thời điểm đo
+325	Thử kiểm tra lại
+326	Thử tên hoặc chuyên khoa khác. Không tự chọn thay bác sĩ.
+327	Tác giả
+328	Tóm tắt dữ liệu HealMata
+329	Việc sắp đến hạn
+330	Về biểu đồ
+331	Xem biểu đồ cơ bản
+332	Xác nhận thu hồi
+333	Xóa điều kiện tìm kiếm
+334	Yêu cầu bàn giao
+335	processing
+336	ready
+337	sự kiện
+338	sự kiện tự báo</p>
+339	· Lý do:
+340	Đang hiệu lực
+341	Đang kiểm tra phiên
+342	Đã dừng
+343	Đã lưu tùy chọn nhắc phối hợp.
+344	Đã được bác sĩ xác nhận
+345	18 / 18 flow · {value0} màn / trạng thái · {value1} popup
+346	Bạn đang offline · Dữ liệu mới có thể chỉ được lưu trên máy.
+347	Chào mừng đến với HealMata
+348	Chưa rõ kết quả
+349	Chỉ Finance · Thực hiện chi. Thử mất phản hồi và tra cùng operation để kiểm tra tránh chi lặp.
+350	Chỉ kích hoạt sau khi Minh đã nhận lời mời.
+351	Chỉ vai Finance · Phê duyệt; đề nghị phải còn đúng phiên bản.
+352	Cá nhân
+353	Các ô là lối tắt review. Để test điều kiện liên bước, dùng nút trong app; trạng thái lưu trong trình duyệt. “Đặt lại flow” tải dữ liệu ban đầu cho flow đang chọn.
+354	Dữ liệu thay đổi
+355	Email mai@example.com hoặc minh@example.com; mật khẩu bất kỳ từ 6 ký tự.
+356	FLOW
+357	Ghi dữ liệu của chính mình được xếp hàng local; thao tác cần server chờ có mạng.
+358	Gia đình
+359	Gửi thao tác rồi tra lại cùng mã tham chiếu.
+360	Hồ sơ:
+361	Không ghi đè. Tải bản hiện tại và xem lại.
+362	Lưu nháp, review, công bố hoặc hiệu chỉnh có lý do. Sau đó mở bước của người dùng để xem tài liệu.
+363	Lời nhắc
+364	Micro/camera, gián đoạn và kết thúc phiên đều được mô phỏng. Không thu âm hoặc thu hình.
+365	Minh chấp nhận lời mời. Sau đó Mai cần xác nhận đúng người.
+366	Màn Hôm nay nối tới Thuốc, Sức khỏe, Gia đình và Tư vấn. Các thẻ đều có đích bấm.
+367	Mất mạng
+368	Mở màn hình ↗
+369	Nhánh điều kiện và cách test
+370	POP
+371	POPUP TRÊN MÀN
+372	Phải trả
+373	Phản ánh
+374	Quay lại
+375	Queue chỉ hiển thị dữ liệu của tài khoản hiện tại. Thử mất mạng rồi ghi thuốc để tạo thao tác local.
+376	Quyền thay đổi
+377	Review chuyên môn
+378	Sao kê
+379	Thuốc
+380	Thứ tự: đối soát → xác minh bên nhận → đề nghị → phê duyệt → thực hiện chi. Đổi vai ở thanh ngoài.
+381	Trợ giúp
+382	Tài liệu
+383	active
+384	Đang xem: Ngọc Mai · Thao tác:
+385	Đã nhận
+386	Đã tải dữ liệu mẫu ban đầu cho flow
+387	Đối soát
+388	Ẩn dữ liệu người thân và chặn ghi khi không còn quyền.
+389	Bàn giao có hiệu lực sau người mới chấp nhận
+390	Bác sĩ review, công bố → Người dùng nhận tài liệu
+391	Bác sĩ · Xem packet trong quyền và tham gia cùng phiên
+392	Bác sĩ → Giữ chỗ → Thanh toán → Kết quả tiền/lịch riêng
+393	Bấm ô để mở màn hoặc popup bên trái. Khi thao tác trong app, vị trí hiện tại trên sơ đồ sẽ sáng lên. Kéo ngang để xem nhánh dài.
+394	Chưa công bố · Tiếp tục theo dõi
+395	Chỉnh sửa · Lưu phiên bản mới
+396	Chọn hồ sơ và ghi thuốc hộ
+397	Chọn thiết bị rồi cập nhật request
+398	Chủ hồ sơ ngừng chia sẻ
+399	Dừng lịch · Giữ lịch sử
+400	Ghi cảm nhận
+401	Giảm một phần quyền
+402	Gửi → Tiếp nhận → Phân tuyến → Review → Kết quả
+403	Hiệu chỉnh có lý do và lịch sử
+404	Hủy gia hạn · Giữ quyền lợi đến cuối kỳ
+405	Hủy lịch → Theo dõi hoàn tiền riêng
+406	Kháng nghị liên kết quyết định gốc
+407	Khôi phục rồi đăng nhập
+408	Khôi phục theo giao dịch
+409	Local chờ gửi → Kết quả đồng bộ
+410	Mua gói và xác minh quyền lợi
+411	Màn liên quan:
+412	Mời → Người nhận chấp nhận → Chủ hồ sơ kích hoạt
+413	Mở từ thông báo · Ghi nhận là bước riêng
+414	Nguồn → Payable → Đích nhận → Đề nghị → Duyệt → Chi → Sao kê
+415	Người dùng · Chuẩn bị và tham gia
+416	Người hiện hành hoàn tất
+417	Nhập số đo hộ trong quyền
+418	Phiên còn hợp lệ
+419	Phạm vi → Job → Snapshot → Tải/chia sẻ
+420	Sai lệch giao dịch / quyền lợi · Finance đối soát
+421	Sai lệch · Bút toán bổ sung, đối chiếu lại
+422	Truy nguồn hiện hành · Snapshot giữ nguyên
+423	Trùng email · Xác thực để liên kết
+424	Tùy chọn app và quyền iOS
+425	Tạo lịch mới
+426	Tạo việc và nhận trách nhiệm
+427	Xem nguồn và hiệu chỉnh
+428	Xung đột · Xem lại trước ghi
+429	Xuất dữ liệu gốc
+430	Xác nhận một lần dùng
+431	Yêu cầu xóa · Theo dõi các kho
+432	Đang mở popup:
+433	Đang xem bên trái
+434	Đăng ký email và xác minh
+435	Đăng nhập email
+436	Đổi giờ · Giữ lịch cũ tới khi commit thành công
+437	Đổi tài khoản · Xử lý queue trước
+438	Bạn chưa có quyền thao tác
+439	Có cập nhật mới từ một người hoặc thiết bị khác. Hãy tải lại và xem trước khi gửi.
+440	Cần kết nối để tiếp tục
+441	Của tôi
+442	Dữ liệu đã thay đổi
+443	Hàng chờ được khóa theo tài khoản đã tạo. Đăng nhập đúng tài khoản để tiếp tục.
+444	Kiểm tra kết quả
+445	Kết nối lại
+446	Kết nối đã được khôi phục trong bản mẫu
+447	Mã thao tác
+448	Mẹ · Ngọc Mai
+449	Nội dung này hiện không được chia sẻ. Bạn có thể xem lại phạm vi quyền hoặc chọn hồ sơ khác.
+450	Quyền truy cập đã thay đổi
+451	Quyền xem, nhập, hiệu chỉnh và quản lý được kiểm riêng. Chọn đúng vai hoặc xem lại quyền đã cấp.
+452	Thao tác này chưa được gửi. Bản nhập vẫn được giữ trong phiên hiện tại.
+453	Thao tác thuộc tài khoản khác
+454	Thiếu dữ liệu
+455	Tiếp tục
+456	Tải bản hiện tại
+457	Tệp đã sẵn sàng để trình duyệt lưu
+458	Xem hồ sơ
+459	Xem lại trước khi tiếp tục
+460	Xem quyền hiện tại
+461	Xu hướng huyết áp theo dữ liệu mẫu; ngày 24 thiếu dữ liệu
+462	Yêu cầu có thể đã được nhận. Kiểm tra cùng mã tham chiếu để tránh thao tác lặp.
+463	confirmed
+464	verified
+465	{value5} · Hồ sơ minh họa
+466	Đã hiểu
+467	Đã lưu trên máy · Chưa đồng bộ
+468	Đã tra kết quả cùng tham chiếu
+469	Đã tải bản hiện tại. Xem lại trước khi gửi thay đổi mới.
+470	Đóng
+471	Đóng, theo dõi sau
+472	Đăng nhập lại
+473	đ
+474	08:00 hôm nay
+475	08:00 · Hôm nay
+476	6 quan sát · 1 ngày chưa có dữ liệu
+477	Biểu đồ & báo cáo
+478	Biểu đồ sức khỏe
+479	Bạn có thể ghi nhiều lượt trong ngày. Bỏ qua không tạo dữ liệu sức khỏe giả.
+480	Bạn cảm thấy thế nào?
+481	Bạn cần hỗ trợ điều gì?
+482	Bạn muốn ghi lại điều gì?
+483	Bạn quản lý dữ liệu của mình
+484	Bạn tự quản lý
+485	Bạn đang tạo lịch cho
+486	Bản gốc giữ nguyên tác giả và dấu vết. Hiệu chỉnh tạo một sự kiện mới.
+487	Bản tải ra ngoài app do bạn quản lý.
+488	Bắt đầu
+489	Bắt đầu cùng HealMata
+490	Bỏ qua
+491	Bỏ xác nhận nhầm
+492	Bỏ xác nhận nhầm không kết luận rằng bạn chưa dùng thuốc.
+493	Chi tiết lịch thuốc
+494	Chi tiết sức khỏe
+495	Chia sẻ gia đình
+496	Chia sẻ trong phạm vi bạn chọn
+497	Chào bạn trở lại
+498	Chào {value0}!
+499	Chưa có ghi nhận
+500	Chưa có ghi nhận hợp lệ cho lần dùng này.
+501	Chưa có sự kiện.
+502	Chưa xác nhận
+503	Chưa xác nhận chỉ có nghĩa chưa có bản tự báo hợp lệ trong hệ thống.
+504	Chỉ số
+505	Chọn câu trả lời
+506	Chọn người và khung giờ phù hợp
+507	Chọn vấn đề và theo dõi trong app
+508	Chủ dữ liệu
+509	Các ghi nhận trước đây vẫn được giữ. Đây là thao tác quản lý lịch trong app.
+510	Các khoảng trống giữ nguyên ý nghĩa thiếu dữ liệu.
+511	Cân nặng
+512	Cùng chăm sóc
+513	Cùng chăm sóc sức khỏe mỗi ngày.
+514	Cảm nhận hôm nay
+515	Cần nghỉ ngơi
+516	Dấu vết cập nhật
+517	Dừng lịch trong app
+518	Dừng lịch trong app?
+519	Dữ liệu chờ
+520	Dữ liệu của
+521	Dữ liệu sức khỏe
+522	Dữ liệu trước / sau
+523	Dữ liệu tại mốc
+524	Dữ liệu và riêng tư
+525	Email
+526	Email tài khoản hiện có
+527	Email đã có tài khoản
+528	Facebook
+529	Family Plus
+530	Ghi nhận lần dùng
+531	Gia đình và kết nối
+532	Gia đình và quyền
+533	Giá trị (ví dụ 118 / 76)
+534	Giá trị số chưa hợp lệ.
+535	Giá trị, đơn vị và nguồn rõ ràng
+536	Giờ nhắc
+537	Giờ theo lịch
+538	Giữ lịch hiện tại
+539	Giữ tài khoản
+540	Google
+541	Gõ XOA
+542	Gửi hướng dẫn
+543	Gửi lại mã
+544	Gửi yêu cầu xóa
+545	Hai mật khẩu chưa khớp.
+546	Hiệu chỉnh ghi nhận
+547	Hiệu chỉnh lần dùng
+548	Hiệu chỉnh sức khỏe
+549	Hiệu chỉnh:
+550	Hoàn tất theo phạm vi mẫu
+551	Huyết áp · Tuần này
+552	Hãy nhập đúng XOA để xác nhận.
+553	Hãy đọc và chọn xác nhận điều khoản.
+554	Hôm nay bạn thế nào?
+555	Hôm nay · 27/10
+556	Hơi mệt
+557	Hướng dẫn
+558	Hướng dẫn bạn muốn ghi lại
+559	Hồ sơ
+560	Hồ sơ hoạt động
+561	Hủy liên kết
+562	JSON
+563	Kho tệp
+564	Khoảng ngày chưa hợp lệ.
+565	Khóa khi tiếp nhận hợp lệ
+566	Không tự gửi sau khi khóa
+567	Không yêu cầu gói Plus
+568	Kiểm tra hộp thư của bạn
+569	Kiểm tra mã và hai mật khẩu.
+570	Kiểm tra tiến độ
+571	Kiểm tra trạng thái
+572	Kiểu lặp
+573	Kênh hỗ trợ trong bản mẫu. Giờ tiếp nhận thực tế sẽ được công bố khi vận hành.
+574	Kết nối và ngừng chia sẻ
+575	Kết thúc lượt bỏ qua
+576	Liên kết đăng nhập
+577	Loại
+578	Loại dữ liệu
+579	Lý do sửa
+580	Lưu dữ liệu
+581	Lưu hiệu chỉnh?
+582	Lưu thay đổi
+583	Lưu và tiếp tục
+584	Lần dùng thuốc
+585	Lặp
+586	Lịch hôm nay
+587	Lịch sử dùng thuốc
+588	Lịch sử ghi nhận đã có được giữ nguyên.
+589	Lịch và nhắc
+590	Mascot mầm cây
+591	Mã khôi phục mẫu
+592	Mã mẫu chưa đúng. Dùng 123456.
+593	Mã xác minh mẫu
+594	Mã yêu cầu là kênh theo dõi tối thiểu sau khi phiên bị khóa. Chính sách giữ lại thực tế cần được chốt trước vận hành.
+595	Mã đã gửi tới
+596	Múi giờ
+597	Múi giờ chăm sóc
+598	Mật khẩu
+599	Mật khẩu mới
+600	Mốc dữ liệu
+601	Một chút quan tâm, mỗi ngày.
+602	Một lượt ghi nhận cảm nhận
+603	Một lần
+604	Nguồn dữ liệu
+605	Ngày bắt đầu
+606	Ngày kết thúc (tùy chọn)
+607	Ngày kết thúc phải từ ngày bắt đầu trở đi.
+608	Ngày trong tuần
+609	Người ghi
+610	Người thao tác
+611	Người thân nhập hộ
+612	Ngừng các lần dùng tương lai
+613	Ngừng công việc tương lai
+614	Nhiệt độ
+615	Nhận việc và bàn giao rõ ràng
+616	Nhập XOA để xác nhận có chủ ý. Tiếp nhận yêu cầu chưa có nghĩa mọi kho đã xử lý xong.
+617	Nhập email để nhận hướng dẫn. Phản hồi không cho biết email có tồn tại hay không.
+618	Nhập lại
+619	Nhập lại mật khẩu
+620	Nhập nhầm giá trị
+621	Nhập số đo đã có
+622	Nhập thông tin bạn đang sử dụng. Lịch trong app giúp bạn theo dõi.
+623	Nhập đủ hai thành phần, ví dụ 118 / 76.
+624	Nhắc đã bật
+625	Nhịp tim
+626	Nếu thông tin hợp lệ, hướng dẫn đã được gửi.
+627	Phiên đăng nhập
+628	Phân tích nhiều kỳ và báo cáo
+629	Phạm vi
+630	Phần chỉ lưu trên máy, chưa đồng bộ sẽ chưa có trong tệp xuất.
+631	Quay lại chỉnh sửa
+632	Quay lại đăng nhập
+633	Quyền lợi và khôi phục
+634	Quên mật khẩu?
+635	Số đo bạn đã có
+636	Sức khỏe của tôi
+637	Sửa dữ liệu
+638	Sửa email
+639	Sửa lịch
+640	Sửa lịch thuốc
+641	Sửa thông tin tự báo
+642	Sửa thời điểm nhập nhầm
+643	Thao tác chờ đồng bộ
+644	Thao tác đang chờ trên máy
+645	Theo dõi của bạn
+646	Theo dõi yêu cầu và phản ánh
+647	Theo hướng dẫn đã có
+648	Thiết bị đo ngoài app
+649	Thu hồi quyền liên quan
+650	Thuốc B
+651	Thuốc của tôi
+652	Thông báo và thiết bị
+653	Thông tin thuốc
+654	Thời điểm tự báo
+655	Tiếp tục yêu cầu xóa
+656	Trên máy · Chờ đồng bộ
+657	Trước
+658	Trạng thái
+659	Tác động
+660	Tên hiển thị
+661	Tên thuốc
+662	Tìm lại tài khoản
+663	Tôi đã đọc điều khoản và chính sách riêng tư
+664	Tư vấn cùng bác sĩ
+665	Tạo lịch thuốc
+666	Tạo mật khẩu mới
+667	Tạo tài khoản
+668	Tạo tài khoản bằng email
+669	Tạo tệp dữ liệu?
+670	Tạo yêu cầu khác
+671	Tải dữ liệu
+672	Tất cả dữ liệu của tôi
+673	Tệp dữ liệu của bạn
+674	Tệp đã sẵn sàng
+675	Tệp đã tải ngoài app
+676	Từ lần dùng tiếp theo
+677	Từ ngày
+678	Tự báo · Đã đồng bộ
+679	Việt Nam · UTC+07
+680	Việt Nam · UTC+07:00
+681	Xem bảng và nguồn
+682	Xem cập nhật và bổ sung thông tin
+683	Xem lại
+684	Xem lại trước khi gửi
+685	Xem lại xuất dữ liệu
+686	Xem lần dùng hôm nay
+687	Xem lịch nguồn
+688	Xem lịch sử / Hiệu chỉnh
+689	Xem phạm vi và tác động trước khi gửi
+690	Xem tất cả
+691	Xuất dữ liệu / Yêu cầu xóa
+692	Xuất dữ liệu hoặc yêu cầu xóa
+693	Xuất dữ liệu trước
+694	Xác nhận
+695	Xác nhận ghi nhận
+696	Xác nhận lưu
+697	Xác nhận lưu lịch
+698	Xác nhận tạo tệp
+699	Xác nhận yêu cầu xóa
+700	Xác thực tài khoản hiện có trước khi liên kết với
+701	Xác thực và liên kết
+702	Xóa tài khoản
+703	Yêu cầu
+704	Yêu cầu của tôi
+705	Yêu cầu dành cho tài khoản Ngọc Mai. Các bước xử lý dữ liệu được theo dõi riêng.
+706	complete
+707	thao tác của tài khoản này
+708	{value2} · phiên bản {value3}
+709	{value5}Bằng việc tiếp tục, bạn đã đọc các điều khoản.
+710	· Tự báo
+711	Áp dụng
+712	Đang chờ
+713	Đang chờ bộ phận riêng tư xử lý. Xem bước OPS-04 trong sơ đồ.
+714	Đang tạo tệp
+715	Điều chỉnh lịch đã có
+716	Điểm đầu Flow 01. Email mẫu mai@example.com / minh@example.com; mật khẩu chỉ dùng cho bản test.
+717	Đây là thông tin tự báo. Mở hoặc bỏ lời nhắc không tạo ghi nhận.
+718	Đã có tài khoản? Đăng nhập
+719	Đã gửi lại mã mẫu 123456.
+720	Đã tiếp nhận · Đang xử lý
+721	Đã xác nhận
+722	Đã xác nhận ·
+723	Đã xác nhận · Tự báo
+724	Đã xác thực và liên kết danh tính mẫu.
+725	Đã xử lý
+726	Đã được hệ thống nhận
+727	Đã đổi mật khẩu mẫu. Hãy đăng nhập lại.
+728	Đăng xuất
+729	Đơn vị
+730	Đơn vị chưa phù hợp với chỉ số đã chọn.
+731	Đơn vị mmHg · Theo ngày chăm sóc
+732	Đặt lại mật khẩu
+733	Đến ngày
+734	Để HealMata gọi đúng tên bạn
+735	Định dạng
+736	Đồng bộ
+737	+ Mời người thân
+738	+ Tạo báo cáo mới
+739	+ Tạo việc chăm sóc
+740	08:00 · Chưa xác nhận
+741	27/10/2026 · Nguồn việc chăm sóc
+742	Bàn giao
+743	Bàn giao việc
+744	Báo cáo của tôi
+745	Báo cáo nâng cao Family Plus
+746	Báo cáo đang tạo
+747	Bạn chọn dữ liệu và quyền chia sẻ.
+748	Bạn chủ động chọn người nhận. File đã lưu ngoài app có thể không thu hồi được.
+749	Bạn muốn chia sẻ gì?
+750	Bạn đang dùng tài khoản Minh. Chỉ nhận các quyền đã xem; không chia sẻ dữ liệu của bạn theo chiều ngược.
+751	Bạn đang hỗ trợ mẹ · 27/10
+752	Bạn đang offline. Dữ liệu lưu trên máy chưa được server nhận.
+753	Bạn đang xem ai?
+754	Bạn đã nhận lời. Đang chờ Ngọc Mai xác nhận đúng người.
+755	Bản báo cáo
+756	Bản hiện tại
+757	Bản mẫu dữ liệu sức khỏe HealMata
+758	Bản nguồn đã được cập nhật
+759	Bản trên máy
+760	Bảng chăm sóc gia đình
+761	Bật app và request được đặt chưa chứng minh bạn đã nhìn thấy thông báo.
+762	Bật hoặc tắt nhắc thuốc
+763	Chi tiết báo cáo
+764	Chi tiết việc chăm sóc
+765	Chiều
+766	Chiều chia sẻ
+767	Cho phép
+768	Cho phép hiệu chỉnh
+769	Cho phép nhập hộ
+770	Cho phép trong bản mẫu
+771	Chuẩn bị báo cáo
+772	Chăm sóc cùng người thân
+773	Chưa chia sẻ
+774	Chưa cho phép
+775	Chưa có
+776	Chưa có báo cáo
+777	Chưa có báo cáo sẵn sàng.
+778	Chưa có báo cáo. Tạo một bản theo phạm vi bạn chọn.
+779	Chưa có bằng chứng
+780	Chưa có quyền truy cập sức khỏe
+781	Chưa cấp quyền dữ liệu
+782	Chưa cập nhật
+783	Chưa được server chấp nhận
+784	Chưa đặt / cần cập nhật
+785	Chấp nhận
+786	Chấp nhận bàn giao
+787	Chấp nhận chưa tự mở dữ liệu trước bước xác nhận của chủ hồ sơ.
+788	Chấp nhận lời mời
+789	Chỉ biết khi bạn mở
+790	Chỉ bỏ quyền đang có. Muốn thêm quyền cần lời mời/đồng ý mới.
+791	Chờ Lan phản hồi
+792	Chờ Minh phản hồi
+793	Chờ chủ hồ sơ xác nhận
+794	Chờ gửi
+795	Các bản đã yêu cầu
+796	Có
+797	Có dữ liệu 21–27/10/2026
+798	Có đúng là Minh?
+799	Cùng chăm sóc Ngọc Mai
+800	Cần có yêu cầu bàn giao còn hiệu lực và đúng tài khoản Lan.
+801	Cần phân công lại
+802	Cần xem lại dữ liệu
+803	Cập nhật khi kết nối lại
+804	Cập nhật lịch nhắc
+805	Dữ liệu
+806	Dữ liệu có nguồn, theo kỳ
+807	Dữ liệu gốc
+808	Dữ liệu minh họa. Dữ liệu thiếu giữ nguyên ý nghĩa.
+809	Dữ liệu mỗi hồ sơ có nguồn và quyền riêng. Đổi hồ sơ không chuyển bản nháp sang người khác.
+810	Dữ liệu thiếu được giữ nguyên; báo cáo này không tự đổi khi nguồn được sửa.
+811	Email người nhận
+812	Ghi chú bàn giao
+813	Ghi nhận gần đây
+814	Ghi nhận thuốc
+815	Ghi nhận thuốc và lịch sử tự báo
+816	Giảm quyền chia sẻ
+817	Giữ lại quyền nào?
+818	Gửi yêu cầu
+819	Gửi yêu cầu bàn giao?
+820	Gửi yêu cầu chưa chuyển người hiện hành.
+821	Hiệu lực
+822	Hoàn tất
+823	Hoàn tất việc chăm sóc?
+824	Hoàn tất việc không tạo bản ghi thuốc hoặc số đo sức khỏe.
+825	Hành động
+826	Hãy bật tùy chọn app và cho phép trong mô phỏng.
+827	Hôm nay của mẹ
+828	Hỏi thăm những việc mẹ cần hỗ trợ hôm nay.
+829	Hủy lời mời đang chờ
+830	Hủy việc
+831	Không chia sẻ
+832	Không cho phép
+833	Không có thao tác chờ của tài khoản đang đăng nhập.
+834	Không có yêu cầu chờ
+835	Không ghi đè tự động. Bản ghi đã có không bị chuyển sang một lần dùng khác.
+836	Không được chia sẻ
+837	Không được phép
+838	Kiểm tra quyền thông báo
+839	Kiểm tra tiến độ báo cáo
+840	Kiểm tra từng thao tác trước khi gỡ trạng thái chờ.
+841	Kích hoạt
+842	Kỳ
+843	Kỳ báo cáo
+844	Kỳ dài vẫn thể hiện phạm vi dữ liệu thực. Ngày thiếu không được bù bằng 0.
+845	Kỳ đang xem
+846	Lan chấp nhận bàn giao · Người hiện hành đổi từ Minh sang Lan
+847	Lan từ chối bàn giao; Minh vẫn hiện hành
+848	Lần dùng 08:00
+849	Lịch sử phối hợp
+850	Lịch thuốc
+851	Lời mời bàn giao công việc chăm sóc.
+852	Lời mời của bạn
+853	Lời mời kết nối
+854	Lời mời nhận được
+855	Lời mời đang chờ
+856	Lời nhắc thuốc
+857	Mai tạo việc và mời
+858	Minh mời Lan nhận bàn giao
+859	Minh nhận → Mai xác nhận đúng người
+860	Minh sẽ mất các quyền được bỏ chọn; quyền còn lại tiếp tục có hiệu lực.
+861	Máy cũ offline có thể còn nhắc local. Bản mẫu tách thiết bị được chọn và việc hủy trên thiết bị cũ.
+862	Mã lời mời
+863	Mã lời mời: HM-MAI-MINH-01
+864	Mô phỏng quyền iOS
+865	Mẫu báo cáo
+866	Mẫu nâng cao cần quyền lợi Plus; xuất gốc vẫn dùng miễn phí.
+867	Mốc snapshot
+868	Một việc nhỏ, cùng quan tâm
+869	Mời người nhận
+870	Mời người nhận mới
+871	Mời người thân
+872	Mở chia sẻ nếu trình duyệt hỗ trợ
+873	Mở lần dùng từ thông báo
+874	Mở lời nhắc chỉ điều hướng; việc ghi nhận thuốc là thao tác riêng.
+875	Mở nguồn hiện tại
+876	Ngày
+877	Người gửi
+878	Người hiện hành
+879	Người hiện hành hoàn tất việc
+880	Người hiện hành:
+881	Người mới cần chấp nhận
+882	Người mời
+883	Người nhận
+884	Người nhận chưa chấp nhận lời mời. Thử bước của Minh trước.
+885	Người nhận mới
+886	Người được chăm sóc
+887	Người được mời mới
+888	Người được mời từ chối
+889	Ngọc Mai chia sẻ cho bạn
+890	Ngọc Mai hủy việc
+891	Ngọc Mai muốn chia sẻ với bạn
+892	Ngọc Mai · Snapshot
+893	Ngọc Mai →
+894	Ngọc Mai → Minh
+895	Ngừng chia sẻ cho Minh?
+896	Ngừng toàn bộ chia sẻ
+897	Nhóm dữ liệu này không được chia sẻ.
+898	Nhận chia sẻ từ Ngọc Mai?
+899	Nhận lời nhắc từ HealMata?
+900	Nhận nhầm, hủy lời mời
+901	Nhận việc
+902	Nhập hộ
+903	Nhắc nhẹ để bạn dễ theo dõi
+904	Nhờ Lan tiếp tục hỗ trợ cuộc gọi ngày mai.
+905	Năm
+906	Nội dung
+907	Phiên bản mẫu
+908	Phiên bản mới hơn
+909	Phản hồi bàn giao
+910	Phản hồi bằng đúng tài khoản người nhận
+911	Plus
+912	Quan sát
+913	Quay lại chọn quyền
+914	Quyền chỉ theo chiều Ngọc Mai → Minh, không tự chia sẻ ngược.
+915	Quyền iOS
+916	Quyền kết nối
+917	Quyền truy cập chiều Ngọc Mai → Minh sẽ dừng. Các ghi nhận đã lưu vẫn giữ tác giả; bản sao đã tải ngoài app có giới hạn thu hồi.
+918	Quyền đang hiệu lực
+919	Quyền được xem lại
+920	Quý
+921	Quản lý thiết bị nhận
+922	Request đã đặt
+923	Rời quyền đang nhận
+924	Rời quyền đang nhận?
+925	Sao chép mã lời mời
+926	Sau khi bạn chấp nhận
+927	Sẵn sàng ·
+928	Số đo và câu trả lời sức khỏe
+929	Thao tác của tài khoản này
+930	Thay đổi chỉ áp dụng cho chiều chia sẻ này.
+931	Thiết bị
+932	Thiết bị của bạn
+933	Thiết bị offline
+934	Thuốc / Sức khỏe theo lời mời
+935	Thuốc và sức khỏe đã chọn
+936	Tháng
+937	Thông báo dùng nội dung riêng tư tối thiểu. Bạn vẫn xem và ghi nhận thuốc khi không bật thông báo.
+938	Thời hạn
+939	Timeline phối hợp
+940	Tra thao tác chưa rõ kết quả
+941	Trong lúc chờ, người hiện hành vẫn giữ trách nhiệm nếu còn đủ điều kiện.
+942	Trình duyệt này chưa hỗ trợ bảng chia sẻ. Bạn có thể tải tệp và tự gửi.
+943	Trạng thái lịch nhắc
+944	Tài khoản nhận: minh@example.com
+945	Tài khoản này không có dữ liệu chờ.
+946	Tài khoản đã nhận
+947	Tách riêng với nhắc thuốc
+948	Tên việc
+949	Tóm tắt dữ liệu đi khám
+950	Tóm tắt theo dữ liệu; không sinh chẩn đoán, điểm sức khỏe hoặc lời khuyên điều trị.
+951	Tùy chọn nhắc trong app
+952	Tùy chọn này không tự thay đổi nhắc thuốc.
+953	Tăng quyền cần một lần đồng ý mới.
+954	Tạo báo cáo
+955	Tạo báo cáo để xem snapshot dữ liệu tại thời điểm đó.
+956	Tạo lời mời
+957	Tạo việc chăm sóc
+958	Tạo việc và gửi lời mời
+959	Tải / Xem lại chia sẻ
+960	Tải bản báo cáo HTML
+961	Tải lại bản hiện tại
+962	Tệp chứa dữ liệu sức khỏe
+963	Từ chối
+964	Việc
+965	Việc đang theo dõi
+966	Về danh sách đồng bộ
+967	Về gia đình
+968	Xem cách xử lý xung đột
+969	Xem dữ liệu nguồn
+970	Xem dữ liệu sức khỏe
+971	Xem dữ liệu trong phạm vi đã cấp
+972	Xem ghi nhận thuốc
+973	Xem lại bàn giao
+974	Xem lại nội dung sẽ đưa vào
+975	Xem lại tác động
+976	Xem lại tệp báo cáo
+977	Xem lại, rồi tạo thay đổi có chủ ý
+978	Xem lịch sử và nguồn trong quyền
+979	Xem lịch thuốc
+980	Xem lời mời nhận việc
+981	Xem quyền đang nhận
+982	Xem sức khỏe
+983	Xem trạng thái lịch nhắc
+984	Xác nhận giảm quyền?
+985	Xác nhận hoàn tất
+986	Xác nhận hoàn tất việc phối hợp. Nếu cần ghi thuốc hoặc sức khỏe, hãy thao tác riêng.
+987	Xác nhận người nhận
+988	Xác nhận rời
+989	Xác nhận đúng người nhận
+990	Yêu cầu đã tiếp nhận; tệp chưa sẵn sàng.
+991	bản ghi
+992	iPad ở nhà
+993	iPad ở nhà · Chưa kết nối
+994	nhận việc
+995	pending
+996	thao tác local đang chờ. Lệnh đang gửi hoặc chưa rõ có thể đã được nhận; bỏ local không hoàn tác server.
+997	thao tác đúng tài khoản.
+998	{value2} · Đã lưu trên máy
+999	Áp dụng giảm quyền
+1000	Đang chia sẻ
+1001	Đang tạo ·
+1002	Đang xem dữ liệu được chia sẻ. Người thao tác: Minh.
+1003	Đang xử lý
+1004	Điều chỉnh giảm quyền
+1005	Đã chọn thiết bị. Cần cập nhật request nhắc.
+1006	Đã hiển thị
+1007	Đã hủy
+1008	Đã kiểm tra trạng thái từ nguồn giả lập.
+1009	Đã lưu riêng tùy chọn nhắc phối hợp.
+1010	Đã mời Minh · Chưa nhận
+1011	Đã mở
+1012	Đã ngừng chia sẻ
+1013	Đã sao chép mã lời mời.
+1014	Đã tạo lời mời
+1015	Đã xác nhận · Có tác giả
+1016	Đã đóng bảng chia sẻ.
+1017	Đã đặt trên thiết bị mẫu
+1018	Đã đồng bộ
+1019	Đúng người, kích hoạt chia sẻ
+1020	Đăng xuất tài khoản?
+1021	Đăng xuất và bỏ phần chưa gửi
+1022	Được cho phép trong mô phỏng
+1023	Được giữ nguyên
+1024	Được phép
+1025	Được xem
+1026	Đặt request
+1027	Để sau
+1028	Để thử phía người nhận, chọn Minh ở thanh vai bên ngoài hoặc mở bước người nhận trên sơ đồ.
+1029	Đối chiếu trực tiếp với người bạn muốn chia sẻ trước khi kích hoạt.
+1030	Đồng bộ dữ liệu
+1031	Đồng bộ ngay
+1032	Đồng bộ trước
+1033	Ở lại
+1034	10.000 đ
+1035	28 tháng 10
+1036	4 số cuối tài khoản
+1037	Biện pháp
+1038	Biện pháp tiếp theo
+1039	Báo cáo
+1040	Bên nhận
+1041	Bút toán
+1042	Bạn có thể gửi thông tin để chúng tôi phân tuyến xử lý.
+1043	Bản nháp
+1044	Bằng chứng
+1045	Bổ sung:
+1046	Ca này cần vai
+1047	Chi trả
+1048	Chuẩn bị đề nghị chi
+1049	Chúng tôi có thể hỗ trợ gì?
+1050	Chưa
+1051	Chưa có báo cáo sẵn sàng trong packet.
+1052	Chưa có ca cần review
+1053	Chưa có lịch được phân công
+1054	Chưa có packet
+1055	Chưa có phê duyệt hợp lệ hoặc lệnh đã tồn tại.
+1056	Chưa có phản ánh
+1057	Chưa có phản ánh được gửi trong phiên test.
+1058	Chưa có quyết định
+1059	Chưa có quyền xem packet
+1060	Chưa có yêu cầu
+1061	Chưa duyệt
+1062	Chưa gửi lệnh
+1063	Chưa thực hiện
+1064	Chưa tiếp nhận
+1065	Chưa tạo
+1066	Chưa xác minh
+1067	Chưa xử lý
+1068	Chưa đủ điều kiện
+1069	Chỉ kháng nghị sau khi có quyết định.
+1070	Chỉnh sửa
+1071	Chờ thêm bằng chứng
+1072	Chờ xác nhận
+1073	Chờ xử lý
+1074	Chờ đối chiếu
+1075	Có báo cáo snapshot được chia sẻ.
+1076	Có packet được chia sẻ
+1077	Có quyết định
+1078	Công bố quyết định
+1079	Công bố quyết định v
+1080	Cần nhập lý do khi hiệu chỉnh tài liệu đã công bố.
+1081	Cần đối chiếu bằng chứng và 4 số cuối hợp lệ.
+1082	Cần đủ điều kiện, khớp nguồn, xác minh đích nhận và không bị hold.
+1083	Dịch vụ
+1084	Dữ liệu chuẩn bị
+1085	Finance
+1086	Ghi thêm bút toán điều chỉnh
+1087	Ghi điều chỉnh cân bằng Nợ/Có 10.000 đ vào tài khoản chờ đối soát theo bằng chứng đã kiểm tra.
+1088	Giao dịch cửa hàng
+1089	Giao dịch hợp lệ
+1090	Giao dịch nguồn
+1091	Giải thích / cung cấp kết quả
+1092	Gross
+1093	Gửi Finance review yêu cầu hoàn
+1094	Gửi bổ sung
+1095	Gửi lệnh chi đã được duyệt
+1096	Gửi phản ánh về phiên tư vấn, tài liệu hoặc khoản phải trả. Mỗi ca được theo dõi riêng với tham chiếu liên quan.
+1097	Hold
+1098	Hàng đợi phản ánh
+1099	Hàng đợi trống
+1100	Hãy xác nhận đã xem lại nội dung.
+1101	Hỗ trợ kỹ thuật
+1102	Khi mất phản hồi, kiểm tra cùng operation và tham chiếu; không tạo một lệnh chi thứ hai.
+1103	Kho sức khỏe
+1104	Kho tài khoản
+1105	Khoản phải trả / chi trả
+1106	Kháng nghị quyết định
+1107	Không
+1108	Không có tệp
+1109	Kiểm tra phiên bản trước duyệt
+1110	Kiểm tra và tham gia phiên
+1111	Kết luận và căn cứ
+1112	Kết nối / kỹ thuật
+1113	Kết quả
+1114	Kết quả dịch vụ
+1115	Kết quả đối soát
+1116	Kết quả:
+1117	Kỳ đối soát 27/10/2026
+1118	Lý do hiệu chỉnh (nếu đã công bố)
+1119	Lý do và cặp bút toán
+1120	Lý do và thông tin mới
+1121	Lưu bản nháp
+1122	Lưu kết quả đối soát
+1123	Lưu nháp và xem lại
+1124	Lệnh chi PAYABLE-042
+1125	Lịch thuốc được chia sẻ
+1126	Lịch tư vấn của bác sĩ
+1127	Minh chứng
+1128	Mã ca
+1129	Mã lịch / tham chiếu
+1130	Mã sai lệch
+1131	Mã yêu cầu
+1132	Mô tả sự việc
+1133	Mở bước phê duyệt
+1134	Mở bước thực hiện chi
+1135	Mở form người dùng
+1136	Net
+1137	Net phải trả
+1138	Ngân hàng
+1139	Ngân hàng mẫu A
+1140	Ngân hàng mẫu B
+1141	Người chuẩn bị
+1142	Người dùng chưa chia sẻ hoặc đã thu hồi. Bác sĩ vẫn có thể kiểm tra lịch được phân công.
+1143	Người dùng sẽ xem được tài liệu đã công bố. Hiệu chỉnh bảo lưu phiên bản trước và cần có lý do.
+1144	Người review hiện tại
+1145	Người được tư vấn
+1146	Ngọc Mai · Packet v
+1147	Nhà cung cấp
+1148	Nhóm
+1149	Nhóm phản ánh
+1150	Nhóm được phân công
+1151	Nhận từ khách
+1152	Nội dung chuyên môn
+1153	Nội dung tư vấn
+1154	Nợ
+1155	Packet của người được tư vấn
+1156	Phiên
+1157	Phiên bản ca
+1158	Phiên bản quyết định
+1159	Phiên bản tiếp theo
+1160	Phiên bản đề nghị
+1161	Phiên tư vấn
+1162	Phiên tư vấn bị gián đoạn, tôi muốn kiểm tra lại kết quả dịch vụ.
+1163	Phiên tư vấn · Bác sĩ
+1164	Phân tuyến và mở review
+1165	Phê duyệt đúng phiên bản
+1166	Phê duyệt đề nghị chi
+1167	Phí nền tảng
+1168	Phải trả NCC
+1169	Phản ánh khoản đối soát này
+1170	Phản ánh và đối soát
+1171	Quyết định biện pháp chỉ tạo yêu cầu tới nhóm có thẩm quyền. Cần xác minh riêng kết quả hoàn tiền, hiệu chỉnh hoặc chi trả.
+1172	Quyết định được yêu cầu xem lại
+1173	Quyền lợi hiện tại
+1174	Review
+1175	Review bản hiện tại để công bố
+1176	Review trước khi công bố
+1177	Riêng tư / dữ liệu
+1178	Sai lệch nguồn đối soát
+1179	Sao kê của bác sĩ
+1180	Sao kê của tôi
+1181	Sau khi tạo, đổi vai sang Finance · Phê duyệt ở thanh ngoài để kiểm tra tách nhiệm vụ.
+1182	Sau phiên
+1183	Soạn tài liệu
+1184	Soạn, review và công bố
+1185	Sẵn sàng tham gia
+1186	Số tiền
+1187	Số tiền đề nghị
+1188	Sổ cân bằng chưa chứng minh đã khớp nguồn thanh toán. Bút toán điều chỉnh được ghi thêm, không sửa lịch sử.
+1189	Tham chiếu
+1190	Tham chiếu bằng chứng
+1191	Tham chiếu chi
+1192	Tham gia phiên tư vấn
+1193	Tham gia phiên đã phân công
+1194	Thanh toán / hoàn tiền
+1195	Theo dõi khoản phải trả và chi trả
+1196	Theo dõi phía người dùng
+1197	Theo dõi phản ánh
+1198	Thông tin bổ sung
+1199	Thực hiện và tra kết quả chi
+1200	Tiêu đề
+1201	Tiếp nhận phản ánh chưa phải kết luận và chưa tự thay đổi tiền hay tài liệu.
+1202	Tiền nhận
+1203	Tra cùng tham chiếu chi
+1204	Trong phạm vi buổi tư vấn
+1205	Tuyến
+1206	Tài khoản liên kết
+1207	Tài liệu tư vấn
+1208	Tài liệu và kết quả dịch vụ
+1209	Tên chủ tài khoản
+1210	Tình trạng chi
+1211	Tôi muốn bổ sung thông tin và đề nghị xem xét lại kết quả.
+1212	Tôi muốn kiểm tra khoản phải trả cho phiên tư vấn này.
+1213	Tôi đã xem lại nội dung và đồng ý gửi để xử lý
+1214	Tạo phản ánh
+1215	Tạo phản ánh khác
+1216	Tạo phản ánh từ phía người dùng trước.
+1217	Tạo đề nghị chi phiên bản hiện tại
+1218	Tệp minh chứng (lưu tên tệp trong bản mẫu)
+1219	Tổng phân bổ
+1220	Về hàng đợi
+1221	Về lịch tư vấn
+1222	Xem dữ liệu được chia sẻ
+1223	Xem khoản phải trả
+1224	Xem lại phản ánh
+1225	Xem sao kê nhà cung cấp
+1226	Xem trạng thái ca gần nhất
+1227	Xác minh kết quả từng kho trước khi xác nhận hoàn tất. Bản mẫu mô phỏng job và không xử lý dữ liệu thật.
+1228	Xác minh đích nhận
+1229	Xác nhận dịch vụ tách riêng với kết thúc kết nối và công bố tài liệu.
+1230	Xác nhận dịch vụ đã thực hiện
+1231	Xác nhận đích nhận
+1232	Xử lý và xác minh các kho
+1233	Xử lý yêu cầu riêng tư
+1234	Yêu cầu bác sĩ review hiệu chỉnh
+1235	Yêu cầu xem xét lại quyết định
+1236	Yêu cầu xóa tài khoản
+1237	appealed
+1238	clinical
+1239	connected
+1240	decided
+1241	ended
+1242	interrupted
+1243	paid
+1244	payment
+1245	published
+1246	received
+1247	refunded
+1248	review
+1249	review. Chọn vai ở thanh ngoài.
+1250	technical
+1251	Đang chờ Finance xử lý yêu cầu hoàn
+1252	Đang chờ bác sĩ review hiệu chỉnh
+1253	Đang hold
+1254	Đang review kháng nghị
+1255	Đang xem xét
+1256	Điều chỉnh AUD-001
+1257	Đã cung cấp kết quả
+1258	Đã công bố · v
+1259	Đã duyệt phiên bản hiện tại
+1260	Đã ghi bút toán điều chỉnh
+1261	Đã gửi · đang xử lý
+1262	Đã hoàn tiền / thu hồi
+1263	Đã khớp nguồn
+1264	Đã kiểm tra bằng chứng của ca và thông tin kết quả phiên.
+1265	Đã kết thúc
+1266	Đã nhận kháng nghị cho quyết định v
+1267	Đã phân tuyến đến
+1268	Đã phê duyệt
+1269	Đã tiếp nhận
+1270	Đã tiếp nhận phản ánh
+1271	Đã tạo
+1272	Đã xác minh
+1273	Đã xác minh chi thành công
+1274	Đã xác minh đích nhận
+1275	Đã xác nhận hoàn tất
+1276	Đã đặt hold chờ kiểm tra
+1277	Đã đối chiếu danh tính và đích nhận
+1278	Đích nhận
+1279	Đặt hold khoản phải trả
+1280	Đề nghị
+1281	Đề nghị chi PAYABLE-042
+1282	Đề nghị chưa hợp lệ hoặc phiên bản đã thay đổi.
+1283	Đối chiếu và xác nhận nguồn
+1284	Đối soát kỳ 27/10/2026
+1285	Đổi vai sang Finance · Thực hiện chi để gửi lệnh. Thay đổi số tiền, hold hoặc đích nhận làm mất hiệu lực phê duyệt.
+1286	Đủ điều kiện chi trả?
+1287	Đủ điều kiện ghi nhận
+1288	+ Đặt lịch mới
+1289	/ 5 · dữ liệu minh họa
+1290	0 đ
+1291	1 tháng
+1292	27/11/2026 · 59.000 đ
+1293	59.000 đ
+1294	59.000 đ / tháng
+1295	Buổi tư vấn
+1296	Báo cáo tóm tắt sẵn sàng
+1297	Báo cáo và mẫu tổng hợp mở rộng.
+1298	Bạn chỉ xem được tài liệu sau khi bác sĩ review và công bố.
+1299	Bạn vẫn dùng quyền lợi đến hết kỳ đã thanh toán. Hủy gia hạn không tự tạo yêu cầu hoàn tiền.
+1300	Bạn được xem phí, chính sách đổi hủy và phạm vi chia sẻ trước khi xác nhận. Tư vấn từ xa không thay thế xử trí cấp cứu.
+1301	Bật camera
+1302	Bật micro
+1303	Camera, micro và cuộc gọi trong bản này là mô phỏng; trình duyệt không thu âm hoặc thu hình.
+1304	Chi tiết lịch tư vấn
+1305	Chia sẻ cho buổi tư vấn này?
+1306	Chu kỳ
+1307	Chuẩn bị buổi tư vấn
+1308	Chuẩn bị và tư vấn theo lịch
+1309	Chênh lệch phí
+1310	Chính sách mẫu để test: đổi lịch trước 2 giờ không thêm phí; hủy trước 2 giờ hoàn đủ phí. Kết quả hoàn tiền cần xác minh riêng.
+1311	Chưa chọn
+1312	Chưa có giữ chỗ
+1313	Chưa có gói
+1314	Chưa có lịch
+1315	Chưa có lịch tư vấn
+1316	Chưa có tài liệu công bố
+1317	Chưa công bố
+1318	Chưa kết nối
+1319	Chưa kết thúc
+1320	Chưa thay đổi lịch hiện hành
+1321	Chưa xác minh thanh toán
+1322	Chưa xác định
+1323	Chưa được kích hoạt
+1324	Chỉ bác sĩ được phân công cho lịch này có thể xem packet đang hiệu lực.
+1325	Chỉ khôi phục giao dịch gắn với tài khoản cửa hàng và tài khoản HealMata tương ứng.
+1326	Chọn bác sĩ để xem khung giờ còn trống.
+1327	Chọn khung giờ thay thế
+1328	Chọn lại khung giờ
+1329	Chọn người khám và giờ
+1330	Chọn người đồng hành
+1331	Chờ thanh toán
+1332	Các quyền cơ bản luôn có
+1333	Còn trên 2 giờ trước lịch hẹn
+1334	Công bố
+1335	Cần hỗ trợ
+1336	Cần lịch đã xác nhận để tham gia.
+1337	Cổng thanh toán được mô phỏng trên trình duyệt. Dùng hai kết quả bên dưới để thử các nhánh.
+1338	Dữ liệu cho buổi tư vấn
+1339	Dự kiến hoàn
+1340	FAMILY PLUS
+1341	Family Plus · Hàng tháng
+1342	Ghi nhận sức khỏe 7 ngày
+1343	Ghi thuốc, nhập sức khỏe, biểu đồ cơ bản và xuất dữ liệu gốc vẫn dùng được. Plus không cấp thêm quyền truy cập hồ sơ người thân.
+1344	Gia hạn
+1345	Gia hạn tiếp theo
+1346	Giao dịch
+1347	Giao dịch đã hoàn / thu hồi
+1348	Giá kỳ đầu
+1349	Giữ chỗ trong 5 phút
+1350	Giữ chỗ và xem lại
+1351	Giữ chỗ đã hết hạn. Vui lòng chọn lại giờ.
+1352	Gửi phản ánh về buổi tư vấn
+1353	Gửi phản ánh về lịch
+1354	Hoàn tiền lịch tư vấn
+1355	Hãy xác nhận đúng người được tư vấn.
+1356	Hình thức
+1357	Hỗ trợ trao đổi về các vấn đề sức khỏe thông thường và hướng dẫn chăm sóc phù hợp trong phạm vi chuyên môn.
+1358	Hủy lịch
+1359	Hủy lịch và gửi yêu cầu hoàn
+1360	Khung giờ
+1361	Khung giờ · giờ Việt Nam (UTC+7)
+1362	Khung người tham gia
+1363	Khung xem camera minh họa
+1364	Khám phá hồ sơ và lịch tư vấn phù hợp.
+1365	Không có giao dịch
+1366	Không thêm phí theo policy mẫu
+1367	Không tạo lịch · Yêu cầu hoàn
+1368	Kiểm tra chi tiết lịch
+1369	Kiểm tra cập nhật hoàn tiền
+1370	Kiểm tra kết quả tạo lịch
+1371	Kiểm tra micro và camera
+1372	Kiểm tra trước khi tham gia
+1373	Kiểm tra trạng thái xác minh
+1374	Kiểm tra và khôi phục
+1375	Kiểm tra đúng tài khoản
+1376	Kèm mã lịch để được hỗ trợ
+1377	Kênh
+1378	Kênh thanh toán ban đầu
+1379	Kết nối
+1380	Kết nối gián đoạn · đang chờ nối lại
+1381	Kết nối ổn định
+1382	Kết quả cửa hàng để test
+1383	Kết quả phiên
+1384	Kết quả thanh toán và lịch
+1385	Lý do tư vấn
+1386	Lịch cũ
+1387	Lịch cũ → Lịch mới
+1388	Lịch của bạn
+1389	Lịch hiện tại vẫn được giữ cho đến khi thay đổi thành công.
+1390	Lịch mới
+1391	Lịch sẽ bị hủy sau khi được chấp nhận. Yêu cầu hoàn tiền được theo dõi riêng; chưa có nghĩa tiền đã về.
+1392	Lịch thuốc hiện tại
+1393	Lịch tư vấn
+1394	Lịch tư vấn của bạn
+1395	Lịch tư vấn của tôi
+1396	Lịch tư vấn đã được xác nhận
+1397	Lịch đang giữ chỗ
+1398	Mua trong ứng dụng
+1399	Mã giao dịch cửa hàng
+1400	Mã lịch
+1401	Mô phỏng gián đoạn / Nối lại
+1402	Mô phỏng xác nhận mua
+1403	Mạng
+1404	Mục đích
+1405	Nguồn tiền
+1406	Ngày giờ
+1407	Ngày tư vấn
+1408	Ngân hàng có thể ghi có sau thời điểm bên thanh toán xác nhận hoàn. Prototype mô phỏng các lần cập nhật trạng thái.
+1409	Ngôn ngữ
+1410	Người đặt / trả tiền
+1411	Người đặt và người thanh toán có thể khác người được tư vấn. Chia sẻ dữ liệu được chọn ở bước chuẩn bị.
+1412	Nối lại cùng phiên và cùng lịch. Kết thúc kỹ thuật chưa tự xác nhận dịch vụ đã hoàn tất.
+1413	Packet có phiên bản riêng. Việc chia sẻ không tạo quyền dài hạn cho hồ sơ.
+1414	Phí dịch vụ
+1415	Phí tư vấn
+1416	Phản ánh về tài liệu
+1417	Quay lại kiểm tra đơn
+1418	Quay lại lựa chọn
+1419	Quay lại offer
+1420	Quyền lợi
+1421	Quyền lợi của bạn
+1422	Quản lý / khôi phục gói
+1423	Quản lý Family Plus
+1424	Sau buổi tư vấn
+1425	Sau khi xác minh giao dịch
+1426	Sắp tới
+1427	Sẵn sàng
+1428	Sẵn sàng tham gia?
+1429	Tham gia buổi tư vấn
+1430	Thanh toán
+1431	Thanh toán thành công
+1432	Theo dõi kết quả phiên
+1433	Theo dõi xử lý tiền
+1434	Theo kết quả xác minh hoàn tiền
+1435	Thu hồi quyền xem packet
+1436	Thêm góc nhìn cho cả nhà
+1437	Tiếng Việt
+1438	Tiếp tục gia hạn
+1439	Tiếp tục thanh toán
+1440	Tiếp tục theo dõi
+1441	Tiền về tài khoản
+1442	Trong bản mẫu, nút dưới mô phỏng kết quả từ cửa hàng. Không có giao dịch tiền thật.
+1443	Trước khi đặt lịch
+1444	Tài khoản nhận gói
+1445	Tài liệu sau tư vấn
+1446	Tài liệu tư vấn không tự tạo hoặc sửa lịch thuốc và dữ liệu sức khỏe của bạn.
+1447	Tài liệu và hỗ trợ
+1448	Tài liệu đang được chuẩn bị
+1449	Tên hoặc chuyên khoa
+1450	Tìm bác sĩ
+1451	Tìm kiếm
+1452	Tìm thấy giao dịch hợp lệ
+1453	Tôi muốn trao đổi về việc chăm sóc sức khỏe hằng ngày.
+1454	Tôi đã xác định đúng người được tư vấn
+1455	Tư vấn video · 30 phút
+1456	Tạo báo cáo mở rộng
+1457	Tải tài liệu HTML
+1458	Tắt camera
+1459	Tắt gia hạn
+1460	Tắt gia hạn tự động?
+1461	Tắt micro
+1462	Tổng thanh toán
+1463	Tự động nếu chưa hủy
+1464	Việt Nam · UTC+7
+1465	Về Hôm nay
+1466	Về bác sĩ
+1467	Xem chi tiết lịch
+1468	Xem lại gói đăng ký
+1469	Xem lại lịch mới
+1470	Xem lại phạm vi chia sẻ
+1471	Xem lại trước thanh toán
+1472	Xem lại và chọn mua
+1473	Xem lại và hủy lịch
+1474	Xem lịch hiện hành
+1475	Xem lịch và chuẩn bị
+1476	Xem tài liệu của bác sĩ
+1477	Xác nhận chia sẻ
+1478	Xác nhận hủy lịch?
+1479	Xác nhận đổi lịch
+1480	cancelled
+1481	converted
+1482	held
+1483	phiên bản cũ được bảo lưu.
+1484	requested
+1485	Đang bật
+1486	Đang chờ xác nhận
+1487	Đang kết nối · 12:36
+1488	Đang tắt
+1489	Đang xác minh
+1490	Đang xử lý sau thanh toán
+1491	Điều kiện hiện tại
+1492	Đánh giá
+1493	Đã chia sẻ packet phiên bản
+1494	Đã công bố
+1495	Đã hoàn / thu hồi
+1496	Đã hủy gia hạn
+1497	Đã nhận tiền chưa có nghĩa là đã có lịch. Kiểm tra kết quả với cùng giao dịch hoặc yêu cầu hoàn tiền.
+1498	Đã nhận yêu cầu
+1499	Đã trả, chưa tạo được lịch
+1500	Đã tắt
+1501	Đã xác minh hoàn tiền
+1502	Đã xác minh thanh toán
+1503	Đơn tư vấn
+1504	Được sử dụng đến 27/11/2026
+1505	Đổi giờ
+1506	Đổi hoặc hủy lịch

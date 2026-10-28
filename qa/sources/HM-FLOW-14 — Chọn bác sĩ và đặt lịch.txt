@@ -1,0 +1,416 @@
+HM FLOW 14 Chọn bác sĩ và đặt lịch
+HealMata V3.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Design, App, Backend, chuyên môn, đối tác, Finance và QA để triển khai từ tìm dịch vụ/bác sĩ tới chọn đúng người được khám, giữ chỗ, xem tổng giá, thanh toán và nhận kết quả lịch. Kết quả phải phân biệt chỗ đang giữ, tiền đang xử lý và lịch thực sự được xác nhận.
+Hold chưa phải booking confirmed; thanh toán thành công chưa đủ xác nhận lịch. V3.0 là phạm vi đề xuất trong nguồn, chưa có bằng chứng đối tác/kênh/build thật đã sẵn sàng. Các quyết định thị trường, chuyên môn, đối tượng, giá, kênh, hold và bù trừ được đặt trong task, không tự trở thành cam kết.
+I Phạm vi và kết quả cần đạt
+1 Bề mặt và đường đi
+49 danh mục → 50 hồ sơ → 51 chọn người/slot → 52 xem lại quote → 53 chuyển kênh thanh toán → 54 kết quả tiền/lịch → 55/56 lịch hiện hành. 58 theo dõi hoàn và 20 hỗ trợ là nhánh ngoại lệ. Flow15 sở hữu đổi/hủy/refund tracking; Flow16 sở hữu chuẩn bị, quyền vào phiên và tài liệu. Không cấp mã mới cho mỗi trạng thái kết quả.
+2 Người khám người đặt người trả
+Tách bệnh nhân, người đặt, người trả và người được phép xem/tham gia. Đặt hộ cần mô hình đại diện/quyền được review; trả tiền không cấp quyền hồ sơ hoặc join. Grant gia đình hiện có không tự thành quyền đại diện đặt dịch vụ. Bác sĩ/cơ sở/dịch vụ được kiểm đủ điều kiện tại các gate liên quan theo T01/T02.
+3 Dịch vụ và tiền đề xuất
+Phiên thời lượng cố định, trả từng lịch bằng tổng giá trước mua. Consultation tách Family Plus, không mặc định gói trả phí đã chi trả phiên. Không tự thêm ví/credit, phí theo phút, gia hạn thu tiền tự động, AI chọn dịch vụ bằng chẩn đoán hoặc ghi hình mặc định. Dữ liệu công bố bác sĩ có nguồn; rating/giá không thay xác minh.
+4 Kết quả và phạm vi kiểm
+Lịch chỉ xác nhận khi thỏa điều kiện slot, quyền/eligibility và tiền theo contract; không thu/đặt trùng qua retry. Mỗi kết quả treo có reference, trạng thái và owner/bước tiếp. Quote/hold/payment/booking có nguồn và version riêng. Trước mở dịch vụ/thu tiền thật cần các điều kiện đối tác, chuyên môn, thị trường và payment được review; sandbox chỉ phục vụ triển khai/kiểm.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+Các số là HM-SCR. Nhánh hoàn/bù trừ không tuyên bố tiền đã về khi mới yêu cầu. Handoff sang Flow15/16 giữ booking identity và policy hiện hành; không tạo lịch mới để sửa lỗi hiển thị.
+
+III Flow chi tiết
+1 Danh mục và hồ sơ bác sĩ
+a Tìm và đọc thông tin
+Từ mục dịch vụ/04 mở 49, lọc theo phạm vi được duyệt như dịch vụ, thời gian, ngôn ngữ. 50 hiển thị thông tin công bố, chuyên môn/cơ sở/phạm vi, hình thức phiên, thời lượng/giá nếu có nguồn. Lý do gợi ý dựa trường có căn cứ, không chẩn đoán hoặc hứa kết quả điều trị. Không có kết quả phù hợp cho đổi lọc, không chọn bác sĩ sai scope để lấp danh sách.
+b Điều kiện thay đổi
+Chưa duyệt/tạm dừng/hết hiệu lực không được nhận đặt mới kể cả client còn cache. Kiểm lại theo service/provider/patient tại gate được chốt, không chỉ ẩn nút. Hồ sơ mất điều kiện có lịch cũ cần route vận hành/Flow15, không xóa lịch sử. Không có badge xác minh nếu chưa có chứng cứ và reviewer; hồ sơ công bố khác tài liệu xác minh private.
+2 Chọn bệnh nhân và quyền đặt
+51 ghi rõ người được khám trước kiểm eligibility và giữ chỗ. Nếu đặt hộ, server kiểm quyền đại diện và nhóm đối tượng đã review; thiếu điều kiện thì giải thích/đổi người hợp lệ, không tự tạo hồ sơ hộ hoặc consent từ thao tác thanh toán. Người trả có thể khác bệnh nhân, nhưng chỉ thấy phần thông tin giao dịch/lịch cần thiết theo T02.
+3 Chọn slot và giữ chỗ
+Hiển thị ngày/giờ/timezone/thời lượng và capacity từ nguồn lịch có thẩm quyền. Gọi giữ chỗ online, kiểm trạng thái hiện tại và concurrency. Chỉ báo còn giữ sau receipt hợp lệ; thời hạn lấy server, đồng hồ UI không tự gia hạn. Slot hết khi bấm thì tải lại để người dùng chọn; không chọn hộ slot/bác sĩ khác. Timeout tra cùng operation/hold reference trước retry. Quay lại/đóng app xử lý release/expiry theo T03, không coi giữ mãi hoặc đã hủy chắc chắn.
+4 Xem lại quote và xác nhận điều kiện
+52 nêu bệnh nhân, người đặt/người trả theo quyền, bác sĩ/dịch vụ/hình thức, thời gian/timezone/thời lượng, hold expiry, quote version/hạn, tổng giá/tiền tệ và phí/thuế nếu có nguồn. Hiển thị policy hủy/đổi/no show/gián đoạn theo bản được duyệt trước mua. Giá/điều kiện đổi phải xem và xác nhận lại, không tự thu chênh. Hold/quote không còn hợp lệ thì không mở thanh toán theo dữ liệu cũ ngoài contract.
+
+5 Thanh toán và xác minh
+53 mở kênh đã review, giao diện payment thật do nhà cung cấp/SDK chọn. Không yêu cầu dữ liệu thẻ bí mật trong form tự chế, không ép top up/mua Plus. Server verify theo cơ chế chính thức của kênh và ràng buộc quote/hold/patient/payer/payment reference, kiểm giá/tiền tệ, môi trường và chống trùng. Callback client chưa là chứng cứ đã trả; pending thanh toán khác pending verify, hủy/lỗi khác unknown.
+6 Điều phối tiền và xác nhận lịch
+a Đủ điều kiện
+Orchestrator chỉ confirm khi quyền/eligibility, capacity và điều kiện payment được thỏa theo T03/T04/T06. 54 hiển thị trạng thái tiền và lịch riêng; confirmed có booking ID và thông tin đúng chủ thể/slot/giá. Người dùng mở 56 hoặc 55; receipt tiền không tự cấp quyền join hay chia sẻ dữ liệu. Cập nhật nhắc theo booking/version/recipient trong scope được duyệt, không tự báo người dùng đã nhận nhắc.
+b Tiền có nhưng chưa có lịch
+Payment tới muộn khi hold hết hạn hoặc chỗ đã cấp cho người khác không được chiếm lại slot. Theo policy chọn void/refund hoặc hàng chờ xử lý có owner; 54 nêu tình trạng thật và 58 nếu có hoàn. Không tự đặt slot thay, chuyển bác sĩ, thu thêm hoặc báo tiền đã hoàn khi mới gửi yêu cầu. Nếu chưa biết capture/charge đã xảy ra, query nguồn trước bù trừ để tránh thu/hoàn trùng.
+7 Quay lại mất phản hồi và ngoại lệ
+Mất mạng/đóng app sau giữ chỗ hoặc trả tiền: mở lại tra operation/reference/account để phục hồi đúng kết quả 54, không mặc định thất bại rồi yêu cầu trả lại. Tranh slot, expiry–confirm, duplicate payment event, provider suspend hoặc quyền bệnh nhân đổi trong lúc checkout đều theo oracle chung. Booking/tiền không cùng transaction cần phục hồi bền, event retry không tạo hai lịch hoặc hai khoản thu.
+Người dùng hủy checkout chưa chắc hold/intent đã release; đọc trạng thái nguồn và policy. Thao tác tạo/giữ/đặt/thanh toán cần online trong phương án này; không queue offline một yêu cầu đặt mới. Đổi account loại callback/cache cũ; deep link kết quả kiểm quyền hiện hành. Lịch cũ vẫn có route hỗ trợ trong quyền, không lộ hồ sơ bệnh nhân cho người chỉ trả tiền.
+8 Bàn giao sau kết quả
+55/56 hiển thị lịch, tiền và trạng thái phiên riêng. 57/58 chuyển Flow15 cho đổi/hủy/hoàn; 59/60 chuyển Flow16 cho consent/chuẩn bị/join. 20 nhận lỗi kỹ thuật/tiền/điều kiện dịch vụ theo miền có owner, không support tự vượt quyền chuyên môn hoặc Finance. Sandbox/fixture không chứng minh đối tác có thể nhận lịch thật; readiness phải được review riêng khi phát hành.
+
+IV Layout sơ bộ
+1 Danh mục và hồ sơ công bố
+
+a Biến thể và giới hạn
+49/50 cần loading, rỗng, lỗi, nguồn cũ, tạm dừng và không đủ điều kiện. Thông tin xác minh công bố theo policy; không đưa tài liệu riêng tư của bác sĩ ra màn hồ sơ.
+
+2 Chọn người giữ chỗ và xem lại giá
+
+a Biến thể và giới hạn
+51/52 có hết slot, hold/quote expiry, giá đổi và thiếu quyền đặt hộ. Đồng hồ chỉ là hiển thị; server quyết định hiệu lực. Không tự xác nhận lại giá mới thay người mua.
+
+3 Chuyển thanh toán và kết quả chưa rõ
+
+a Biến thể và giới hạn
+53 là bề mặt app trước/sau chuyển giao kênh thật; không giả payment UI. 54 cần tách pending thanh toán, verify, unknown, hủy/lỗi và booking status, không dùng một nhãn Thành công chung.
+
+4 Đã trả chưa có lịch và lịch xác nhận
+
+a Biến thể và giới hạn
+Bên trái là ngoại lệ có owner/route bù trừ, chưa hứa refund xong. Bên phải là 56 để bàn giao; 55 danh sách trong quyền cần layout ở flow quản lý lịch. Join và chia sẻ dữ liệu vẫn qua gate riêng của Flow16.
+
+V Trạng thái và hợp đồng lịch tiền
+1 Các lớp không gộp
+Lớp
+Nguồn và ý nghĩa
+Không được suy
+Eligibility/quyền
+Dịch vụ bác sĩ bệnh nhân vai trò hiện hành
+Payer không tự được xem/join
+Availability/hold
+Capacity và giữ chỗ có expiry server
+Hold khác lịch xác nhận
+Quote
+Giá/kỳ dịch vụ/thời lượng/policy có version
+Giá cũ không phải consent giá mới
+Payment
+Kết quả kênh đã verify
+Paid chưa đủ confirmed
+Booking
+Lịch xác nhận theo điều kiện nguồn
+Booking không chứng minh phiên đã hoàn tất
+Refund/void
+Bù trừ theo kênh và policy
+Yêu cầu hoàn khác tiền đã về
+2 Trạng thái kết quả cần có
+Tiền và lịch
+Cách hiển thị
+Bước tiếp
+Chưa biết kết quả giữ/đặt
+Đang kiểm tra, reference an toàn
+Tra nguồn trước retry
+Hold/quote hết hiệu lực
+Chưa có lịch xác nhận
+Chọn/xem lại; không thu theo dữ liệu cũ
+Thanh toán đang chờ
+Lịch chưa xác nhận nếu chưa đủ điều kiện
+Theo dõi, không tạo thu mới
+Tiền xác minh lịch chưa có
+Hai nhãn riêng cùng tiến độ xử lý
+Orchestrator/owner và 58 nếu cần
+Booking confirmed
+Đúng ID bệnh nhân slot và policy
+56 rồi Flow15/16 trong quyền
+Hủy/lỗi/refund chờ
+Trạng thái đúng nguồn từng lớp
+Khôi phục/hỗ trợ theo policy
+
+3 Hợp đồng nguồn định danh và thời gian
+a Liên kết dữ liệu đề xuất
+service/provider/patient/booker/payer ID; eligibility/scope version; slot ID/capacity version; hold ID/expiry; quote ID/version/expiry/amount/currency/policy version; payment intent/transaction reference/environment; booking ID/version/state và operation ID. Actor lấy từ phiên xác thực, không client tự khai để cấp quyền. Payment/reference ở payload tối thiểu, không log secrets hoặc nội dung khám.
+b Thời gian và expiry
+T03 chốt khoảng slot/capacity, timezone chuẩn và hiển thị, DST nếu áp dụng, hold/quote expiry và điểm confirm. Quy tắc biên hết hạn, payment bắt đầu trước nhưng tới sau, server clock và đổi timezone máy phải có oracle. UI không tự gia hạn hold khi app resume. Thời lượng/giá/cutoff/timeout cần nguồn và quyết định, không tự đặt số trong tài liệu.
+c Capacity và điều phối
+T06 thiết kế kiểm và cấp capacity trong ranh giới nhất quán, có version/idempotency; không mặc định capacity luôn bằng 1 nếu dịch vụ chưa chốt. Một đơn vị capacity không được cấp chồng qua expiry/confirm race. Giao dịch hệ thống lịch và tiền có thể tách; cần trạng thái trung gian và recovery bền thay vì giả có commit nguyên tử xuyên nhà cung cấp.
+4 Tiền retry và bù trừ
+T04/T06 chốt authorize/capture nếu kênh hỗ trợ hoặc phương án charge/bù trừ tương thích; không ngầm chọn PSP hay store từ Flow13. Quote từ server có nguồn, client sửa giá không tạo quyền trả giá đó. Cùng ý định retry giữ operation; event lặp/đảo thứ tự không ghi hai khoản thu hoặc confirm hai lịch. Unknown query nguồn trước retry/void/refund; bù trừ cũng có định danh/audit/owner.
+Trạng thái treo có lý do, next action và mốc review theo năng lực đã duyệt. Không thể hoàn tự động thì chuyển đúng queue, không báo đã hoàn. Ledger/handoff Finance nhận giao dịch thật và version policy, không dùng sửa dữ liệu trực tiếp để cân tiền/lịch giả. Payout không phải mục tiêu đóng Flow14 và không tự phát sinh vì payment thành công.
+5 Cô lập dữ liệu và readiness
+T02/T05 chốt cache, access khi payer khác patient, link kết quả, account switch, app cũ và restore. Snapshot/cache không vượt provider/patient eligibility hiện hành. Nhắc có nguồn booking, loại/recipient/version và giới hạn delivery riêng. Hỗ trợ có quyền theo miền; review thị trường/chuyên môn/payment dùng người phù hợp và nguồn hiện hành trong task, không suy đủ điều kiện từ tài liệu này.
+
+VI Task triển khai
+1 T01 Chốt dịch vụ đối tác và điều kiện nhận lịch
+a Mục tiêu  Chỉ mở nhánh đặt cho dịch vụ và provider đủ điều kiện đã review.
+b Phụ trách và đầu vào  Product/PM với chuyên môn/đối tác/Privacy; cần V3.0 và nền thực.
+c Điểm cần xác nhận trong task  Chốt thị trường, đối tượng, scope/hình thức dịch vụ, provider verification/lifecycle và nguồn lịch.
+d Công việc  Lập eligibility matrix, nguồn/ngày/reviewer và xử lý provider mất điều kiện trước/sau đặt.
+e Đầu ra  Scope/verification contract và điều kiện mở dịch vụ.
+f Tiêu chí nghiệm thu  Rating/tự khai không thay xác minh; provider hết điều kiện không nhận đặt mới qua cache/API.
+g Khi thiếu đầu vào  Thiếu đối tác vẫn làm cấu trúc/fixtures; không nhận lịch thật khi gate chưa đạt.
+h Liên kết  HM-V3-T01 T02 T05 T06; HM-V31-T04
+2 T02 Chốt bệnh nhân người đặt người trả và consent
+a Mục tiêu  Đặt hộ/trả tiền không làm mở hồ sơ hoặc join ngoài quyền.
+b Phụ trách và đầu vào  Product/Privacy với chuyên môn Backend; cần T01 và mô hình account.
+c Điểm cần xác nhận trong task  Chốt đối tượng/đại diện hợp lệ, quyền đặt/xem/trả, dữ liệu tối thiểu và consent theo phiên.
+d Công việc  Lập action × actor × patient matrix; kiểm quyền tại chọn người, hold, quote và confirm; nối Flow16.
+e Đầu ra  Role/access contract và oracle quyền thay đổi.
+f Tiêu chí nghiệm thu  Payer không tự vào phiên/xem sức khỏe; không consent hoặc tạo hồ sơ hộ ngầm từ giao dịch.
+g Khi thiếu đầu vào  Chưa duyệt đại diện thì khóa nhánh đặt hộ; vẫn làm luồng self hợp lệ.
+h Liên kết  HM-V3-T03 T07 T15; HM-V31-T04
+
+VI Task triển khai tiếp theo
+3 T03 Chốt slot hold quote và policy lịch
+a Mục tiêu  Người mua hiểu giờ chỗ và điều kiện trước trả tiền.
+b Phụ trách và đầu vào  Product/Finance/vận hành với Backend QA; cần T01 T02.
+c Điểm cần xác nhận trong task  Chốt capacity/thời lượng/timezone/expiry, giá tiền tệ phí thuế, hủy/đổi/no show/gián đoạn và version.
+d Công việc  Lập state/time/quote matrix; xác định khi giá hoặc policy đổi phải xem lại, khi hold hết phải chọn lại.
+e Đầu ra  Booking/quote spec và expected biên thời gian.
+f Tiêu chí nghiệm thu  Hold chưa là confirmed; không tự đổi slot/giá; không tự đặt cutoff hoặc phí theo phút.
+g Khi thiếu đầu vào  Thiếu số giá/expiry giữ cần chốt; vẫn làm mô hình định danh và validation.
+h Liên kết  HM-V3-T04 T08 T09; HM-V31-T05 T06
+4 T04 Chốt kênh payment và bù trừ
+a Mục tiêu  Tiền được verify và xử lý đúng khi lịch không xác nhận được.
+b Phụ trách và đầu vào  Finance/Backend với reviewer payment Product; cần T03.
+c Điểm cần xác nhận trong task  Chốt PSP/channel/merchant/environment, authorize/capture hoặc phương án khác, refund/void và late payment.
+d Công việc  Review tài liệu/yêu cầu hiện hành theo kênh chọn; map callback/event/verify và refund pending/failed/confirmed.
+e Đầu ra  Payment capability contract và compensation policy.
+f Tiêu chí nghiệm thu  Consultation tách Plus; paid chưa là confirmed; không thu lại khi chưa query nguồn hoặc hứa đã hoàn.
+g Khi thiếu đầu vào  Có thể chuẩn bị sandbox/contract; chưa đủ review không bật thu tiền thật.
+h Liên kết  HM-V3-T10 T12 T13; HM-V31-T06 T07
+
+VI Task triển khai tiếp theo
+5 T05 Chốt recovery nhắc và vận hành ngoại lệ
+a Mục tiêu  Mọi trạng thái treo có cách đối soát và owner.
+b Phụ trách và đầu vào  App/Backend/vận hành/Support/Finance; cần T01–T04 và Flow08–10.
+c Điểm cần xác nhận trong task  Chốt resume/retry/unknown, account switch, nhắc, provider suspend, cache và tuyến xử lý.
+d Công việc  Lập fault/owner matrix; hướng dẫn giữ reference an toàn; chuyển Flow15/16 hoặc SCR20 trong quyền.
+e Đầu ra  Recovery runbook, error map và handoff.
+f Tiêu chí nghiệm thu  Không tạo lịch/thu mới để chữa UI; không tự chọn giờ thay; payer chỉ thấy dữ liệu được phép.
+g Khi thiếu đầu vào  Thiếu SLA ghi owner/bước tiếp cần chốt; không tự đặt thời gian phản hồi cam kết.
+h Liên kết  HM-V3-T12 T14 T22 T24; HM-V31-T10 T12 T13
+6 T06 Xây nguồn lịch quote payment và orchestrator
+a Mục tiêu  Capacity tiền và booking có kết quả phục hồi nhất quán.
+b Phụ trách và đầu vào  Backend lead với Finance QA; cần T02–T05.
+c Điểm cần xác nhận trong task  Chốt identity/version/receipt, concurrency/dedup, confirm gate, expiry và bù trừ có định danh.
+d Công việc  Làm directory eligibility/availability/hold/quote/payment/confirm/status; recovery bền và audit tối thiểu.
+e Đầu ra  API/schema/adapter/orchestrator và dữ liệu kiểm.
+f Tiêu chí nghiệm thu  Không cấp chồng capacity, thu/hoàn/confirm lặp; event cũ không hồi sinh lịch hoặc quyền.
+g Khi thiếu đầu vào  Dùng fixtures/sandbox trước; không coi mock chứng minh khám/thu thật sẵn sàng.
+h Liên kết  HM-V3-T06 T08 T10 T12; HM-V31-T05 T06
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế directory chọn lịch checkout và kết quả
+a Mục tiêu  Người dùng hiểu rõ của ai giờ nào giá nào và tiền/lịch đang ở đâu.
+b Phụ trách và đầu vào  Designer với Product chuyên môn Finance App; nhận T01–T05.
+c Điểm cần xác nhận trong task  Duyệt 49–54/56, preview role/quote, hold timer, native handoff và nhánh lỗi; source/date công bố.
+d Công việc  Hoàn thiện 8 khung IV; loading/rỗng/cũ/expiry/price change/unknown; chữ lớn và đọc màn hình.
+e Đầu ra  Layout/copy/state map theo version.
+f Tiêu chí nghiệm thu  Không nhãn Thành công chung che paid/no booking; giá/rating không hứa chất lượng; không lộ hồ sơ private.
+g Khi thiếu đầu vào  Giữ placeholder cho giá/kênh chưa chốt; không giả payment UI thật.
+h Liên kết  HM-V3-T05 T09 T11 T14; HM-V31-T03 T15
+8 T08 Triển khai app đặt lịch và khôi phục trạng thái
+a Mục tiêu  Có hành trình tích hợp đúng patient booking và reference tiền.
+b Phụ trách và đầu vào  App với Backend và đầu mối payment; cần T06 T07.
+c Điểm cần xác nhận trong task  Chốt callback/resume/deep link, nguồn trạng thái, timer hiển thị và handoff 55/56/58.
+d Công việc  Nối 49–54, kết quả 56, check lại hold/quote; cô lập account; nhắc/route quản lý theo contract.
+e Đầu ra  Build tích hợp và bằng chứng server/app/kênh.
+f Tiêu chí nghiệm thu  Hủy/timeout không tự trả lại; giá đổi cần xác nhận; không tự mở phiên hoặc chia sẻ hồ sơ.
+g Khi thiếu đầu vào  Có thể staging/sandbox; giữ scope độc lập khi readiness chuyên môn/payment chưa đủ.
+h Liên kết  HM-V3-T07 T09 T11 T14; HM-V31-T10 T13
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm hành trình quyền giờ và giá
+a Mục tiêu  Có expected chung cho nhánh chức năng trước fault test.
+b Phụ trách và đầu vào  QA/Design QA với chuyên môn Finance; cần T01–T08.
+c Điểm cần xác nhận trong task  Chốt dataset provider/patient/role/capacity/timezone/quote và payment fixtures.
+d Công việc  Chạy TC01–TC12; API trực tiếp, danh mục/role/slot/hold/quote/checkout/result và hồi quy core/Plus.
+e Đầu ra  Báo cáo build/policy/kênh/dữ liệu và defect.
+f Tiêu chí nghiệm thu  Không pass từ UI/callback; kết quả giờ giá quyền và lịch/tiền đối chiếu nguồn độc lập.
+g Khi thiếu đầu vào  Thiếu oracle hoặc thiết bị ghi Not run/Blocked với owner.
+h Liên kết  HM-V3-T25 T26; HM-V31-T16 T17
+10 T10 Kiểm concurrency tiền recovery và release
+a Mục tiêu  Không đặt/thu trùng hoặc bỏ mặc trạng thái tiền có lịch chưa có.
+b Phụ trách và đầu vào  QA/Backend/Finance/vận hành/Security; cần T03–T06 T08 T09.
+c Điểm cần xác nhận trong task  Chốt race/crash/expiry matrix, nguồn đối soát, restore và điều kiện mở dịch vụ/thu tiền.
+d Công việc  Chạy TC13–TC24; tranh slot/payment muộn/revoke/suspend; diễn tập queue và handoff refund.
+e Đầu ra  Bằng chứng thực, known limits, runbook và release packet theo miền.
+f Tiêu chí nghiệm thu  Recovery idempotent; không overbook; không giả settled/refunded; domain readiness có reviewer.
+g Khi thiếu đầu vào  Thiếu môi trường đánh Blocked; sandbox không thay điều kiện đối tác hoặc thu tiền thật.
+h Liên kết  HM-V3-T23 T26 T27 T28; HM-V31-T17 T18 T19 T20
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA ghi build, provider/patient/role, capacity, timezone, hold/quote/policy version, payment environment và reference an toàn. Oracle lịch/tiền độc lập với UI; thiếu đầu vào ghi Blocked có owner. Dữ liệu sandbox không là giao dịch hoặc dịch vụ thật.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+14-01
+Tìm/lọc 49 và mở 50 với provider khác trạng thái
+Chỉ đặt mới theo eligibility; thông tin công bố có nguồn, rating không thay xác minh.
+T01 T07
+14-02
+Không có bác sĩ/slot phù hợp hoặc query lỗi
+Rỗng khác lỗi; đổi lọc được, không gợi ý sai scope hoặc giả availability.
+T01 T07
+14-03
+Chọn patient đặt hộ thiếu quyền hoặc payer khác
+Server kiểm đại diện/eligibility; payer không tự được xem/join/share hồ sơ.
+T02 T06
+14-04
+Chọn slot xem timezone/thời lượng rồi giữ
+Cùng thời điểm thật theo oracle; receipt mới báo còn giữ; chưa ghi confirmed.
+T03 T08
+14-05
+Slot mất trước khi hold hoặc hold hết hạn
+Tải lại/chọn lại có chủ ý; không checkout hold cũ hoặc tự chọn thay.
+T03 T06
+14-06
+52 hiển thị quote giá phí thuế và policy
+Đúng người/giờ/tiền tệ/tổng/version/hạn từ nguồn; không số giả hoặc consent giá ngầm.
+T03 T07
+14-07
+Quote giá hoặc policy đổi trước checkout
+Cần xem/xác nhận lại; không thu chênh hoặc dùng giá cũ ngoài contract.
+T03 T04
+14-08
+Checkout hủy lỗi pending hoặc client success
+54 tách tiền/lịch; server verify, không tự coi đã trả hoặc confirmed.
+T04 T08
+14-09
+Client sửa giá currency product/reference
+Server dùng nguồn/kiểm binding; không thu hoặc cấp lịch theo dữ liệu giả.
+T04 T06
+14-10
+Đủ eligibility capacity và tiền theo contract
+Một booking confirmed đúng ID/slot/subject, trạng thái54→56 nhất quán.
+T02 T06
+14-11
+Plus đang hiệu lực rồi đặt consultation
+Không mặc định đã trả phí phiên, không ép top up/mua Plus.
+T03 T04
+14-12
+Mở 56 chuyển quản lý/chuẩn bị/nhắc
+Flow15/16 nhận đúng booking; join/packet gate riêng, nhắc không chứng minh đã nhận.
+T02 T05
+
+VII Ca kiểm thử tranh chỗ tiền và khôi phục
+Toàn bộ ca hiện là Not run. QA ghi build, provider/patient/role, capacity, timezone, hold/quote/policy version, payment environment và reference an toàn. Oracle lịch/tiền độc lập với UI; thiếu đầu vào ghi Blocked có owner. Dữ liệu sandbox không là giao dịch hoặc dịch vụ thật.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+14-13
+Hai người tranh capacity cuối cùng của slot
+Chỉ capacity được nguồn cho phép; không overbook hoặc tự chuyển slot.
+T03 T06
+14-14
+Expiry–confirm chạy đồng thời
+Theo oracle server/version; không vừa hết hạn vừa cấp chồng chỗ cho hai bên.
+T03 T06
+14-15
+Payment thành công tới sau hold hết chỗ
+Không chiếm slot đã cấp; bù trừ/queue đúng policy, không đổi giờ tự động.
+T04 T06
+14-16
+Crash sau charge/capture trước confirm hoặc receipt
+Phục hồi cùng reference; confirm hoặc bù trừ theo nguồn, không thu lại để sửa UI.
+T04 T05
+14-17
+Payment event lặp đảo thứ tự hoặc callback giả
+Xác thực/dedup/reconcile; không thu/hoàn/confirm hai lần hoặc hồi sinh trạng thái cũ.
+T04 T06
+14-18
+Không rõ payment đã capture khi recovery chạy
+Query nguồn trước thao tác; unknown không thành thất bại hoặc refund confirmed.
+T04 T05
+14-19
+Bù trừ tự động lỗi hoặc refund đang chờ
+Owner/next action;58 đúng trạng thái, không nói tiền đã về.
+T04 T05
+14-20
+Provider suspend sau hold trước confirm
+Recheck gate theo policy; chặn đặt mới/confirm không hợp lệ, xử lý tiền có owner.
+T01 T06
+14-21
+Patient/đại diện bị revoke giữa checkout
+Quyền kiểm hiện hành, không cấp hồ sơ/join từ paid; xử lý booking/tiền theo oracle.
+T02 T06
+14-22
+Đổi timezone/clock máy DST hoặc đóng app quá hạn
+Server expiry có thẩm quyền; giờ đúng cùng thời điểm, resume không tự gia hạn/tạo mới.
+T03 T08
+14-23
+Logout A login B callback hoặc link kết quả A tới
+Không lộ/gắn lịch/tiền A vào B; source access kiểm account hiện hành.
+T02 T05
+14-24
+Restore cũ API cũ và kiểm ops/log/readiness
+Không hồi sinh lịch/quyền/thu trùng; log không nội dung khám/secrets; gate release theo miền.
+T01 T05 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+SCR49 50
+Danh mục hồ sơ đủ điều kiện
+Nguồn xác minh và gate đặt mới
+SCR51 52
+Patient slot hold quote xem lại
+Quyền riêng; expiry/giá từ nguồn
+SCR53 54
+Payment và hai trạng thái kết quả
+Paid khác confirmed; đối soát trước retry
+SCR55 56
+Danh sách chi tiết lịch hiện hành
+Đúng booking/patient và quyền xem
+Flow15 SCR57 58
+Đổi hủy và theo dõi hoàn
+Policy/version và tiền có nguồn
+Flow16 SCR59 60
+Chuẩn bị chia sẻ và tham gia
+Consent/join riêng, payer không tự vào
+SCR20 OPS
+Hỗ trợ điều phối Finance
+Owner theo miền; công cụ được chọn
+Flow13
+Family Plus riêng với consultation
+Không suy đã trả phí phiên từ gói
+2 Điều kiện đóng flow
+T01–T05 có policy/contract và reviewer theo miền; T06 backend/orchestrator; T07 đủ layout; T08 build; T09–T10 có bằng chứng tranh slot, quote, verify và recovery. Mở dịch vụ, nhận tiền và vận hành cần readiness riêng, không coi mock/sandbox hoặc tài liệu đã đủ. Flow15/16 phải nhận cùng booking/policy identity.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026, trang 14–16,26,30: SCR49–60, FLOW14 và Q12. HealMata V3.0 VI bản 0.1 ngày 18/10/2026 phần I–II, bảng task 01–28 và task 04/05/09–12: eligibility, quyền người khám/đặt/trả, hold/quote, verify, orchestration và bù trừ. HealMata V3.1 VI bản 0.1 ngày 18/10/2026 phần I–II và bảng task: expiry/concurrency, quote review lại, paid/no booking và recovery.
+T01–T10 là nhóm việc Flow14 liên kết HM-V3/HM-V31, không thay mã nguồn. Các lựa chọn mới vẫn cần chốt; tài liệu không xác nhận giấy phép, đối tác, code hoặc release. Thay kênh/dịch vụ/giá/đối tượng cần impact map cập nhật policy, contract, layout và expected, không chỉ đổi copy checkout.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng app/backend/đối tác.
+DST
+Daylight Saving Time
+Đổi giờ theo mùa nếu timezone áp dụng.
+HM
+HealMata
+Tiền tố mã flow màn task và case.
+ID
+Identifier
+Định danh provider patient hold quote booking.
+OPS
+Operations
+Công cụ/vai trò vận hành theo quyền.
+PM
+Project Manager
+Điều phối scope và đầu vào.
+PSP
+Payment Service Provider
+Nhà cung cấp payment; chưa chọn tại đây.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và oracle.
+SDK
+Software Development Kit
+Bộ tích hợp kênh/nền tảng được chọn.
+SCR
+Screen
+Mã màn trong Master Screen List.
+SLA
+Service Level Agreement
+Cam kết dịch vụ; chưa đặt số trong tài liệu.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ lịch tiền và quyền
+Eligibility là điều kiện được cung cấp/sử dụng dịch vụ; provider là bên/bác sĩ cung cấp, patient là người khám, booker là người đặt, payer là người trả. Slot là khung giờ; capacity là năng lực nhận lịch; hold là giữ chỗ có hạn; quote là báo giá có version/hạn; booking confirmed là lịch được nguồn xác nhận. Paid chỉ là trạng thái tiền đã được xác minh, không tự là confirmed.
+Authorize/capture là cơ chế giữ/thu tiền nếu kênh hỗ trợ; void/refund là hủy/hoàn theo kênh. Compensation là bù trừ khi một nhánh lịch/tiền đã thành công. Orchestrator điều phối các bước và phục hồi; reconcile là đối soát; unknown là chưa rõ kết quả. Idempotency giúp retry không tạo tác động lặp ngoài thiết kế; oracle là kết quả chuẩn; scope là phạm vi duyệt; baseline là bộ quyết định hiện hành; restore là khôi phục.

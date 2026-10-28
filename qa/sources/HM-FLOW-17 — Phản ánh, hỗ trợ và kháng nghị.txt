@@ -1,0 +1,425 @@
+HM FLOW 17 Phản ánh hỗ trợ và kháng nghị
+HealMata V3.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Support, vận hành, chuyên môn, Privacy, Finance, Design, App, Backend và QA để triển khai phản ánh riêng tư từ bệnh nhân/bác sĩ tới phân tuyến, bổ sung bằng chứng, review, công bố kết quả và kháng nghị. Mỗi yêu cầu cần người nhận, bước tiếp và trạng thái thật theo nguồn.
+Tiếp nhận chưa là kết luận nội dung đúng; quyết định biện pháp chưa là biện pháp đã thực thi; đóng ticket không chứng minh đã hoàn tiền hoặc giải quyết mọi phần. Giờ hỗ trợ, SLA, quyền bằng chứng, reviewer và điều kiện kháng nghị cần chốt trong task. Tài liệu chưa xác nhận đã có đội trực/công cụ hoặc vận hành thật.
+I Phạm vi và kết quả cần đạt
+1 Bề mặt và điểm vào
+56/58/62/63 vào 64 gửi phản ánh;65 theo dõi, bổ sung qua 64 và kháng nghị. 20 là trợ giúp/điểm vào phù hợp;39 nếu có ticket hỗ trợ nền thì liên kết, không tạo luồng trùng ngầm. Bác sĩ dùng DOC09 từ DOC05/DOC08 trong quyền. OPS10 là queue/review/appeal theo miền; OPS03/08/09/11/12 chuyển giao đúng phạm vi, không bắt buộc xây portal mới nếu công cụ thật đáp ứng.
+2 Người và quyền
+Tách người gửi, chủ dữ liệu, người được phản ánh, nhân sự tiếp nhận, reviewer chuyên môn/Privacy/Finance/kỹ thuật và người thực thi biện pháp. Payer/đại diện/bác sĩ chỉ phản ánh và xem nội dung trong policy; không tự mở packet/hồ sơ của người khác. Bên bị phản ánh không mặc định được xem toàn bộ nội dung hoặc bằng chứng nhạy cảm.
+3 Các tuyến xử lý
+Chuyên môn, riêng tư, kỹ thuật/vận hành, tiền/no show và phản hồi chung có phân tuyến/owner phù hợp. Vấn đề nhiều miền có case liên kết và owner điều phối theo T02, không gộp mọi lỗi thành Finance hoặc Support. Phản ánh không phải rating công khai; không AI tự quyết chuyên môn, tranh chấp hoặc hoàn tiền.
+4 Ranh giới và kết quả
+Flow15 giữ đổi/hủy/refund tracking, Flow16 giữ session/tài liệu, Flow18 giữ ledger/payable/payout. Flow17 ghi review/quyết định/chuyển giao và theo dõi thực thi theo nguồn, không tự sửa tiền/hồ sơ. Nội dung cần trợ giúp ngay dùng hướng dẫn/kênh đã được review, không chờ quyết định refund; chưa tự đặt số điện thoại hoặc cam kết trực. Kết quả có lý do/phạm vi và đường kháng nghị theo policy.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+64/65 là HM-SCR, DOC09 là phía bác sĩ, OPS10 là nhân sự trong quyền. Các tuyến song song chỉ mở dữ liệu tối thiểu cho từng miền. Tên trạng thái và thời gian xử lý lấy từ policy/nguồn, không hứa có reviewer đã nhận khi mới ghi nhận yêu cầu.
+
+III Flow chi tiết
+1 Chọn ngữ cảnh và loại vấn đề
+a Điểm vào
+Từ lịch/phiên/tiền/tài liệu trong quyền mở 64, hoặc 20 dẫn tới biểu mẫu/kênh phù hợp. Bác sĩ từ DOC09 theo lịch hoặc khoản tiền được thấy. Ghi đúng account, booking/session/payment/document reference cần thiết, không tự kéo toàn bộ hồ sơ vào case. Lỗi đăng nhập hoặc account đã khóa cần đường trợ giúp theo T01, không yêu cầu mở lại quyền sức khỏe để gửi phản ánh.
+b Phân loại dễ hiểu
+Cho chọn loại vấn đề hoặc chưa rõ; người dùng không cần biết cơ cấu nội bộ. Nội dung người gửi là thông tin phản ánh chưa được xác minh, không hiển thị như kết luận lỗi của bác sĩ/bệnh nhân. T02 định nghĩa triage, mức ưu tiên, trường hợp cần ngay và cách route; trợ giúp chuyên môn/riêng tư cần reviewer đúng, không chờ Finance giải quyết tiền trước.
+2 Nhập và xem lại trước gửi
+64 nhập mô tả, mốc sự việc và liên hệ theo phạm vi được duyệt; bằng chứng chỉ tối thiểu cần thiết. T03 chốt loại/kích thước/số lượng tệp, kiểm tra và cách xem an toàn; không xin mật khẩu, token, toàn bộ hồ sơ hoặc dữ liệu thẻ bí mật. Nội dung/tệp không tự chia sẻ cho bên bị phản ánh, gửi email hay công khai như rating.
+Preview nêu case ngữ cảnh, loại, nội dung/tệp và phạm vi người xử lý theo policy. Quay lại trước gửi không tạo case. Upload thành công không đồng nghĩa case đã tiếp nhận; nếu một tệp lỗi phải nêu rõ, không âm thầm thiếu hoặc gửi nhầm tệp account trước. Gửi online theo T03/T06 với operation ổn định; receipt hợp lệ mới báo đã tiếp nhận. Timeout giữ chưa rõ, tra trước gửi lại để tránh trùng.
+3 Theo dõi và bổ sung
+65 hiển thị mã an toàn, trạng thái, cập nhật, tuyến/owner hoặc bộ phận theo policy và bước người gửi cần làm. Đã tiếp nhận khác đang có reviewer xử lý. Cần bổ sung qua 64 với câu hỏi tối thiểu và mục đích; thêm dữ liệu là sự kiện/version, không xóa lời gửi cũ. Nháp/trao đổi trong quyền có lifecycle riêng. Ngoài giờ tiếp nhận hoặc chưa có người nhận phải nói thật theo kênh/giờ được công bố, không tự hứa 24/7.
+
+4 Phân tuyến và bàn giao ca
+a OPS10 tiếp nhận
+Nhân sự đăng nhập miền nội bộ/OPS01 theo quyền, mở queue từOPS03/08 hoặc case hai phía. Triage xác minh ngữ cảnh, route chuyên môn/Privacy/kỹ thuật/tiền đúng reviewer, phân công owner/bước tiếp/ngày review. Chuyển cấp chưa được người nhận chấp nhận không được bỏ owner cũ nếu quy trình chưa có owner mới; T02 chốt trách nhiệm để case không bị bỏ quên.
+b Nhiều miền và sự cố diện rộng
+Case nhiều miền có liên kết workstream và điều phối; reviewer chỉ thấy phần cần cho miền của mình. Technical outage diện rộng có incident/runbook riêng liên kết các case cá nhân, không tự đóng mọi phản ánh như đã giải quyết. Vấn đề clinical/privacy cần hành động bảo vệ theo thẩm quyền/policy, không chờ refund hoặc tự đình chỉ provider chỉ vì có cáo buộc chưa review.
+5 Review và quyền bằng chứng
+T04 chốt reviewer đủ năng lực, xung đột lợi ích, chuyển reviewer/kiểm tra độc lập nếu cần, điều kiện quyết định và người duyệt. Support không tự phán quyết chuyên môn, thay hồ sơ hoặc refund/payout. Bên liên quan được xin phản hồi qua kênh/quyền tối thiểu đã duyệt, không mở toàn bộ case để tự trả lời. Ghi chú nội bộ, trao đổi công bố và mỗi tệp có visibility riêng; không chuyển copy/paste dữ liệu sang tuyến ngoài quyền.
+Bằng chứng thiếu thì xin tối thiểu, ghi chưa đủ căn cứ/chờ, không bịa no show, lỗi điều trị hoặc tiền đã trả. Mất grant/đổi account không tự xóa case hoặc cấp thêm quyền bằng chứng; quyền tiếp tục theo dõi phản ánh của người gửi khi quan hệ dịch vụ/grant đổi phải có policy riêng ở T01/T03, không mặc định bằng quyền hồ sơ sức khỏe.
+6 Kết quả và thực thi biện pháp
+Reviewer lưu quyết định có version, nguồn, lý do/phạm vi, người có thẩm quyền và phần công bố cho từng bên. 65 chỉ hiện nội dung được phép, không ghi chú nhạy cảm nội bộ. Kết quả không tự trở thành public rating hoặc kết luận về toàn bộ chất lượng dịch vụ. Nếu chưa đủ căn cứ hoặc ngoài phạm vi phải có hướng xử lý phù hợp, không success giả.
+Biện pháp đổi/hủy/hoàn chuyển Flow15/OPS09; amendment tài liệu chuyển Flow16/DOC07; ảnh hưởng provider eligibility chuyển reviewer OPS07; hold/payable/payout chuyển Flow18 trong quyền. T05 chốt điều kiện và điểm hiệu lực; quyết định yêu cầu refund chưa là tiền đã hoàn, yêu cầu sửa chưa là tài liệu đã công bố. Theo dõi action/status nguồn, audit và owner riêng; không sửa lịch sử để đóng case.
+
+7 Kháng nghị kết quả
+a Điều kiện và xem lại
+65 hiển thị điều kiện kháng nghị và đường gửi nếu đủ quyền theo T04: ai được gửi, mốc/giới hạn nếu có, lý do/bằng chứng cần thiết và quyết định/version được liên kết. Không tự đặt số ngày, số lần hoặc yêu cầu người dùng phải đồng ý kết quả mới có hỗ trợ. Ngoài điều kiện có lý do/hướng trợ giúp theo policy, không nút trống không có người nhận.
+b Tiếp nhận và review lại
+Người dùng xem lại rồi gửi operation ổn định; receipt mới báo nhận kháng nghị, chưa tự đảo quyết định hoặc hoàn tiền. Appeal có identity/version/status/owner riêng hoặc cấu trúc tương đương, liên kết quyết định ban đầu và bổ sung bằng chứng có trace. Reviewer phù hợp và kiểm xung đột lợi ích theo policy, không mặc định người bị phản ánh tự duyệt đơn của mình. Kết quả mới giải thích giữ/thay quyết định trong phạm vi, không xóa lịch sử cũ.
+8 Phía bác sĩ và đối tượng liên quan
+DOC09 cho bác sĩ gửi/theo dõi vấn đề lịch/phiên/chuyên môn/tiền trong quyền từ DOC05 hoặc DOC08. Khi được mời phản hồi, chỉ phần nội dung/tệp đã được reviewer cho phép; không tự mở thông tin bệnh nhân hoặc danh tính báo cáo nhạy cảm. Bác sĩ cũng có route kháng nghị theo policy, không toàn quyền vì là provider. Trạng thái case riêng có thể khác thông tin được công bố cho bệnh nhân, nhưng không dùng để ghi hai sự thật nguồn mâu thuẫn.
+9 Đóng mở lại và phục hồi
+T04/T05 chốt khi case được coi kết thúc, đang chờ biện pháp, rút phản ánh nếu hỗ trợ, reopen/appeal và trách nhiệm action còn mở. Không coi ticket closed là mọi phần hoàn/sửa/chi đã xong. Rút không tự xóa bằng chứng/audit hoặc hủy điều tra bắt buộc theo policy; cách giữ lại cần review, không tự đặt thời hạn. Notify/refresh mở đúng version/case trong quyền, không gửi nội dung nhạy cảm lên lockscreen/kênh ngoài chưa duyệt.
+Lỗi mạng/đóng app sau gửi hoặc upload: tra cùng reference, không nhân case/appeal/action. Callback/event trễ, hai operator cùng phân công/quyết định, account đổi, grant revoke và restore cần version/gate/lifecycle. Nội dung đã tải ngoài app có giới hạn thu hồi. Runbook có owner/next action/review date và công cụ thật; thiếu người giờ dịch vụ cần giới hạn scope/chuyển cấp theo quyết định, không giả có on call.
+
+IV Layout sơ bộ
+1 Gửi và xem lại phản ánh
+
+a Biến thể và giới hạn
+64 có chọn sai loại/chưa rõ, validation, upload lỗi, loading, phiên hết hạn và unknown. Hướng dẫn cần trợ giúp ngay chỉ dùng nội dung/kênh được review; không bịa hotline hoặc hứa đây là kênh trực.
+
+2 Tiếp nhận và cần bổ sung
+
+a Biến thể và giới hạn
+65 tách receipt, queue chờ, reviewer đang xử lý và cần người gửi bổ sung. UI không mặc định công bố tên reviewer; mức thông tin do policy quyết định. 64 bổ sung giữ lịch sử.
+
+3 Kết quả và kháng nghị
+
+a Biến thể và giới hạn
+Kết quả công bố có giới hạn/next step, không tự hoàn/sửa dữ liệu. Appeal là nhánh trong65 có identity/status và reviewer riêng theo quy trình; không tạo cảm giác gửi là quyết định đã đảo.
+
+4 Bác sĩ và hàng chờ nội bộ
+
+a Biến thể và giới hạn
+Hai khung là sơ đồ bố trí thông tin cho DOC09/OPS10, không buộc portal phải là màn điện thoại hoặc xây mới. Cần views phân quyền, tệp/ghi chú visibility và conflict of interest theo T03/T04/T07 hoặc mapping công cụ thật.
+
+V Trạng thái và hợp đồng phản ánh
+1 Các lớp trạng thái riêng
+Lớp
+Nguồn và ý nghĩa
+Không được suy
+Submission
+Nháp/upload/receipt/unknown
+Upload xong chưa là đã nhận case
+Case/triage
+Chờ/phân tuyến/owner đang xử lý
+Tiếp nhận chưa là kết luận đúng
+Evidence visibility
+Người gửi/bên liên quan/reviewer theo quyền
+Case access không mở mọi tệp
+Decision
+Reviewer thẩm quyền và version/lý do
+Quyết định hoàn chưa là tiền về
+Action thực thi
+Refund/amend/provider/hold theo miền
+Closed không chứng minh mọi action xong
+Appeal
+Nhận/review/kết quả liên kết quyết định
+Gửi kháng nghị không tự đảo kết luận
+2 Trạng thái hiển thị đề xuất
+Trạng thái
+Cách hiểu
+Bước tiếp
+Nháp hoặc chưa rõ gửi
+Chưa receipt hoặc chưa biết kết quả
+Xem lại/tra cùng operation
+Đã tiếp nhận/chờ phân công
+Case có nguồn, chưa reviewer xử lý
+Route theo giờ/capacity thật
+Đang review/cần bổ sung
+Owner và bước tiếp theo nguồn
+Xin tối thiểu hoặc chờ đúng tuyến
+Có kết quả/chờ biện pháp
+Quyết định đã công bố, action có thể còn mở
+Theo dõi nguồn miền thực thi
+Kháng nghị đang xử lý
+Có yêu cầu liên kết quyết định/version
+Review theo policy, giữ trace
+Kết thúc hoặc mở lại
+Đạt điều kiện đóng/reopen đã chốt
+Không xóa lịch sử hoặc action ngầm
+
+3 Hợp đồng identity quyền và bằng chứng
+a Định danh đề xuất
+case/submission/appeal/decision/action ID và version; reporter/subject/provider/booking/session/payment/document references tối thiểu; domain/priority/owner/next action/review date; evidence ID/classification/visibility/retention, operation ID/receipt/source time. Actor lấy phiên server; client không tự khai owner/domain để cấp quyền. T03/T06 chốt schema và trường nội dung công bố.
+b Tệp và trao đổi riêng tư
+T03 chốt loại/kích thước/kiểm tra tệp/cách xem, redaction, access lúc upload/download và storage/temp policy. Evidence không copy thành link công khai; preview/count/tên tệp cũng kiểm quyền. Ghi chú nội bộ không được đổi thành công bố chỉ vì chuyển tuyến; mỗi lần chia sẻ cho bên liên quan cần scope/quyền rõ. Lưu nguyên thông tin báo cáo cùng bổ sung/version theo retention, không tự sửa lời gửi cũ.
+c Phiên quyền và vòng đời
+Quyền case/appeal khác quyền sức khỏe: mất quan hệ/grant, provider dừng hoặc account xóa cần policy tiếp nhận/theo dõi/bằng chứng riêng. Không tự cấp lại grant để xử lý khiếu nại; cũng không âm thầm xóa quyền gửi phản ánh chỉ vì quan hệ đổi. T01/T03 review các tình huống và kênh xác minh an toàn. Retention/legal hold nếu cần do reviewer chốt, không đặt số hoặc kết luận yêu cầu pháp lý trong tài liệu.
+4 Đồng thời kháng nghị và thực thi
+T06 dùng operation/version/receipt để retry không nhân case/appeal/refund action; cùng khóa khác payload bị xử lý theo contract. Hai operator đổi owner/decision phải có concurrency control, không ghi đè ngầm; chuyển tuyến có acknowledgment/owner theo T02. Event cũ không đóng action/reopen sai trạng thái. Decision mới và appeal giữ liên kết với version gốc và history.
+Action thực thi phân quyền riêng, không một nút Resolve tự sửa hồ sơ, hoàn tiền và chi tiền. T05 map quyết định sang Flow15/16/18/OPS07 đúng approval/source; readback kết quả thật trước báo biện pháp hoàn tất. Payout hold theo policy có thẩm quyền, không tự giữ tiền chỉ từ nội dung cáo buộc chưa qua điều kiện. Nguồn tiền chưa rõ phải tra, không sửa ledger để case trông như đã giải quyết.
+5 Vận hành đo lường và phục hồi
+Runbook có trigger/domain/owner/next action/review date, conflict handling và giờ/capacity được xác nhận. Không tự cam kết 24/7 hoặc SLA. Sự cố diện rộng liên kết incident; vấn đề chuyên môn/riêng tư tới người đủ năng lực, không đợi Finance quyết refund. Log/analytics không chứa nội dung khám, evidence, token hoặc secrets; chỉ đo phễu/trạng thái an toàn, không gọi số case thấp là chất lượng điều trị tốt. Restore áp lại quyền/retention/action state trước mở.
+
+VI Task triển khai
+1 T01 Chốt scope người gửi và quyền case
+a Mục tiêu  Có quyền phản ánh theo dõi và cung cấp thông tin đúng vai trò.
+b Phụ trách và đầu vào  Product/Support với Privacy/chuyên môn/Finance; cần Q11–Q13 và Flow14–16.
+c Điểm cần xác nhận trong task  Chốt patient/payer/đại diện/provider, case dịch vụ hay support nền, account khóa/mất grant và quyền bên liên quan.
+d Công việc  Lập action/visibility matrix cho64/65/DOC09/OPS10 và handoff20/39; không tự mở hồ sơ sức khỏe.
+e Đầu ra  Baseline scope/access và kênh xác minh.
+f Tiêu chí nghiệm thu  Payer/bên bị phản ánh không mặc định xem mọi evidence; mất grant không tự cấp/xóa quyền case ngầm.
+g Khi thiếu đầu vào  Thiếu policy khóa nhánh phụ thuộc; vẫn làm receipt/state và dữ liệu mock.
+h Liên kết  HM-V3-T03 T21; HM-V31-T04
+2 T02 Chốt phân tuyến ưu tiên owner và giờ hỗ trợ
+a Mục tiêu  Không bỏ quên case hoặc route sai miền.
+b Phụ trách và đầu vào  Support/vận hành với chuyên môn/Privacy/Finance/technical owner; cần T01.
+c Điểm cần xác nhận trong task  Chốt taxonomy/ưu tiên, chưa rõ/nhiều miền, hướng trợ giúp ngay đã review, chuyển cấp và capacity/giờ thực.
+d Công việc  Lập route matrix/trigger/owner/next action/review date; bàn giao có người nhận; link incident diện rộng.
+e Đầu ra  Triage/runbook và danh sách đầu mối xác nhận.
+f Tiêu chí nghiệm thu  Clinical/privacy không đợi refund; chuyển cấp chưa nhận không bỏ owner; không tự hứa 24/7.
+g Khi thiếu đầu vào  Chưa có đội/giờ thì ghi cần chốt và giới hạn scope, không giả có on call.
+h Liên kết  HM-V3-T21 T22; HM-V31-T12
+
+VI Task triển khai tiếp theo
+3 T03 Chốt bằng chứng trao đổi và retention
+a Mục tiêu  Thu tối thiểu và ngăn lộ nội dung qua tệp ghi chú hoặc chuyển tuyến.
+b Phụ trách và đầu vào  Privacy/Security với Product/Support và các miền reviewer; cần T01 T02.
+c Điểm cần xác nhận trong task  Chốt tệp hỗ trợ, giới hạn/kiểm tra, redaction/visibility, lưu/xóa/temp và access khi quyền/account đổi.
+d Công việc  Lập evidence/data lifecycle; tách nội bộ/công bố/bên liên quan; review yêu cầu áp dụng với người phù hợp.
+e Đầu ra  Evidence contract/retention/copy được duyệt.
+f Tiêu chí nghiệm thu  Không xin secrets/toàn bộ hồ sơ; file URL/preview đều có gate; không public rating hoặc link tự động.
+g Khi thiếu đầu vào  Chưa duyệt loại tệp/retention không bật upload tùy tiện; vẫn làm form tối thiểu.
+h Liên kết  HM-V3-T21 T23; HM-V31-T18
+4 T04 Chốt review kết luận và kháng nghị
+a Mục tiêu  Có quyết định có thẩm quyền và đường review lại có người nhận.
+b Phụ trách và đầu vào  Chủ quy trình với chuyên môn/Privacy/Finance/Support; cần T01–T03.
+c Điểm cần xác nhận trong task  Chốt reviewer/COI, bằng chứng đủ, approval, nội dung mỗi bên xem, appeal condition và mốc nếu có.
+d Công việc  Lập decision/appeal state machine, conflict handling, version/trace và quyền bổ sung.
+e Đầu ra  Review/appeal policy và oracle quyết định.
+f Tiêu chí nghiệm thu  Không AI phán quyết; bên liên quan không tự duyệt case của mình; appeal không tự đảo kết quả.
+g Khi thiếu đầu vào  Chưa có reviewer/điều kiện ghi cần chốt; không tự đặt deadline/số lần appeal.
+h Liên kết  HM-V3-T21; HM-V31-T12
+
+VI Task triển khai tiếp theo
+5 T05 Chốt biện pháp thực thi và điều kiện đóng
+a Mục tiêu  Quyết định và kết quả hành động không bị gộp sai.
+b Phụ trách và đầu vào  Product/vận hành với Finance/chuyên môn/Privacy; cần T02 T04.
+c Điểm cần xác nhận trong task  Chốt refund/amend/provider action/payout hold, case resolved/closed/withdraw/reopen và action còn chờ.
+d Công việc  Map quyết định sang Flow15/16/18/OPS07; check authority/source; closure criteria và readback thật.
+e Đầu ra  Action/closure contract cùng handoff owner.
+f Tiêu chí nghiệm thu  Ticket closed không tự là đã hoàn/sửa/chi; support không sửa ledger/hồ sơ ngoài quyền.
+g Khi thiếu đầu vào  Chưa hỗ trợ rút/reopen ghi không áp dụng theo policy; không xóa lịch sử để đóng.
+h Liên kết  HM-V3-T13 T18 T19 T20 T21 T22; HM-V31-T11 T12
+6 T06 Xây API case evidence routing decision và appeal
+a Mục tiêu  Có nguồn trạng thái nhất quán qua retry/chuyển cấp/đồng thời.
+b Phụ trách và đầu vào  Backend với App/ops tool/QA; cần T01–T05.
+c Điểm cần xác nhận trong task  Chốt identity/version/operation/receipt, tệp riêng tư, assignment acknowledgment và action event.
+d Công việc  Làm submit/query/supplement/assign/review/publish/appeal/close, access theo miền và audit tối thiểu.
+e Đầu ra  API/schema/error map/công cụ mapping và fixtures.
+f Tiêu chí nghiệm thu  Timeout không nhân case/appeal/action; operator conflict không ghi đè; event cũ không đảo quyết định.
+g Khi thiếu đầu vào  Dùng sandbox/fixtures; mock không chứng minh đã có đội review hoặc xử lý thật.
+h Liên kết  HM-V3-T21 T22 T23; HM-V31-T12
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế app bác sĩ và bàn xử lý
+a Mục tiêu  Người gửi biết trạng thái/bước tiếp, operator thấy đúng dữ liệu trách nhiệm.
+b Phụ trách và đầu vào  Designer với Support/Product/các reviewer và App; nhận T01–T05.
+c Điểm cần xác nhận trong task  Duyệt 64/65/DOC09/OPS10, gộp20/39 nếu cần, copy chưa rõ/kết quả/appeal và tệp visibility.
+d Công việc  Hoàn thiện 8 khung IV; form/preview/status/evidence/version, chữ lớn/đọc màn hình và hướng recovery.
+e Đầu ra  Layout/copy/state map người dùng/provider/ops.
+f Tiêu chí nghiệm thu  Không biến cáo buộc thành kết luận hoặc giấu action pending; không UI công khai evidence.
+g Khi thiếu đầu vào  Công cụ đối tác/có sẵn cần mapping thật, không mặc định xây portal mới.
+h Liên kết  HM-V3-T21 T22; HM-V31-T03 T12 T15
+8 T08 Triển khai client công cụ và vận hành handoff
+a Mục tiêu  Có flow hai phía từ gửi tới kết quả và appeal trong quyền.
+b Phụ trách và đầu vào  App/Backend/ops/vận hành; cần T06 T07 và người nhận ca.
+c Điểm cần xác nhận trong task  Chốt notification/channel, resume/query, kênh hỗ trợ, action readback và công cụ thật.
+d Công việc  Nối 64/65/DOC09/OPS10; upload trong scope, callback/account isolation, domain/action handoff và runbook.
+e Đầu ra  Build tích hợp và bằng chứng trạng thái/assignment/quyền.
+f Tiêu chí nghiệm thu  Không gửi email/public link tự động; đúng case/version; bổ sung không ghi đè lời gửi cũ.
+g Khi thiếu đầu vào  Có thể staging; chưa đủ giờ/đội review phải giữ giới hạn hiển thị thật.
+h Liên kết  HM-V3-T21 T22 T24; HM-V31-T10 T12 T14
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm hành trình quyền evidence và appeal
+a Mục tiêu  Có oracle cho nội dung trạng thái và quyền hai phía.
+b Phụ trách và đầu vào  QA/Design QA với Privacy/chuyên môn/Finance/Support; cần T01–T08.
+c Điểm cần xác nhận trong task  Chốt case/role/domain/visibility/policy và decision versions cùng expected.
+d Công việc  Chạy TC01–TC12; API/file/preview, routing/supplement/result/appeal và hồi quy Flow14–16.
+e Đầu ra  Kết quả build/dataset/policy/role và defect.
+f Tiêu chí nghiệm thu  Không Pass chỉ vì UI ẩn nút; chứng minh quyền tệp/nội dung và người nhận thật trên công cụ.
+g Khi thiếu đầu vào  Thiếu reviewer/build/oracle ghi Not run hoặc Blocked có owner.
+h Liên kết  HM-V3-T25; HM-V31-T16
+10 T10 Kiểm recovery COI handoff và readiness
+a Mục tiêu  Không mất case lộ bằng chứng hoặc thực thi tiền/hồ sơ sai qua lỗi.
+b Phụ trách và đầu vào  QA/Security/Backend/vận hành với reviewer từng miền; cần T03–T06 T08 T09.
+c Điểm cần xác nhận trong task  Chốt concurrency/fault/restore, incident drill, action boundaries và giờ/capacity nhận việc.
+d Công việc  Chạy TC13–TC24; duplicate/upload/revoke/COI/race/restore; diễn tập clinical khác money và chuyển ca.
+e Đầu ra  Bằng chứng thực, known limits/runbook/release packet.
+f Tiêu chí nghiệm thu  Không action lặp, case bỏ owner hoặc evidence leak; readiness theo miền và guardrail có người nhận.
+g Khi thiếu đầu vào  Thiếu đội/môi trường đánh Blocked; không coi tài liệu/sandbox là phản ánh đã được xử lý thật.
+h Liên kết  HM-V3-T23 T25 T27 T28; HM-V31-T17 T18 T19 T20
+
+VII Ca kiểm thử đề xuất
+Toàn bộ ca hiện là Not run. QA ghi build/OS, case/decision/appeal/action version, actor/domain/evidence visibility, policy/oracle và công cụ thực. Không áp dụng cần lý do; thiếu đầu vào ghi Blocked có owner. Kiểm nội dung công bố, nội bộ, quyền tệp và action nguồn riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+17-01
+Mở64 từ lịch/tiền/phiên/tài liệu hoặc DOC09
+Đúng account/ngữ cảnh/quyền; không tự đưa toàn bộ hồ sơ vào case.
+T01 T08
+17-02
+Chọn loại chưa rõ hoặc case nhiều miền
+Có triage/owner; không ép người dùng biết nội bộ hoặc mọi vấn đề về Finance.
+T02 T07
+17-03
+Nhập/preview rồi quay lại trước gửi
+Không tạo case; rõ tệp/phạm vi/riêng tư, không coi cáo buộc là kết luận.
+T03 T07
+17-04
+Upload tệp lỗi hoặc không đủ điều kiện
+Theo contract, không giả upload/case thành công hoặc âm thầm gửi thiếu/nhầm tệp.
+T03 T06
+17-05
+Submit có receipt rồi mở 65
+Đã nhận khác reviewer đang xử lý; mã/status/bước tiếp đúng nguồn.
+T06 T08
+17-06
+OPS10 phân tuyến/assign và bàn giao
+Đúng reviewer/owner/next action/review date; chưa nhận chuyển cấp không bỏ trách nhiệm.
+T02 T06
+17-07
+Xin bổ sung rồi64 gửi thêm
+Chỉ tối thiểu và trong quyền; giữ sự kiện/version/lời gửi cũ, không xin secrets.
+T03 T08
+17-08
+Bên bị phản ánh/provider hoặc payer mở evidence
+Chỉ nội dung/tệp được phép; không tự xem toàn bộ case hoặc hồ sơ bệnh nhân.
+T01 T03
+17-09
+Reviewer không đủ vai trò hoặc COI
+Không tự quyết ngoài thẩm quyền; chuyển theo quy trình và có trace.
+T04 T06
+17-10
+Công bố quyết định với biện pháp còn chờ
+Kết quả/giới hạn/action status riêng; không nói refund/amend đã xong thiếu nguồn.
+T04 T05
+17-11
+Gửi kháng nghị đủ điều kiện hoặc quay lại
+Gắn decision/version; chưa gửi không tạo, receipt không tự đảo kết luận hoặc tiền.
+T04 T08
+17-12
+Bác sĩ gửi/theo dõi/phản hồi DOC09
+Scope đúng provider/lịch/khoản tiền; nội dung được phép không lộ evidence bệnh nhân.
+T01 T07
+
+VII Ca kiểm thử quyền chuyển cấp và khôi phục
+Toàn bộ ca hiện là Not run. QA ghi build/OS, case/decision/appeal/action version, actor/domain/evidence visibility, policy/oracle và công cụ thực. Không áp dụng cần lý do; thiếu đầu vào ghi Blocked có owner. Kiểm nội dung công bố, nội bộ, quyền tệp và action nguồn riêng.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+17-13
+Submit/appeal đã nhận nhưng mất phản hồi
+Unknown query cùng operation; không nhân case/appeal hoặc action biện pháp.
+T06 T08
+17-14
+Tệp upload xong case submit lỗi/đổi account
+Không orphan file ngoài lifecycle hoặc lộ file account cũ; receipt/status đúng.
+T03 T06
+17-15
+Hai operator đổi owner/decision đồng thời
+Version/conflict đúng; không ghi đè ngầm hoặc mất owner/trace.
+T02 T06
+17-16
+Event action/decision lặp hoặc đảo thứ tự
+Không refund/amend/hold lặp, không close/reopen sai hoặc đảo decision cũ.
+T05 T06
+17-17
+Clinical/privacy cần xử lý trong lúc refund chờ
+Route reviewer đúng theo policy, không đợi Finance; không tự hứa kênh trực chưa có.
+T02 T05
+17-18
+Sự cố diện rộng nhiều case cùng nguyên nhân
+Liên kết incident/runbook có owner; không tự đóng mọi case như đã giải quyết.
+T02 T08
+17-19
+Người bị phản ánh hoặc reviewer liên quan tự duyệt
+COI/approval gate theo policy; không AI tự phán quyết hoặc thay reviewer thật.
+T04 T06
+17-20
+Grant quan hệ đổi provider dừng hoặc account khóa
+Case access theo policy riêng, không cấp lại grant sức khỏe hoặc xóa evidence ngầm.
+T01 T03
+17-21
+Appeal ngoài điều kiện hoặc decision đã có bản mới
+Lý do/bước tiếp và version đúng; không tự áp deadline giả hoặc review sai quyết định.
+T04 T08
+17-22
+Closed/withdraw/reopen khi refund/action còn mở
+Theo closure policy; không xóa lịch sử hoặc nói mọi phần đã xong, action vẫn có owner.
+T05 T06
+17-23
+Restore/cache/link cũ/log và notification
+Không hồi sinh quyền tệp vô hiệu/lộ ghi chú; log không nội dung nhạy cảm, deep link gate hiện hành.
+T03 T06
+17-24
+Diễn tập bàn giao ca support/domain readiness
+Có người nhận/giờ thật/runbook; không support sửa tiền/hồ sơ hoặc gọi sandbox là kết quả vận hành.
+T02 T05 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Vai trò
+Bàn giao
+SCR64 65
+Submit supplement result appeal
+Case/decision/appeal identity và quyền
+DOC09
+Phía bác sĩ gửi và phản hồi
+Không tự mở evidence bệnh nhân
+OPS10 OPS03
+Queue review/chuyển cấp và support
+Owner/miền/visibility/COI
+OPS08 OPS09
+Ngoại lệ lịch và tiền
+Không Support tự refund hay xác định no show
+OPS07
+Provider eligibility nếu có biện pháp
+Review thẩm quyền, không auto suspend từ cáo buộc
+Flow15 16
+Refund/session/tài liệu thực thi
+Decision khác nguồn xác nhận action
+Flow18
+Ledger/payable/payout theo miền
+Hold/chi theo policy và authorization riêng
+SCR20 39
+Hỗ trợ nền/kênh tiếp nhận
+Liên kết case nếu có, không tạo route trùng
+2 Điều kiện đóng flow
+T01–T05 có policy/role/reviewer/giờ/capacity; T06 contract/tool; T07 layout/state; T08 build và người nhận; T09–T10 có bằng chứng drill/quyền/action. Chủ quy trình từng miền xác nhận nhận việc, không một người Support duyệt mọi quyết định. Case kết thúc và biện pháp thực thi cần tiêu chí riêng.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026 trang 17,19–21,26: SCR64/65, DOC09, OPS10 và FLOW17. HealMata V3.0 VI bản 0.1 ngày 18/10/2026 task 21–22 trang 27–28: phản ánh hai phía riêng tư, review/appeal, COI, tuyến chuyên môn/Privacy/technical/money và giờ hỗ trợ có căn cứ. HealMata V3.1 VI bản 0.1 ngày 18/10/2026 task 12 trang 17: queue/owner/bước tiếp/review date và role action.
+T01–T10 là nhóm việc Flow17 liên kết HM-V3/HM-V31, không thay mã nguồn. Lựa chọn mới vẫn cần chốt; chưa xác nhận code, đội trực, kết quả review hoặc refund thật. Thay policy/visibility/giờ hỗ trợ cần cập nhật contract, layout, expected và handoff Flow14–18; không chỉ sửa copy thông báo.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+AI
+Artificial Intelligence
+Không tự phán quyết chuyên môn/appeal/tiền.
+API
+Application Programming Interface
+Hợp đồng app/backend/công cụ.
+COI
+Conflict Of Interest
+Xung đột lợi ích của người review/quyết định.
+DOC
+Doctor tools
+Tiền tố công cụ bác sĩ trong Master.
+HM
+HealMata
+Tiền tố flow màn task và case.
+ID
+Identifier
+Định danh case appeal decision evidence.
+OPS
+Operations
+Công cụ nội bộ theo miền và quyền.
+OS
+Operating System
+Hệ điều hành trong kiểm thử.
+QA
+Quality Assurance
+Kiểm chất lượng theo build/oracle.
+SCR
+Screen
+Mã màn trong Master Screen List.
+SLA
+Service Level Agreement
+Cam kết dịch vụ; chưa tự đặt thời hạn.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ phản ánh và xử lý
+Case/ticket là hồ sơ yêu cầu; triage là phân loại ban đầu; domain là miền xử lý; owner là người/bộ phận chịu trách nhiệm. Evidence là bằng chứng; visibility là phạm vi người được xem; redaction là che phần không cần lộ. Decision là quyết định có thẩm quyền; appeal là kháng nghị liên kết quyết định; action là biện pháp thực thi có nguồn riêng. Incident là sự cố có quy trình vận hành riêng.
+Receipt là kết quả tiếp nhận/xử lý theo nguồn; operation là ý định có định danh; unknown là chưa rõ kết quả. Idempotency giúp retry không tạo tác động lặp. Audit là dấu vết được bảo vệ; retention là chính sách lưu; legal hold nếu áp dụng do reviewer xác định; restore là khôi phục. Oracle là quy tắc kết quả chuẩn; baseline là bộ quyết định; on call là người trực được phân công thật, không mặc định có.

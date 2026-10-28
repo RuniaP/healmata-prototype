@@ -1,0 +1,400 @@
+HM FLOW 04 Ghi nhận sức khỏe
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  23/10/2026
+Tài liệu mô tả hành trình trả lời câu hỏi sức khỏe, nhập số đo đã có, xem lại, lưu, xem lịch sử và hiệu chỉnh trong quyền. Cấu trúc kế thừa Flow 01–03: sơ đồ, layout, trạng thái, task và ca kiểm thử. Các quyết định còn mở nằm ngay trong task, không coi phương án minh họa là yêu cầu đã duyệt.
+Mục tiêu sản phẩm về hỏi nhiều lần trong ngày và phân tích theo ngày, tuần, tháng, quý, năm được giữ trong bản đồ. Tài liệu không tự thu hẹp V1.0 thành một câu cảm nhận mỗi ngày; số lượt, bộ câu, lịch nhắc và phạm vi biểu đồ theo từng phiên bản cần chốt tại T01/T08. Nội dung câu hỏi trong wireframe là placeholder, chưa phải công cụ được xác nhận chuyên môn.
+I Phạm vi và kết quả cần đạt
+1 Người dùng và đầu vào
+Có phiên hợp lệ, hồ sơ đang ghi và quyền xem/nhập/hiệu chỉnh từ Backend. Tách người thao tác khỏi người được ghi. Nhập số đo là nhập dữ liệu từ nguồn được chọn, không phải app tự đo bằng camera hay suy từ câu trả lời. Danh mục chỉ số, đơn vị, câu hỏi và validation phải được version hóa/review trước dùng thật.
+2 Các mã trong luồng
+HM-SCR-14 danh sách lịch sử; HM-SCR-15 chọn loại, trả lời/nhập số đo và xem lại; HM-SCR-29 chi tiết/hiệu chỉnh. Bước con trong cùng màn không cấp mã riêng. POP-03 xem lại hiệu chỉnh dùng chung với nội dung phù hợp; POP-07/09/10/11/12 xử lý nháp, phiên/quyền, conflict và lỗi mạng.
+3 Điểm kết thúc
+Đã lưu online khi server xác nhận đúng operation và record/version; 14/29 cùng tổng hợp phản ánh nguồn hợp lệ. Nếu offline được cho phép, local chờ chưa phải đã lưu server. Nếu bỏ qua hết câu hỏi, không tạo HealthRecord giả. Nếu lượt có dữ liệu một phần, kết quả từng mục hoặc toàn lượt phải theo contract đã chọn, không âm thầm bỏ phần lỗi.
+4 Ranh giới
+Flow 01 nhận xác thực; Flow 06 quyền ghi hộ; Flow 08 nhắc sức khỏe; Flow 09 đồng bộ. SCR-30 biểu đồ cơ bản và Flow 12 báo cáo là các đích khai thác dữ liệu: Flow 04 bàn giao nguồn/đơn vị/time/version, chưa thiết kế toàn bộ biểu đồ. Không chẩn đoán, tự thay liều, quy đổi thiếu dữ liệu thành khỏe/bệnh hoặc hứa có người theo dõi liên tục.
+
+II Sơ đồ luồng tổng thể
+
+1 Quy tắc đọc
+04/14/15/16/29 là mã HM-SCR. Trả lời câu hỏi và nhập số đo có schema/nguồn khác nhau; các bước cùng dùng subject_id rõ. Bộ câu, tần suất, quyền, offline và lưu nhiều mục trong một lượt còn là quyết định trong task. Sơ đồ không chứng minh đã có nội dung được review hoặc build chạy thực tế.
+
+III Flow chi tiết
+1 Vào luồng và chọn đúng hồ sơ
+a Điểm vào
+Từ Hôm nay 04/16, Lịch sử 14 hoặc lời nhắc đã được cấu hình, mở 15. Server kiểm phiên, hồ sơ và quyền nhập hiện tại. Tên người được ghi xuất hiện trên form và bước xem lại. Deep link chứa định danh không được xem là bằng chứng quyền; khi cần đăng nhập lại phải kiểm quyền sau xác thực, không tự mở dữ liệu người thân.
+b Chọn loại và nội dung
+Chọn trả lời câu hỏi hoặc nhập số đo từ danh mục được duyệt. Nếu mở từ một lượt hỏi theo lịch, giữ question set/version và định danh lượt; không gán câu trả lời vào lượt khác khi quay lại. Nội dung ngừng dùng/đổi phiên bản giữa lúc nhập cần phản hồi tại T06, không tự map theo nhãn dịch giống nhau.
+2 Câu hỏi sức khỏe và nhiều lượt trong ngày
+a Trả lời và bỏ qua
+Hiện câu hỏi cùng lựa chọn/schema đã được review. Không chọn sẵn câu trả lời mang nghĩa sức khỏe bình thường. Bỏ qua là trạng thái của câu trong lượt nếu cần theo dõi, không phải câu trả lời 0. T01 chốt câu nào tùy chọn/bắt buộc, có được thoát toàn lượt hay không và cách thể hiện số câu còn lại. Nếu tất cả bị bỏ qua, kết thúc lượt mà không tạo dữ liệu sức khỏe giả.
+b Tần suất và định danh lượt
+Giữ khả năng thiết kế hỏi nhiều lần trong ngày; số lượt, khung giờ, lượt tự ghi và chế độ nhắc theo lựa chọn Product/reviewer. Một ngày có thể có nhiều quan sát thật; không dùng subject + ngày làm khóa duy nhất để vô tình đè câu trả lời trước. Cùng operation gửi lại không tạo lượt mới. Chốt ai được tạo lượt, có tiếp tục lượt bỏ dở và có trả lời lại lượt đã hoàn tất hay tạo hiệu chỉnh.
+c Xem lại
+Trước lưu, hiện hồ sơ, câu trả lời, câu bỏ qua, thời điểm tự báo và nguồn/tác giả. Khi một lượt chứa nhiều câu, cho thấy đủ nội dung để nhận lỗi. T06 quyết định commit toàn lượt hoặc từng mục với kết quả rõ; không hiển thị “Đã lưu tất cả” khi có mục còn lỗi/chờ. Thời điểm tự báo khác thời điểm server nhận.
+3 Nhập số đo đã có
+Chọn chỉ số → hiện đúng thành phần, đơn vị được hỗ trợ, thời điểm đo, nguồn và trường phụ theo schema đã duyệt. Một số đo có nhiều thành phần phải được giữ thành một nhóm hợp lệ theo contract, không lưu thành các record rời thiếu nghĩa. Người dùng nhập, xem lại và xác nhận; không lấy câu cảm nhận để suy số đo hoặc tự đề xuất điều trị.
+
+4 Validation và lưu dữ liệu
+a Kiểm định dạng và đơn vị
+Client hỗ trợ nhập theo ngôn ngữ đã chọn; Backend kiểm kiểu, độ chính xác, thành phần bắt buộc, đơn vị/schema và quyền. Dấu phẩy/chấm, khoảng trắng và giá trị thiếu cần quy tắc parse rõ; không diễn giải mơ hồ hoặc tự đổi 1,5 thành 15. Nếu không hỗ trợ đơn vị, yêu cầu sửa/chọn đúng; không đổi nhãn đơn vị giữ nguyên số. Mọi phép quy đổi phải được duyệt và truy nguyên giá trị/đơn vị gốc.
+b Phạm vi giá trị và thời gian
+Ngưỡng kỹ thuật, yêu cầu xác nhận lại giá trị lạ và phạm vi thời gian do T02/reviewer duyệt; chưa tự đặt ngưỡng bệnh. Từ chối định dạng sai khác với phân loại bệnh. Thời điểm tương lai/ghi bù/đồng hồ máy sai có đường sửa/xem lại theo policy, không tự đổi về giờ hiện tại. Dữ liệu không được tự sửa chỉ để qua validation.
+c Gửi và kết quả
+Xem lại rồi gửi operation gắn subject, actor từ phiên, schema/content version và định danh lượt/record. Backend trả accepted/pending/rejected hoặc kết quả từng mục nếu có theo contract. Khi mất phản hồi, tra operation trước retry; không gửi lại dưới một khóa khác để làm hết loading. Hủy trước gửi không tạo HealthRecord, trừ metadata lượt bỏ qua được duyệt riêng.
+5 Lịch sử chi tiết và hiệu chỉnh
+Sau lưu mở 14 hoặc 29 theo UX. 14 lọc ngày/loại/nguồn trong quyền, tách chưa tải/không có dữ liệu/mất quyền. 29 hiển thị giá trị hoặc câu trả lời, đơn vị, câu hỏi/chỉ số theo version nguồn, thời điểm sự việc và ghi nhận, tác giả/nguồn, lịch sử hiệu chỉnh. Chọn sửa khi có quyền; form giữ record_id và expected_version, xem trước/sau qua POP-03 rồi tạo amendment theo policy.
+T03 chốt sửa trường nào, có đánh dấu bản nhập sai không còn hợp lệ, lý do và giới hạn sửa hộ. Không đổi question_id thành câu khác khi chỉ sửa câu trả lời; không biến sửa giá trị thành một phép đo mới mà mất nguồn. Version cũ giữ dấu vết trong thời hạn lưu, tổng hợp/báo cáo biết bản nào hiện hành theo contract.
+6 Offline ghi hộ và xung đột
+Đề xuất offline chỉ cho dữ liệu của chính mình theo allowlist, ghi hộ/hiệu chỉnh cần mạng; T04 quyết định. Local chờ luôn phân biệt server accepted. Khi gửi lại, kiểm phiên/quyền/content version/schema; nội dung cũ bị vô hiệu phải xử lý rõ, không tự sửa payload đã gửi để dùng cùng operation. Hai lượt ghi thật không tự gộp chỉ vì giá trị giống; hai hiệu chỉnh cùng version không ghi đè âm thầm. Mất quyền che dữ liệu trước khi tải bản mới.
+7 Liên kết nhắc và tổng hợp
+Lượt bỏ qua, chưa trả lời và chưa có dữ liệu không tự thành bất thường hoặc lý do tăng nhắc. T08 chốt nhắc nhiều lần/ngày, opt in/giờ yên tĩnh theo scope và cập nhật sau hoàn tất. Lưu số đo không tự đánh dấu mọi lượt hỏi trong ngày đã hoàn tất. 30/31/báo cáo nhận data source, độ phủ, đơn vị, version và trạng thái hợp lệ; không suy dữ liệu thiếu thành 0 hoặc kỳ dài thành có đủ dữ liệu.
+
+IV Layout sơ bộ
+1 Lịch sử và chọn kiểu ghi nhận
+Wireframe đen trắng để review thứ tự nội dung, chưa là UI cuối hoặc thông số nền tảng. Trường/câu hỏi đều là cấu trúc minh họa cần review; không có bộ câu chuyên môn đã được xác nhận trong bản nháp.
+
+a Biến thể
+14 có loading, có/rỗng dữ liệu, lỗi, mất quyền, snapshot cũ nếu được cho phép. 15 có chỉ xem/không quyền ghi. Chuyển người bỏ response cũ và không chuyển nháp sang hồ sơ khác. Liên kết biểu đồ chỉ hiện khi phạm vi tương ứng được chọn, không tự loại khỏi V1.0.
+
+2 Câu hỏi và lượt ghi nhận trong ngày
+
+a Tần suất và bỏ qua
+Hai khung cùng mã 15. Bề mặt quản lý lượt là đề xuất, có thể gộp với Home/form nếu dễ hiểu. Bỏ qua câu không lưu giá trị sức khỏe giả; bỏ qua hết và kết thúc có copy phù hợp. Lượt theo lịch và tự ghi mới có định danh riêng; không tự áp một lượt/ngày hoặc bắt hỏi nhiều lần trước khi tần suất được chốt.
+
+3 Nhập số đo và xem lại
+
+a Trường có cấu trúc và giá trị dài
+Chọn chỉ số quyết định trường/đơn vị; giá trị nhiều thành phần giữ nhóm theo schema. Đơn vị hiện ngay cạnh giá trị. Khi đổi chỉ số/đơn vị, cần review dữ liệu nhập lại/quy đổi theo policy, không âm thầm giữ một con số mang nghĩa khác. Keyboard, số thập phân và thông báo lỗi theo nền tảng/ngôn ngữ đã chọn.
+
+4 Chi tiết và hiệu chỉnh
+
+a Nháp lịch sử và xung đột
+29 chỉ cho hành động sửa trong quyền; bản trước/sau tham chiếu đúng version. Có thêm biến thể xem lại sửa dùng POP-03, conflict dùng POP-11 và local chờ/lỗi dùng trạng thái chung. Dữ liệu nguồn được giữ khi chuyển ngôn ngữ; nhãn bản dịch không là định danh câu hỏi.
+
+V Trạng thái và mô hình dữ liệu
+1 Ma trận trạng thái
+Tình huống
+Hiển thị và hành động
+Nghĩa phải bảo toàn
+Chưa trả lời
+Lượt/câu còn mở theo policy.
+Không suy khỏe/bệnh hoặc không hợp tác.
+Bỏ qua
+Nhãn bỏ qua ở lượt nếu được chọn.
+Không tạo HealthRecord 0 hoặc đáp án mặc định.
+Giá trị 0 hợp lệ
+Hiện 0 với đơn vị/ngữ cảnh theo schema.
+Khác missing/null/skipped; không bỏ số 0 do kiểm truthy.
+Thiếu thành phần/đơn vị
+Lỗi rõ tại trường, cho sửa.
+Không tự đoán đơn vị/thành phần để lưu.
+Đang gửi
+Nêu tiến độ; khóa submit tương ứng.
+Chưa gọi là đã lưu trước response hợp lệ.
+Local chờ
+Lưu trên máy, chưa đồng bộ nếu allowlist cho phép.
+Tổng hợp server chưa có dữ liệu mới.
+Timeout/kết quả từng mục
+Tra operation; chỉ rõ mục accepted/pending/rejected.
+Không báo hoàn tất toàn lượt khi có phần chưa xong.
+Nội dung/schema cũ
+Thông báo và đường review theo contract.
+Không tự map đáp án theo nhãn hoặc thay payload cũ.
+Conflict/mất quyền
+Không ghi đè; tải lại trong quyền hoặc che dữ liệu.
+Không lộ bản mới/giá trị ngoài quyền.
+Đã hiệu chỉnh
+Hiện bản hiện hành và dấu vết được phép xem.
+Không sửa thầm gốc hoặc dùng cả hai version như hai quan sát.
+2 Hai loại dữ liệu tách nguồn
+Câu trả lời cần question_id, content_version, answer code/value theo schema và định danh lượt nếu có. Số đo cần metric_id, schema version, value/components, unit, measured_at, nguồn đo/nhập. Cả hai có subject_id, actor_id từ phiên, record_id, operation_id, received_at, timezone, version/validity và amendment refs khi cần. Đây là khái niệm đề xuất, schema cuối do T06 quyết định.
+3 Thiếu dữ liệu và tính toàn vẹn
+Không chọn sẵn câu trả lời. Null/missing/skipped và giá trị 0 hợp lệ có nghĩa khác nhau. Validation định dạng không thay review nội dung. Nếu lưu lượt nhiều mục, contract phải xác định atomic toàn lượt hoặc trạng thái từng mục; app không âm thầm chỉ lưu phần hợp lệ mà báo đã xong.
+
+1 Quy tắc thời gian phiên bản và trùng dữ liệu
+a Nhiều thời điểm và múi giờ
+Thời điểm đo/tự báo, thời điểm thao tác local và server nhận là dữ liệu khác nhau. Ngày chăm sóc theo policy hồ sơ; múi giờ người xem không tự đổi ngày quan sát. T02 xác định thời gian tương lai/ghi bù/đổi múi giờ; không dùng đồng hồ máy làm thứ tự lưu có thẩm quyền. Báo cáo cần biết thời điểm nào được dùng và nguồn của nó.
+b Nhiều lần ghi thật và thao tác lặp
+Một người có thể ghi nhiều quan sát cùng loại trong một ngày. Không đặt unique chỉ theo subject/date/metric để tự đè dữ liệu. Cùng operation cùng payload trả lại kết quả cũ, cùng khóa khác payload bị từ chối. Hai operation khác nhau cùng số đo/thời điểm cần policy cảnh báo trùng hoặc giữ riêng theo T06; không tự loại một phép đo thật chỉ vì số giống nhau.
+c Schema và content version
+Lưu đúng bộ câu/schema dùng khi nhập. Đổi ngôn ngữ không đổi question_id/answer code. Nếu bộ câu ngừng dùng lúc gửi, server xử lý theo policy tương thích đã chốt; không ép đáp án cũ sang câu mới. History hiển thị nguồn version đúng; nội dung bị vô hiệu không được âm thầm dùng cho phân tích mới.
+d Đơn vị và hiệu chỉnh
+Không đổi nhãn đơn vị mà giữ số không còn đúng nghĩa. Chuyển đổi nếu được hỗ trợ cần quy tắc/độ chính xác/reviewer và giữ nguồn gốc phù hợp. Hiệu chỉnh tạo version/amendment, giữ actor và dữ liệu gốc theo retention; projection/biểu đồ biết bản hiện hành hoặc bản vô hiệu. Không đổi record của người khác bằng quyền chỉ ghi hộ.
+2 Nội dung và giới hạn sản phẩm
+Bộ chỉ số và câu hỏi thực tế phải được reviewer có thẩm quyền review trước dùng thật; chưa review dùng dữ liệu giả lập để thiết kế/test. Không đưa score/nhận định AI, cảnh báo ngưỡng bệnh hay emergency monitoring vào scope chỉ vì form có dữ liệu. Nếu thêm phản hồi an toàn khi nhập, cần task nội dung và phạm vi review riêng, không tự tạo lời khuyên điều trị từ validation.
+3 Liên kết biểu đồ và riêng tư
+Giữ mục tiêu ngày/tuần/tháng/quý/năm; T01/T08 xác định phần V1.0 và phần mở rộng. Các kỳ thiếu data hiển thị độ phủ/giới hạn, không bù số 0 hay suy xu hướng dài hạn. Request/chart/export đều theo quyền riêng, trả phí không tạo quyền dữ liệu. Log/analytics không chứa nội dung câu trả lời/số đo, thông tin sức khỏe hay credential không cần thiết.
+
+VI Task triển khai và điểm cần chốt
+HM-F04-T01–T10 là mã gói việc của Flow 04; task nguồn V1.0 giữ trong mục h để tránh backlog trùng. Vai trò là đề xuất, chưa gán người/ngày. Nội dung cần xác nhận nằm tại mục c từng task. Không dùng con số/ngưỡng chưa được duyệt làm tiêu chí pass/fail cuối cùng.
+1 HM F04 T01 Chốt phạm vi câu hỏi và tần suất
+a Mục tiêu  Chốt phạm vi câu hỏi và tần suất; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Product cùng reviewer nội dung, Design và Backend. Mục tiêu HealMata; Master Q03; nguồn task V1.0.
+c Cần xác nhận trong task  Chốt bộ câu, lựa chọn, câu bắt buộc/tùy chọn, bỏ qua, tần suất nhiều lần/ngày, lượt tự ghi/theo lịch, và phạm vi V1.0 so với các phiên bản sau. Không mặc định một câu/ngày. Chốt phần phân tích ngày/tuần/tháng/quý/năm; chưa duyệt không đồng nghĩa loại khỏi V1.0.
+d Công việc thực hiện  Lập content registry/version và ma trận lượt/câu/trạng thái; review nội dung/wording, không coi câu tự tạo là công cụ chẩn đoán đã được xác nhận.
+e Đầu ra  Phạm vi cùng bộ nội dung và quy tắc tần suất có người review/version.
+f Nghiệm thu  Có câu trả lời cho bỏ qua hết/ghi nhiều lượt/bỏ dở; giữ mục tiêu gốc hoặc ghi scope change rõ, không tự thu hẹp.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T01/T02/T17/T20; giao T02–T10.
+2 HM F04 T02 Chốt chỉ số đơn vị thời gian và validation
+a Mục tiêu  Chốt chỉ số đơn vị thời gian và validation; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Product và reviewer nội dung cùng Backend, QA. T01; danh mục số đo ứng viên chưa coi đã duyệt.
+c Cần xác nhận trong task  Chọn metric/schema, thành phần, đơn vị, parse thập phân, độ chính xác, nguồn, thời điểm đo/tự báo, giới hạn kỹ thuật và xác nhận giá trị lạ. Chốt thời gian tương lai/ghi bù/đồng hồ máy sai, đổi đơn vị/quy đổi; không tự đặt ngưỡng bệnh.
+d Công việc thực hiện  Lập field/rule theo từng chỉ số, missing/0, đơn vị không hỗ trợ và các ví dụ parse. Phân biệt kiểm input với phân loại sức khỏe.
+e Đầu ra  Metric registry và fixtures chuẩn giá trị/đơn vị/time/reviewer.
+f Nghiệm thu  Không suy số đo, không đổi số/đơn vị âm thầm, không tự từ chối dữ liệu chỉ vì coi bất thường; nhiều thành phần đủ nghĩa.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T02/T17/T18/T19; giao T05–T10.
+
+3 HM F04 T03 Chốt quyền và lịch sử hiệu chỉnh
+a Mục tiêu  Chốt quyền và lịch sử hiệu chỉnh; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Product với Privacy, Backend và reviewer nội dung. Ma trận gia đình; T01/T02 và nguồn/version.
+c Cần xác nhận trong task  Chốt xem/ghi hộ/sửa hộ, trường được sửa, sửa bản người khác, lý do, thời hạn/retention và bản nhập sai có đánh vô hiệu không. Đề xuất amendment giữ dấu vết, không xóa thầm. Quyền ghi sức khỏe khác quyền thuốc.
+d Công việc thực hiện  Viết actor/subject/author/current grant matrix; dòng thời gian record và amendment, bản nguồn nào dùng trong history/report.
+e Đầu ra  Ma trận quyền và policy hiệu chỉnh/validity có version.
+f Nghiệm thu  Sửa hộ không giả thành chủ hồ sơ nhập; bản gốc truy nguyên trong policy; revoke không được bypass bằng cache/deep link.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T02/T07/T08/T18/T25; giao T05–T10.
+4 HM F04 T04 Chốt nháp offline và đồng bộ
+a Mục tiêu  Chốt nháp offline và đồng bộ; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Product cùng kỹ thuật, Privacy và QA. Flow 01 session; T01–T03; Master Q07.
+c Cần xác nhận trong task  Đề xuất offline chỉ nhập của tôi theo schema đã tải, ghi hộ/sửa cần mạng. Chốt snapshot/TTL nếu có, nháp theo lượt, logout/đổi account, version nội dung cũ, gửi lại và lỗi từng mục. Chưa có số thời hạn được duyệt.
+d Công việc thực hiện  Phân biệt chưa gửi/có thể đã gửi/accepted/rejected; cùng operation đã gửi không sửa payload; account isolation và resume có điều kiện.
+e Đầu ra  Allowlist và state machine nháp/queue, giới hạn còn mở.
+f Nghiệm thu  Không báo local là server success; không chuyển nháp/lượt của A sang B; schema cũ được xử lý rõ trước lưu.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T13/T16/T19/T25; giao T05/T07–T10 và Flow 09.
+
+5 HM F04 T05 Hoàn thiện layout và triển khai app
+a Mục tiêu  Hoàn thiện layout và triển khai app; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Design và Dev App cùng Product, QA. Wireframe có thể review ngay; final theo T01–T04 và T06.
+c Cần xác nhận trong task  Chốt bước con 15, bề mặt lượt hỏi, detail/edit 29, nhãn nguồn/time/đơn vị, route sau lưu. Nền tảng/ngôn ngữ kế thừa Flow 01; không tự quyết chỉ từ bản tiếng Việt.
+d Công việc thực hiện  Xây 14/15/29, xem lại mới/hiệu chỉnh, skip, validation, ghi hộ, loading/conflict/local pending. Chữ lớn, keyboard, screen reader và số thập phân; không chuyển hồ sơ của nháp.
+e Đầu ra  Layout/copy và build khi triển khai, mapping states/entry/exit.
+f Nghiệm thu  Đúng người/nguồn/đơn vị; không cắt nghĩa; skip không tạo số 0; cancel trước gửi không tạo record sức khỏe.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T17/T19/T20/T22/T24; giao T09/T10.
+6 HM F04 T06 Định nghĩa API schema và oracle
+a Mục tiêu  Định nghĩa API schema và oracle; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Backend Lead cùng App, QA và reviewer dữ liệu. T01–T04; registry/version nguồn.
+c Cần xác nhận trong task  Chốt list/detail/create/amend/status, định danh lượt và record, content/schema, xử lý nhiều mục: atomic hay per item. Chốt duplicate policy và số đo nhiều thành phần; không unique theo ngày để mất quan sát.
+d Công việc thực hiện  Ví dụ response accepted/partial nếu có/pending/rejected; skipped metadata khác HealthRecord. Oracle độc lập cho version cũ, unit/decimal/time, race và retry.
+e Đầu ra  Contract versioned, fixtures và mapping câu hỏi/metric/answers.
+f Nghiệm thu  Không bịa endpoint production; mọi nhánh có expected hoặc blocker; retry không duplicate, nhiều lượt thật không tự gộp.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T08/T18/T21; giao T05/T07–T10.
+
+7 HM F04 T07 Xây dịch vụ ghi nhận và lịch sử
+a Mục tiêu  Xây dịch vụ ghi nhận và lịch sử; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Backend cùng reviewer kỹ thuật. T06; field/quyền/validity T01–T03.
+c Cần xác nhận trong task  Chốt transaction nhiều mục, operation ledger, amendment chain, projection và schema compatibility; quyền kiểm tại điểm commit phù hợp, actor từ phiên.
+d Công việc thực hiện  Lưu câu trả lời theo ID/version và số đo theo unit/components; distinct missing/skip/0; sự kiện sửa không ghi đè gốc. Reject dữ liệu/version/quyền sai, lưu operation result để tra timeout.
+e Đầu ra  Service/schema/migration nếu cần, audit và kết quả kiểm nhất quán.
+f Nghiệm thu  Không tạo giả dữ liệu từ skip; không mất lượt thật; không trộn trường/đơn vị hoặc tạo amendment ngoài quyền.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T18/T25; giao T08–T10.
+8 HM F04 T08 Tích hợp nhắc tổng hợp và phân tích
+a Mục tiêu  Tích hợp nhắc tổng hợp và phân tích; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  Product với Backend, Data và Dev App. T01/T02/T06/T07; Flow 08 và scope biểu đồ.
+c Cần xác nhận trong task  Chốt nhắc nhiều lần/ngày, giờ/opt in, lượt completed/skipped/draft, cách dừng/cập nhật nhắc; không tăng nhắc từ im lặng. Chốt kỳ phân tích V1.0, đơn vị so sánh/độ phủ và xử lý amendment.
+d Công việc thực hiện  Đồng bộ 04/14/16/29 và nguồn cho 30/31/báo cáo. Không coi đo một chỉ số là hoàn tất mọi câu hỏi; loại bản vô hiệu khỏi phép tính theo policy và giữ trace.
+e Đầu ra  Contract event/projection/nhắc/data source và impact map tới flow phân tích.
+f Nghiệm thu  Tổng hợp không lấy thiếu dữ liệu làm 0/khỏe; không trộn unit/schema; năm thiếu dữ liệu không tự có xu hướng cả năm.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T13–T16/T20–T22/T27; giao T09/T10, Flow 08/12.
+
+9 HM F04 T09 Kiểm chức năng dữ liệu và layout
+a Mục tiêu  Kiểm chức năng dữ liệu và layout; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  QA cùng Design, Dev và reviewer dữ liệu. Lập case ngay; chạy sau policy/build/fixtures tương ứng.
+c Cần xác nhận trong task  Chốt thiết bị/ngôn ngữ, bộ chỉ số/câu và oracle T06. Chưa quyết định ghi Blocked; chưa chạy ghi Not run. Review content không tự là kết quả app.
+d Công việc thực hiện  Chạy TC01–TC12 và TC19–TC22; nhập/skip/multisession, unit/decimal/time, history/amend, keyboard/chữ lớn và tổng hợp. Expected độc lập implementation.
+e Đầu ra  Ma trận kết quả/defect với build/API/config và bằng chứng.
+f Nghiệm thu  Không mất data/missing/0 distinction; không nhầm actor/subject; layout đọc đủ nghĩa; actual khác expected được ghi đúng.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T23/T24; giao T10.
+10 HM F04 T10 Kiểm quyền đồng thời và bàn giao
+a Mục tiêu  Kiểm quyền đồng thời và bàn giao; trạng thái Đề xuất, chưa có kết quả thực thi.
+b Trách nhiệm và đầu vào  QA cùng Backend, Privacy và đầu mối vận hành. T05–T08 có build; registry/contract/fixtures cùng version.
+c Cần xác nhận trong task  Chốt tiêu chí chặn release, người xử lý queue/job lỗi, điều kiện nội dung được mở thật; không tự coi có clinician theo dõi mọi lượt.
+d Công việc thực hiện  Chạy TC13–TC18 và TC23–TC24; API/revoke, account switch, content upgrade/restore, log/analytics. Rà flow/màn/task/schema và điểm giao Flow 06/08/09/12.
+e Đầu ra  Packet Flow 04 có version, kết quả thực/known gaps và người nhận.
+f Nghiệm thu  Không mutation trái quyền, lộ dữ liệu, ghi đè lịch sử hoặc báo false success trong phạm vi kiểm. Duyệt thiết kế/code/test/release là kết quả riêng.
+g Khi thiếu đầu vào  Tiếp tục layout/fixture độc lập; ghi Chờ quyết định cho phần phụ thuộc. Chưa review nội dung thì dùng synthetic, không tự khóa policy.
+h Đối chiếu và bàn giao  HM-V1-T23/T25–T28; cập nhật Master sau review, giữ mục chưa chốt.
+
+VII Ca kiểm thử đề xuất
+Mã đầy đủ HM-F04-TC01–TC24. Trạng thái ban đầu Not run. Khi chạy ghi precondition/bước/expected/actual, registry/version, build/API/config, thiết bị và bằng chứng; policy mở ghi Blocked cùng task. Không dùng số liệu thật nhạy cảm để dựng demo/test thông thường.
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+01
+Mở 15 từ 04/14/16/lời nhắc
+Đúng subject, quyền và lượt; deep link không vượt quyền.
+T05/T09
+02
+Trả lời câu và xem lại trước lưu
+Đúng question/version/code; không chọn sẵn bình thường; một kết quả hợp lệ.
+T01/T09
+03
+Bỏ qua một hoặc tất cả câu
+Skipped khác answer/0; bỏ hết không tạo HealthRecord giả; metadata theo policy.
+T01/T09
+04
+Nhiều lượt thật trong cùng ngày
+Giữ lượt/quan sát riêng; không unique theo subject/date làm đè câu cũ.
+T06/T09
+05
+Lượt bỏ dở, tiếp tục hoặc tự ghi mới
+Đúng định danh/mốc thời gian; không chuyển nháp sang lượt khác không có quyết định.
+T01/T09
+06
+Số đo một/nhiều thành phần theo danh mục
+Đủ thành phần và unit, đúng group; không lưu thiếu nghĩa.
+T02/T09
+07
+Dấu phẩy/chấm, số âm, 0, rỗng theo schema
+Parse rõ; 0 hợp lệ khác missing, không tự 1,5 thành 15; giới hạn theo policy.
+T02/T09
+08
+Đơn vị thiếu/không hỗ trợ hoặc đổi unit
+Báo lỗi/review theo T02; không đổi nhãn giữ số sai nghĩa.
+T02/T09
+09
+Thời điểm tương lai/ghi bù/giờ máy sai
+Theo validation đã duyệt; không tự đổi về hiện tại hoặc dùng giờ máy làm thẩm quyền.
+T02/T09
+10
+Ghi hộ và nguồn tự báo/thiết bị ngoài app
+Actor khác subject hiển thị đúng; không suy số đo từ câu trả lời/camera.
+T03/T09
+11
+Hiệu chỉnh giá trị/câu trả lời trong quyền
+Giữ gốc/version/nguồn, projection theo bản hiện hành, không đổi câu hỏi âm thầm.
+T03/T09
+12
+Hủy xem lại hoặc bỏ nháp
+Không tạo dữ liệu sức khỏe; giữ/bỏ draft theo T04.
+T04/T09
+
+1 Ca kiểm thử tiếp theo
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+13
+Cùng operation cùng/khác payload
+Replay đúng kết quả hoặc reject mismatch; không duplicate.
+T06/T10
+14
+Hai lượt giá trị giống và hai sửa cùng version
+Lượt thật theo duplicate policy, không tự xóa; amendment race không last write wins.
+T06/T10
+15
+Revoke/mất phiên giữa form và commit
+Kiểm quyền hiện tại; không lộ bản mới/preview ngoài quyền; trace kết quả.
+T07/T10
+16
+Offline rồi đổi A sang B
+Queue/nháp/data A không hiện hoặc gửi dưới B; đúng phiên mới tiếp tục.
+T04/T10
+17
+Schema/content đổi khi nháp/queue đang chờ
+Theo compatibility policy; không map đáp án bằng nhãn hoặc sửa payload đã gửi.
+T06/T10
+18
+Timeout sau commit hoặc lưu nhiều mục có lỗi
+Tra operation và kết quả từng mục/toàn lượt theo contract; không false success.
+T06/T10
+19
+History rỗng/loading/forbidden và đổi người
+Trạng thái riêng; không lẫn data/count của hồ sơ trước.
+T05/T09
+20
+Đổi ngôn ngữ và múi giờ người xem
+ID/code/unit/source giữ nghĩa, ngày chăm sóc theo policy; không biến thành quan sát mới.
+T02/T09
+21
+Chữ lớn, screen reader, keyboard, nội dung dài
+Đọc đủ và nhập được, focus/error rõ, không che nút hoặc chỉ màu.
+T05/T09
+22
+Nhắc nhiều lượt và skip/complete một lượt
+Không tự hoàn tất mọi lượt hoặc tăng nhắc từ im lặng; theo T08.
+T08/T09
+23
+Chart/report nhận thiếu data, 0, unit khác và amendment
+Không bù 0 hay trộn unit; dùng validity/version đúng; truy nguồn được.
+T08/T10
+24
+Rà log/analytics và nâng cấp/restore
+Không nội dung sức khỏe/credential không cần; không nhân data hoặc hồi sinh grant đã thu hồi.
+T07/T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Mã màn và liên kết
+Mã hoặc thành phần
+Flow 04 chịu trách nhiệm
+Điểm giao
+HM-SCR-14
+History theo ngày/loại/nguồn trong quyền
+Nhận 04/16 và điều hướng; mở 15/29/30 theo scope.
+HM-SCR-15
+Chọn loại, lượt hỏi/số đo, skip và xem lại
+Bước con chung mã; không thêm trang độc lập tùy tiện.
+HM-SCR-29
+Chi tiết nguồn và hiệu chỉnh record
+POP-03/11; không sửa lịch thuốc hoặc bản của người khác ngoài quyền.
+HM-SCR-30/31; Flow 12
+Bàn giao source/unit/time/version/validity
+Biểu đồ cơ bản/mở rộng và báo cáo theo phạm vi được chọn.
+Flow 01 và 06
+Phiên, hồ sơ và ghi hộ đúng quyền
+Đăng nhập không tự cấp consent dữ liệu sức khỏe.
+Flow 08 và 09
+Nhắc theo lượt và đồng bộ allowlist
+Flow 04 vẫn hiển thị pending/unknown/rejected tại màn.
+Content/metric registry
+ID, schema/version và reviewer
+Thay đổi tác động App/Backend/QA/tổng hợp phải có version.
+2 Điều kiện review và nghiệm thu
+Review tài liệu: T01–T04 chốt đủ cho nhánh, nội dung/câu hỏi/schema có version, layout/state/route khớp Master. Review implementation: contract/build/registry cùng bản, test thật cho quyền/unit/time/multiple sessions/partial result, known gaps có người xử lý. Nội dung chưa review không mở cho người dùng thật chỉ vì demo đã có màn. Duyệt tài liệu không tự nghĩa code/test/release đạt.
+3 Nguồn và trạng thái
+Master Screen List V1.0–V3.1 bản 0.1 ngày 23/10/2026 cung cấp FLOW-04 và SCR-14/15/29/30. HealMata_V1_0_30_Tasks_Detailed.docx đặc biệt T02/T17–T25 là căn cứ task. Bản Clarifications and Recommendations V1.0 mục 8 cung cấp cấu trúc câu hỏi/số đo và đề xuất bộ tối giản; phản hồi của người dùng về giữ mục tiêu hỏi nhiều lần/ngày và phân tích nhiều kỳ được ưu tiên khi lập bản đồ này. Không coi đề xuất bộ nhỏ cũ là đã duyệt.
+Flow 01–03 là nguồn cấu trúc/session/actor-subject và quy tắc đồng bộ tham chiếu; nội dung ghi nhận sức khỏe có schema riêng, không dùng hai trạng thái thuốc làm trạng thái câu trả lời. Tài liệu này là nháp mới, chưa xác nhận build, kết quả vận hành hoặc người phê duyệt. Không tự sửa Master/các flow cũ trong lần tạo; nếu quyết định mới ảnh hưởng thì ghi impact map và cập nhật theo version.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng trao đổi giữa app và dịch vụ.
+HM
+HealMata
+Tiền tố mã màn, flow, task và case.
+ID
+Identifier
+Định danh hồ sơ, câu hỏi, chỉ số, lượt hoặc record.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và tiêu chí cụ thể.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+TC
+Test Case
+Mã ca kiểm thử của Flow 04.
+TTL
+Time To Live
+Thời gian giữ dữ liệu nếu policy chọn; chưa tự đặt số.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+UX
+User Experience
+Trải nghiệm và khả năng hoàn thành/khôi phục luồng.
+1 Thuật ngữ dữ liệu cần thống nhất
+Check in: lượt hỏi/ghi nhận, có thể nhiều lượt trong ngày theo policy. Metric: loại chỉ số đo. Schema: cấu trúc/validation của dữ liệu. Registry: danh mục có ID/version và trạng thái review. Actor/subject: người thao tác/người được ghi. Skipped/missing: bỏ qua/thiếu, khác giá trị 0. Amendment: hiệu chỉnh giữ dấu vết. Projection: trạng thái hiện hành tính từ nguồn hợp lệ. Atomic: lưu toàn lượt thành công hoặc không lưu theo contract; per item là kết quả từng mục phải được thể hiện rõ. Synthetic: dữ liệu giả lập để thiết kế/QA.

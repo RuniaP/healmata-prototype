@@ -1,0 +1,438 @@
+HM FLOW 08 Nhắc thuốc
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu mô tả cách bật/tắt tùy chọn nhắc, xin/kiểm quyền hệ điều hành, đồng bộ lịch đã lưu, cập nhật/hủy nhắc khi dữ liệu đổi và mở đúng lần dùng từ thông báo. Flow 08 nối lịch thuốc Flow 02, ghi nhận Flow 03 và quyền/ngữ cảnh Flow 05–07; không thay thao tác xác nhận dùng thuốc.
+Cần tách tùy chọn app, quyền OS, lịch server, request nhắc đã đặt, hiển thị thực tế và người dùng đã mở. Không hứa mọi thông báo đều đến/đúng giờ hoặc đã được đọc. Local/server/hybrid, người nhận, thiết bị chính, số ngày lập lịch và độ trễ vẫn là lựa chọn trong task; mô hình một máy và cửa sổ 7 ngày từ bản đề xuất trước chưa thành baseline.
+I Phạm vi và kết quả cần đạt
+1 Người dùng và nguồn dữ liệu
+Đối tượng chính là chủ tài khoản nhận nhắc cho lịch của mình theo policy được chọn. Grant xem/ghi hộ không tự biến người thân thành người nhận nhắc thuốc. Nếu muốn nhắc người hỗ trợ hoặc chuyển cấp, T01 cần scope/đồng ý/quyền riêng, không tự thêm vào V1.0. Lịch/occurrence/version từ server theo Flow 02 là nguồn, không sinh một lịch dùng thuốc khác trong module nhắc.
+2 Màn hình và bề mặt
+HM-SCR-18 tùy chọn/trạng thái nhắc; HM-POP-01 giải thích trước quyền OS; 37 thiết bị/phiên nếu mô hình cần; 12 là đích lần dùng sau mở nhắc. Hộp thoại quyền, thông báo màn khóa và cài đặt OS là bề mặt bên ngoài app, không tự thiết kế để giả đã cấp quyền. 19/10/04 là điểm vào; trạng thái chung xử lý lỗi/phiên/quyền.
+3 Thành công và giới hạn
+Bật tùy chọn thành công khi nguồn lưu đã chấp nhận; đặt nhắc thành công theo kết quả kênh có thể kiểm chứng. Hai kết quả khác nhau và chưa chứng minh người dùng đã thấy. Hủy/cập nhật ghi đúng version/recipient/thiết bị và giới hạn đã biết. Mở nhắc xác thực/kiểm quyền rồi tới đúng lần dùng hoặc trạng thái có thể xử lý; không auto confirm.
+4 Ranh giới
+Flow 08 tập trung nhắc thuốc. Nhắc sức khỏe nhiều lượt ở Flow 04, mời kết nối và các thông báo tương lai phải có loại/cấu hình riêng; không gom chung rồi áp giờ yên tĩnh làm tắt thuốc ngoài ý định. Không thêm snooze, nhắc lặp, phản hồi trực tiếp trên notification hoặc tự chuyển cấp khi chưa chốt tại T01/T04.
+
+II Sơ đồ luồng tổng thể
+
+1 Quy tắc đọc
+18/37/12/19/10/04 là mã HM-SCR. Diagram thể hiện nguồn và trạng thái chứ không khẳng định OS luôn chạy tác vụ. Người dùng từ chối quyền có thể tiếp tục xem lịch/ghi nhận. Chọn Android/iOS, exact/inexact và kênh nhắc cần quyết định/kiểm thiết bị ở T01–T03; không suy nền tảng từ ngôn ngữ tài liệu.
+
+III Flow chi tiết
+1 Mở cài đặt và đọc trạng thái
+a Điểm vào
+Từ 19, 10 hoặc gợi ý có ngữ cảnh ở 04 mở 18. Hiện tài khoản/hồ sơ, tùy chọn app, quyền OS của máy này, khả năng lập lịch liên quan nếu có, nguồn/version lịch, thiết bị nhận và lần cập nhật biết được. Nếu không biết trạng thái kênh hoặc thiết bị khác, ghi Chưa xác định thay vì giả sẵn sàng.
+b Bật tùy chọn và giải thích
+Người dùng chủ động bật nhắc; POP-01 giải thích mục đích/nội dung riêng tư và giới hạn rồi mới gọi cơ chế quyền phù hợp. “Để sau” không là đã cho phép; app không hiện nút giả Allow để thay quyền OS. Lưu preference theo contract, có loading/error/unknown. App bật nhưng OS chặn phải thể hiện hai trạng thái riêng, không tắt ghi nhận thuốc để ép cấp quyền.
+2 Quyền hệ điều hành
+a Cấp từ chối và quay lại cài đặt
+Đọc trạng thái thật do nền tảng cung cấp. Tùy trạng thái, xin quyền hoặc dẫn tới cài đặt hệ thống nếu phù hợp; không lặp popup không ngừng. Sau quay lại app/foreground kiểm lại. Người dùng có thể đổi quyền hoặc cấu hình thông báo ngoài app; app preference không tự cho phép lại. Các quyền/capability phụ thuộc OS/kênh phải được hiển thị và kiểm theo T02, không dùng một nhãn “Đã bật” cho tất cả.
+b Các lớp cần phân biệt
+Quyền gửi/hiển thị thông báo, channel/category, khả năng đặt alarm chính xác nếu cơ chế dùng, và giới hạn âm thanh/màn khóa/nền có thể khác nhau. Cấu hình cụ thể theo nền tảng được chọn; không mặc định HealMata đủ điều kiện mọi quyền đặc biệt hoặc thông báo vượt chế độ tập trung. App chỉ nêu trạng thái biết được và bước xử lý phù hợp.
+3 Đồng bộ nguồn và lập lịch
+Lấy lịch/occurrence/version/hiệu lực hiện hành và người nhận được phép; tạo/cập nhật request nhắc theo kiến trúc T03. Đề xuất server làm nguồn lịch, local hoặc remote là cơ chế phát được chọn, không hai nguồn độc lập cùng phát cho một occurrence mà thiếu contract. Cửa sổ lập lịch phụ thuộc khả năng nền tảng, tải lịch và refresh đã kiểm; không mặc định 7 ngày. Nếu hết nguồn đã tải hoặc việc đặt lịch lỗi, 18 nêu giới hạn và hành động kiểm/cập nhật, không báo đầy đủ nhắc tương lai.
+
+4 Sửa dừng lịch và ghi nhận
+a Cập nhật theo version
+Flow 02 sửa/dừng/thay hiệu lực → đối chiếu occurrence tương lai và schedule_version để cập nhật/hủy request tương ứng; không sửa lịch sử dùng thuốc. Xác nhận/hiệu chỉnh Flow 03 có chính sách nhắc riêng; bỏ xác nhận không tự gửi nhắc bù, hẹn giờ khác hoặc mở lại liều. Cùng event retry không tạo nhắc mới, event cũ không đè version mới. T04 chốt dedupe/key/cancel và các trường hợp cùng giờ nhiều lịch.
+b Tắt trong app hoặc quyền OS
+Nếu người dùng tắt nhắc, UI thể hiện tác dụng trên máy này và toàn tài khoản theo policy. Local cancel có thể được thực hiện khi offline nếu cơ chế hỗ trợ, nhưng trạng thái server/thiết bị khác chưa xác nhận phải nói rõ. Tắt nhắc không dừng lịch thuốc hoặc xóa ghi nhận. Quyền OS bị tắt không tự đồng nghĩa server đã xóa mọi request đã gửi; cần reconcile theo contract khi biết thay đổi.
+5 Nhiều máy đổi tài khoản và quyền
+T03 quyết định một hay nhiều thiết bị nhận nhắc. Nếu chọn một máy chính, 37/18 xem lại trước đổi, server/device generation và kết quả hủy máy cũ rõ. Máy cũ offline có thể còn local request; không hứa không bao giờ trùng. Nếu nhiều máy, nêu chính sách recipient/device/dedupe và thông tin riêng tư, không giả cùng một event có đúng một lần hiển thị trên tất cả máy.
+Đăng xuất/đổi account, revoke Flow 07, đổi người nhận hoặc scope phải cập nhật request/token/local queue liên quan theo policy. Không nhắc dữ liệu A trên tài khoản B hoặc grant đã mất; server kiểm trước công bố/gửi theo contract, local cache có giới hạn offline. Ngừng chia sẻ cho B không tự tắt nhắc gốc của A. Thiết bị mất/không thể liên lạc cần bước hỗ trợ theo kênh thật, không cam kết xóa từ xa tức thì.
+6 Mở hoặc bỏ thông báo
+Đề xuất nội dung màn khóa chung như “Bạn có lịch cần xem trong HealMata”, không tên thuốc/số đo; nội dung cuối T05 duyệt. Chạm Mở chỉ điều hướng: kiểm Flow 01, account/subject/grant và occurrence/version mới nhất, rồi 12. Nếu đã đổi/dừng/đã xác nhận/hết quyền, nêu trạng thái hiện tại và hành động hợp lệ; không nhảy sang occurrence gần giống. Offline không kiểm được phiên/quyền cần policy Flow 01/09, không tự bypass vì notification cũ tồn tại.
+Vuốt bỏ, dismiss, tắt âm hoặc mở thông báo không là đã dùng thuốc, chưa dùng thuốc hoặc đã đọc đủ. Chỉ hành động riêng ở Flow 03 mới tạo tự báo. Phản hồi trực tiếp, snooze/lặp và cơ chế nhắc người khác là ngoài phần đã chốt; nếu thêm phải có contract/QA riêng, không ngầm dựa nút OS mặc định.
+7 Khởi động lại nâng cấp và điều kiện nền
+Sau reboot/app update/restore/thay giờ/múi giờ/đổi quyền, reconcile nguồn với request theo khả năng nền tảng; không nhân occurrence hoặc dùng alarm cũ của account trước. Kiểm app foreground/background/không chạy, force stop do người dùng, tiết kiệm pin, Focus/Do Not Disturb, mạng và permission thay đổi. Không kết luận hành vi từ emulator hoặc log gửi; T09/T10 cần thiết bị thật theo ma trận hỗ trợ. Không có delivery evidence thì hiển thị chưa xác định, không suy bỏ thuốc.
+
+IV Layout sơ bộ
+1 Cài đặt nhắc và trạng thái bị chặn
+Wireframe đen trắng dùng review thứ tự thông tin, chưa là UI cuối hoặc thông số nền tảng. Tùy chọn app, quyền hệ thống và kết quả đặt lịch được trình bày riêng; không gộp thành một dấu xanh mang nghĩa chắc chắn sẽ nhận.
+
+a Biến thể
+18 cần app off/on, OS chưa hỏi/cho phép/bị chặn theo trạng thái nền tảng, scheduling capability thiếu nếu áp dụng, đang cập nhật, failed/unknown và dữ liệu lịch cũ. Chức năng lịch/ghi nhận vẫn tới được khi nhắc không khả dụng.
+
+2 Giải thích trước quyền và lịch đã cập nhật
+
+a Bề mặt OS là điểm chuyển giao
+POP-01 không mô phỏng kết quả cấp quyền; dialog hệ thống thực mở theo cơ chế đã chọn, có hủy/quay lại. Trạng thái 18 có thể hiển thị cửa sổ đã tải hoặc last sync khi biết được; không tự suy tới một ngày nào nếu scheduler không có bằng chứng. “Đã đặt” chỉ mô tả request, không là đã hiển thị/người dùng đã nhận.
+
+3 Thiết bị và xem lại thay đổi
+
+a Nhánh điều kiện
+37 và bước đổi máy chỉ cần nếu policy chọn quản lý thiết bị nhắc. Nếu bỏ mô hình một máy, thay nội dung bằng recipient/device policy đã duyệt. Hiển thị máy cũ offline/chưa xác nhận khác đã hủy. Không tự gắn vai trò người thân hoặc quyền đọc sức khỏe từ việc nhận nhắc.
+
+4 Thông báo tối thiểu và điểm mở
+
+a Mở đúng lần dùng
+Khung trái chỉ minh họa nội dung, thông báo thật do OS/kênh hiển thị; không kiểm soát được mọi kiểu render hoặc hành vi từ chối. Khung phải là biến thể 12 giữ ID/nguồn/phiên hiện tại. Câu chữ tránh khuyên uống lại/uống bù, trạng thái Chưa xác nhận không đổi thành chưa uống.
+
+V Ma trận trạng thái và nguồn
+1 Sáu lớp bằng chứng cần tách
+Lớp
+Điều hệ thống có thể ghi nhận
+Không tự kết luận
+Preference app
+Người dùng bật/tắt và nguồn lưu đã chấp nhận.
+OS đã cấp quyền hoặc scheduler đã đặt.
+Authorization/capability
+Trạng thái quyền/capability từ OS khi kiểm.
+Máy sẽ luôn phát đúng giờ hoặc phát âm.
+Lịch server/nguồn đồng bộ
+Schedule/occurrence/version/hiệu lực được tải.
+Request nhắc đã tồn tại trên từng thiết bị.
+Request scheduler/kênh
+Đặt/hủy thành công hoặc lỗi theo API/kênh.
+Thông báo thực sự hiển thị hoặc đã được đọc.
+Delivery/display evidence
+Chỉ dữ liệu kênh/thiết bị thực sự cung cấp.
+Không có callback không bằng không được nhận; không giả delivery.
+Mở và ghi nhận
+Event tap khác event tự báo Flow 03.
+Mở/dismiss không chứng minh đã dùng hoặc chưa dùng thuốc.
+2 Trạng thái cần hiển thị
+Trạng thái
+Nội dung và bước tiếp
+Nguồn
+App off
+Nhắc tắt theo phạm vi đã chọn; lịch vẫn dùng được.
+Preference và kết quả cancel biết được.
+OS blocked/không đủ capability
+Giải thích quyền máy này; mở cài đặt/kiểm lại phù hợp.
+OS query/permission result.
+Đang đồng bộ/lịch cũ
+Last update và giới hạn; cho kiểm/cập nhật.
+Schedule version và nguồn scheduler.
+Đã đặt/chưa xác định hiển thị
+Nêu request đã đặt, không hứa đã nhận.
+Adapter/API theo thiết kế.
+Failed/unknown
+Lỗi rõ có retry hoặc tra operation.
+Kết quả thực và giới hạn.
+Máy cũ chưa xác nhận
+Nêu rủi ro còn nhắc cũ; bước người dùng có thể làm.
+Device/version/ack nếu có.
+Nhắc cũ mở sau đổi quyền/lịch
+Kiểm lại; 12 trạng thái hiện hành hoặc chặn.
+Session/grant/occurrence hiện tại.
+
+3 Ràng buộc nền tảng cần xác minh
+W1/W2: Android tách quyền thông báo và khả năng exact alarm theo phiên bản/target/cơ chế; không coi bật app là đủ hoặc mặc định đủ điều kiện quyền đặc biệt. W3: Apple hướng dẫn kiểm trạng thái authorization trước khi đặt local request vì người dùng có thể đổi cài đặt. W4 là tài liệu cơ chế local. Các nguồn là căn cứ kỹ thuật, không xác nhận nền tảng HealMata đã chọn hay app đã đạt kiểm thử.
+Các hướng dẫn này được đối chiếu ngày 24/10/2026. T02 chọn API/SDK/permission thật, xem tài liệu chính thức cho phiên bản target và review yêu cầu phát hành của kênh tương ứng. Không áp chung mọi loại alarm/notification như cùng hành vi hoặc tự đặt số request tối đa khi chưa có chứng cứ.
+4 Hợp đồng nguồn và chống trùng
+a Định danh và version
+Đề xuất account_id, subject_id, occurrence_id, schedule_version, reminder preference/version, recipient/device generation, channel request ID, planned_at/timezone và trạng thái cập nhật. Dữ liệu notification chỉ chứa tham chiếu tối thiểu, không bí mật hoặc payload sức khỏe không cần. Actor/token/device không lấy từ client để cấp quyền ngoài contract.
+b Reconcile chứ không nhân request
+Cùng occurrence/recipient/version có request identity ổn định theo adapter. Retry/upsert/cancel idempotent khi cơ chế cho phép; event cũ không ghi đè plan mới. Nếu remote fallback/local cùng tham gia, phải có điều kiện ownership và chuyển giao nguồn, không gọi gửi cả hai là tăng độ tin cậy mà bỏ qua nhắc trùng. Không hứa exactly once display trên mọi trạng thái offline.
+c Thời gian và quyền
+Lịch dùng theo care timezone/hiệu lực của Flow 02; nhắc không tự đổi giờ dùng hoặc sinh nhắc bù khi đổi đồng hồ. DST, máy du lịch, reset giờ, lịch qua nửa đêm, grant revoke và session/account switch cần oracle chung. Jobs/notification gửi phải kiểm điều kiện recipient/quyền/version tại gate được thiết kế; local máy không liên lạc có giới hạn không che được bằng log server.
+5 Nội dung đo lường và nhắc khác
+Đếm preference, scheduling result, tap và confirmed record bằng định nghĩa riêng, không dùng số notifications sent làm tỷ lệ uống thuốc. Analytics/log tránh tên thuốc, liều, số đo và token không cần. Nhắc sức khỏe/lời mời/tương lai cần loại/recipient/cấu hình riêng; giờ yên tĩnh cho nhóm khác không tự triệt tiêu thuốc. Chính sách snooze/lặp/escalation chỉ thêm sau quyết định T01/T04 và kiểm tác động.
+
+VI Task triển khai
+1 T01 Chốt phạm vi và người nhận
+a Mục tiêu  Xác định ai nhận nhắc và hành vi nào thuộc V1.0.
+b Phụ trách và đầu vào  Product cùng chủ dự án; đầu vào Master và Flow 02 03 05–07.
+c Điểm cần xác nhận trong task  Chốt chủ tài khoản hay có người hỗ trợ; đồng ý, phạm vi, cách rút đồng ý; chưa tự tạo escalation.
+d Công việc  Lập bảng nhóm nhắc, điểm vào, recipient, quyền và hành vi bật/tắt; ghi quyết định cùng người duyệt.
+e Đầu ra  Scope và decision log có version.
+f Tiêu chí nghiệm thu  Mỗi nhóm nhắc có nguồn và người nhận rõ; grant xem không bị hiểu là đăng ký nhận.
+g Khi thiếu đầu vào  Thiếu policy thì khoanh phần chưa duyệt; vẫn dựng layout cài đặt cơ bản.
+h Liên kết  HM-V1-T13; phụ thuộc T02 T03 T04.
+2 T02 Chốt nền tảng và quyền hệ điều hành
+a Mục tiêu  Xác định quyền thật và trạng thái có thể kiểm chứng.
+b Phụ trách và đầu vào  Mobile lead với QA; cần nền tảng, min OS, target SDK và cơ chế dự kiến.
+c Điểm cần xác nhận trong task  Chốt Android/iOS, kênh, có cần exact alarm không, điều kiện được phép và cách suy giảm; dẫn W1–W4.
+d Công việc  Lập ma trận phiên bản, grant/deny/defer, quay về từ Settings; phân biệt quyền thông báo và capability đặt lịch.
+e Đầu ra  Permission matrix và adapter capability contract.
+f Tiêu chí nghiệm thu  Không báo sẵn sàng chỉ vì app toggle bật; native dialog được gọi đúng điều kiện.
+g Khi thiếu đầu vào  Chưa biết nền tảng vẫn hoàn thiện state UX; hoãn cam kết API và độ chính xác.
+h Liên kết  HM-V1-T13 T15; đầu vào T05 T07 T10.
+
+VI Task triển khai tiếp theo
+3 T03 Chọn kiến trúc và thiết bị nhận
+a Mục tiêu  Có nguồn chịu trách nhiệm cho từng request nhắc.
+b Phụ trách và đầu vào  Tech lead với backend và mobile; cần T01 T02.
+c Điểm cần xác nhận trong task  Chốt local/remote/hybrid, một hay nhiều máy, horizon/refresh và fallback; một máy/7 ngày chỉ là phương án.
+d Công việc  So sánh online/offline, đồng bộ, chống trùng, đổi máy và giới hạn hủy; nêu owner khi chuyển nguồn.
+e Đầu ra  Sơ đồ kiến trúc, decision record và ma trận failure.
+f Tiêu chí nghiệm thu  Không có hai nguồn tự gửi cùng lúc thiếu ownership; offline cũ có giới hạn được thể hiện.
+g Khi thiếu đầu vào  Có thể làm mock adapter; không coi mock là chứng cứ delivery.
+h Liên kết  HM-V1-T13 T14 T15 T16; cần cho T06–T08.
+4 T04 Chốt vòng đời và quy tắc thời gian
+a Mục tiêu  Nhắc luôn phản ánh đúng version lịch và trạng thái lần dùng.
+b Phụ trách và đầu vào  Product với backend/mobile; nhận quy tắc lịch từ Flow 02 và ghi nhận Flow 03.
+c Điểm cần xác nhận trong task  Chốt tạo, sửa, dừng, ghi nhận, sửa ghi nhận; nhắc lặp/snooze, giờ yên tĩnh và đổi múi giờ nếu có.
+d Công việc  Lập event → tác động request; định nghĩa cutoff/race, event cũ, ngày qua nửa đêm/DST và hết horizon.
+e Đầu ra  Bảng chuyển trạng thái cùng oracle kiểm thử.
+f Tiêu chí nghiệm thu  Không sửa giờ dùng vì notification; không sinh nhắc bù ngoài policy; dừng lịch không xóa lịch sử.
+g Khi thiếu đầu vào  Chưa chốt snooze/lặp thì để ngoài scope; vẫn làm upsert/cancel cơ bản.
+h Liên kết  HM-V1-T13 T14 T16; nối Flow 02 03 09.
+
+VI Task triển khai tiếp theo
+5 T05 Thiết kế cài đặt và nội dung nhắc
+a Mục tiêu  Người dùng hiểu trạng thái và thao tác khắc phục.
+b Phụ trách và đầu vào  Designer với Product/mobile; nhận T01–T04.
+c Điểm cần xác nhận trong task  Duyệt nội dung màn khóa, vị trí trạng thái, cách giải thích quyền và cảnh báo máy cũ offline.
+d Công việc  Hoàn thiện 18, POP01, 37 nếu cần; tap tới 12; loading/error/partial/empty, chữ lớn và đọc màn hình.
+e Đầu ra  Layout đủ trạng thái và copy đã duyệt.
+f Tiêu chí nghiệm thu  Bật app không giả quyền OS; bỏ qua xin quyền không chặn ghi nhận thuốc; dismiss không xác nhận.
+g Khi thiếu đầu vào  Có thể dùng wireframe ở IV; chưa coi hình minh họa là UI hệ điều hành thật.
+h Liên kết  HM-V1-T15 T24 T25; dùng cho T07 T09.
+6 T06 Xây hợp đồng và adapter nhắc
+a Mục tiêu  Retry và cập nhật có định danh ổn định để kiểm soát trùng.
+b Phụ trách và đầu vào  Backend/mobile lead; cần T03 T04 và contract lịch/quyền.
+c Điểm cần xác nhận trong task  Chốt khóa request, version/generation, trạng thái quan sát được, lỗi retry và dữ liệu tối thiểu.
+d Công việc  Định nghĩa plan/upsert/cancel/result; bảo vệ account/subject/recipient; event cũ không ghi đè mới.
+e Đầu ra  Schema, API contract và bộ dữ liệu mẫu có oracle.
+f Tiêu chí nghiệm thu  Timeout thể hiện unknown/pending; scheduler accepted không bị đổi thành delivered; idempotency theo khả năng kênh.
+g Khi thiếu đầu vào  Làm contract và fake adapter trước; không lấy số liệu fake làm kết quả vận hành.
+h Liên kết  HM-V1-T14 T15 T16; cần cho T07 T08.
+
+VI Task triển khai tiếp theo
+7 T07 Triển khai app và scheduler
+a Mục tiêu  Lưu tùy chọn và cập nhật request theo nguồn đã chọn.
+b Phụ trách và đầu vào  Mobile; cần T02 T03 T05 T06.
+c Điểm cần xác nhận trong task  Chốt refresh trigger, quay lại app, đổi quyền, reboot/upgrade, logout và chuyển thiết bị theo nền tảng.
+d Công việc  Làm settings, permission handoff, scheduling/cancel, reconcile và deep link có auth; đọc version hiện hành.
+e Đầu ra  Build app, adapter logs tối thiểu và bằng chứng trạng thái.
+f Tiêu chí nghiệm thu  Có đường phục hồi lỗi; không auto record khi mở/dismiss; đổi account không mở dữ liệu cũ.
+g Khi thiếu đầu vào  Nếu backend chưa xong dùng contract stub có nhãn; giữ danh sách giới hạn thật.
+h Liên kết  HM-V1-T15 T16; phụ thuộc T08 cho end to end.
+8 T08 Triển khai server và sự kiện
+a Mục tiêu  Nguồn lịch, quyền và thiết bị được kiểm tại điểm cần thiết.
+b Phụ trách và đầu vào  Backend; cần T01 T03 T04 T06.
+c Điểm cần xác nhận trong task  Chốt kiểm recipient/version trước gửi, vòng đời token, retry/expiry, thu hồi và log retention.
+d Công việc  Phát event thay đổi; tính plan hoặc gửi theo kiến trúc; xử lý stop/confirm/revoke/logout và token mất hiệu lực.
+e Đầu ra  API/jobs/event contract, audit tối thiểu và tài liệu vận hành.
+f Tiêu chí nghiệm thu  Không gửi cho recipient không đủ quyền tại gate; retry không hồi sinh plan cũ; ghi rõ local offline ngoài tầm hủy tức thì.
+g Khi thiếu đầu vào  Không mặc định server gửi push khi chưa chọn kiến trúc; vẫn cung cấp lịch/version chuẩn.
+h Liên kết  HM-V1-T14 T16 T25 T27; nối Flow 07 09.
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm luồng và giao diện
+a Mục tiêu  Kiểm đủ trạng thái chức năng trước thử điều kiện thiết bị.
+b Phụ trách và đầu vào  QA và design QA; cần build T07 T08 và quyết định T01–T06.
+c Điểm cần xác nhận trong task  Chốt expected của từng case theo policy được duyệt; trạng thái chưa rõ phải quay về task sở hữu.
+d Công việc  Chạy TC01–TC12 cùng quyền/ngữ cảnh của Flow 02 03 07; kiểm loading/error, chữ lớn và điều hướng.
+e Đầu ra  Kết quả theo build, OS, dữ liệu, bằng chứng và defect.
+f Tiêu chí nghiệm thu  Không gộp lưu tùy chọn, đặt request, hiển thị và ghi nhận thuốc thành một pass; chưa chạy ghi Not run.
+g Khi thiếu đầu vào  Có thể review contract/wireframe trước; không đánh pass end to end trên mock.
+h Liên kết  HM-V1-T23 T24; đầu vào T10.
+10 T10 Kiểm thiết bị và chốt phát hành
+a Mục tiêu  Biết giới hạn thực tế và có cách hỗ trợ người dùng.
+b Phụ trách và đầu vào  QA/mobile/backend với người duyệt phát hành; cần T09 và device matrix.
+c Điểm cần xác nhận trong task  Chốt thiết bị/OS thực, cửa sổ quan sát, ngưỡng đã được chấp nhận và known limitations; chưa có SLA mặc định.
+d Công việc  Chạy TC13–TC24, fault/race/khôi phục; kiểm riêng force close và force stop nếu nền tảng có; rà dữ liệu log.
+e Đầu ra  Báo cáo thiết bị, defect/limit, hướng dẫn hỗ trợ và release packet.
+f Tiêu chí nghiệm thu  Không dùng gửi request làm bằng chứng đã hiện; lưu kết quả quan sát và các trường hợp không quan sát được.
+g Khi thiếu đầu vào  Thiếu thiết bị/quyền thì đánh blocked nêu lý do; chỉ phát hành trong phạm vi đã duyệt.
+h Liên kết  HM-V1-T23 T25 T26 T27 T28; bàn giao Flow 09.
+
+VII Ca kiểm thử đề xuất
+Trạng thái toàn bộ ca là Not run. Đây là tiêu chí đề xuất; QA gắn build, thiết bị, OS, decision version, expected cụ thể và bằng chứng trước khi đánh Pass hoặc Fail. Blocked phải nêu đầu vào thiếu.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+08-01
+App tắt và OS chưa cấp; bật nhắc
+Lưu preference riêng; hướng dẫn quyền; chưa hiển thị đã đặt/đã đến.
+T02 T05 T07
+08-02
+Bỏ qua POP01 hoặc từ chối native dialog
+Có thể quay lại; không xin lặp cưỡng ép; ghi nhận thuốc vẫn dùng được.
+T02 T05
+08-03
+Đổi quyền ở Settings rồi quay về
+Đọc trạng thái thật và reconcile theo policy; UI hết trạng thái cũ.
+T02 T07
+08-04
+Capability alarm không đủ trên cấu hình áp dụng
+Báo giới hạn/đường xử lý đúng; không giả đã có quyền hoặc hứa đúng giờ.
+T02 T03
+08-05
+Lịch mới lưu thành công; sync/retry hai lần
+Plan đúng occurrence/version/recipient; không nhân request ngoài thiết kế.
+T04 T06
+08-06
+Sửa rồi dừng lịch trong lúc plan đang cập nhật
+Event cũ không hồi sinh nhắc; lịch sử giữ theo Flow 02; kết quả hủy có giới hạn rõ.
+T04 T08
+08-07
+Ghi nhận và sửa ghi nhận khi có nhắc pending
+Tác động request theo oracle T04; không tự tạo bản ghi hoặc nhắc bù.
+T04 T07
+08-08
+Dismiss thông báo rồi mở app
+Trạng thái dùng thuốc không bị đổi chỉ vì dismiss.
+T05 T07
+08-09
+Tap link cũ khi hết phiên hoặc khác account
+Auth và kiểm quyền trước dữ liệu; tới occurrence hiện hành hoặc thông báo xử lý được.
+T06 T07
+08-10
+Notification tới khi đang mở app hoặc mở lặp
+Hành vi foreground theo adapter; không double navigate/confirm.
+T02 T07
+08-11
+Đổi timezone qua nửa đêm và DST nếu áp dụng
+So với oracle thời gian lịch; không trôi occurrence hoặc tự đổi giờ dùng.
+T04 T09
+08-12
+Một số request lỗi hoặc kết quả chưa rõ
+Tách partial/unknown và retry; không dùng success chung che phần lỗi.
+T06 T07
+
+VII Ca kiểm thử thiết bị và khôi phục
+Trạng thái toàn bộ ca là Not run. Đây là tiêu chí đề xuất; QA gắn build, thiết bị, OS, decision version, expected cụ thể và bằng chứng trước khi đánh Pass hoặc Fail. Blocked phải nêu đầu vào thiếu.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+08-13
+Đổi thiết bị khi máy cũ mất mạng
+Generation/ownership đúng; cảnh báo còn nhắc local cũ; không cam kết hủy ngay.
+T03 T07
+08-14
+Local và remote fallback giao nhau
+Chuyển nguồn theo contract; theo dõi trùng thực tế; không gọi hai send là một display.
+T03 T06
+08-15
+App bị đóng và force stop trên nền tảng áp dụng
+Chạy hai điều kiện riêng trên thiết bị; ghi quan sát và hướng phục hồi đúng.
+T02 T10
+08-16
+Reboot cùng battery saver hoặc hạn chế nền
+Kiểm riêng từng điều kiện; refresh theo thiết kế, giới hạn nêu đúng.
+T02 T07
+08-17
+Focus DND hoặc kênh thông báo bị tắt
+Không suy display từ accepted; trạng thái/giải thích đúng khả năng quan sát.
+T02 T05
+08-18
+Airplane/offline qua hết horizon đã chọn
+Không bịa plan mới/delivery; khi online reconcile đúng phiên bản, không nhắc bù ngoài policy.
+T03 T04
+08-19
+Thu hồi quyền OS khi còn request đã đặt
+UI cập nhật khi có thể kiểm; không báo đủ quyền hoặc tự mở lại quyền.
+T02 T07
+08-20
+Upgrade hoặc restore app trên máy khác
+Không hồi sinh plan/token/account cũ; kiểm quyền hiện hành trước lập lại.
+T03 T07
+08-21
+Logout hoặc thu hồi grant khi request đang gửi
+Gate quyền/generation đúng; kiểm nội dung còn có thể hiện trên local offline theo giới hạn.
+T06 T08
+08-22
+Xem lockscreen và log trên build thử
+Nội dung chung theo policy; không lộ tên thuốc/liều/token/dữ liệu người khác.
+T05 T08
+08-23
+Timeout cancel/upsert và event đảo thứ tự
+Unknown có đường reconcile; retry idempotent; kết quả cũ không ghi đè mới.
+T06 T08
+08-24
+A dừng nhắc trên máy mình hoặc sửa quyền với B
+Chỉ tác động đúng phạm vi đã duyệt; không dừng nhắc của chủ thể khác ngoài policy.
+T01 T03 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ màn hình và flow liên quan
+Điểm
+Vai trò trong Flow 08
+Bàn giao
+SCR18
+Tùy chọn và bằng chứng trạng thái nhắc
+T05 T07; đủ loading/error/partial/blocked
+POP01
+Giải thích trước yêu cầu quyền OS
+Native dialog là bề mặt hệ điều hành
+SCR37
+Thiết bị hoặc phiên nếu kiến trúc cần
+T03 quyết định mô hình rồi mới chốt layout
+SCR12
+Đích lần dùng sau tap và kiểm quyền
+Flow 03 nhận thao tác ghi nhận riêng
+Flow 02
+Nguồn lịch occurrence version và thời gian
+T04 dùng cùng oracle
+Flow 05–07
+Quan hệ grant context và thu hồi
+Không tự đăng ký người thân nhận nhắc
+Flow 09
+Offline đồng bộ và reconcile
+Dùng contract T03 T06; cần đối chiếu tiếp
+2 Điều kiện đóng flow
+T01–T04 có quyết định và người duyệt; T05–T08 có thiết kế/contract/build phù hợp quyết định; T09–T10 có kết quả thực và giới hạn. Review flow → wireframe → task → case theo version; case fail/blocked phải có owner. Tài liệu chưa chứng minh engine hay app đã triển khai đầy đủ.
+3 Nguồn sản phẩm
+Master Screen List V1.0 đến V3.1 bản 0.1 cung cấp HM-FLOW-08 và nhóm nhắc/cài đặt. Clarifications and Recommendations V1.0 cung cấp phương án một thiết bị chính, local scheduling và cửa sổ 7 ngày; các phương án này cần chốt tại T03. Bộ 30 task V1.0 cung cấp các mã HM-V1 tham chiếu. Flow 02 cung cấp vòng đời lịch; Flow 07 cung cấp thu hồi/quyền và giới hạn offline. Không thay các quyết định sản phẩm bằng giả định từ tài liệu nền tảng.
+
+4 Nguồn kỹ thuật chính thức
+Đối chiếu ngày 24/10/2026. Người triển khai xem lại tài liệu đúng platform/target SDK và channel được chọn trước khi chốt contract hoặc phát hành. Các nguồn dưới đây hỗ trợ ràng buộc ở V; không xác nhận cấu hình thực tế của HealMata.
+W1 Android Notification runtime permission
+https://developer.android.com/develop/ui/compose/notifications/notification-permission
+Phân biệt quyền thông báo runtime và tùy chọn của app; quyền có thể bị từ chối hoặc người dùng thay đổi.
+W2 Android Schedule alarms
+https://developer.android.com/develop/background-work/services/alarms
+Phân biệt cơ chế alarm và điều kiện nền tảng; T02 kiểm yêu cầu đúng phiên bản, không mặc định mọi nhắc cần exact alarm.
+W3 Apple Asking permission to use notifications
+https://developer.apple.com/documentation/usernotifications/asking-permission-to-use-notifications
+Kiểm trạng thái authorization trước khi lập local request; người dùng có thể đổi cài đặt.
+W4 Apple Scheduling a notification locally from your app
+https://developer.apple.com/documentation/usernotifications/scheduling-a-notification-locally-from-your-app
+Tài liệu triển khai local notification nếu T03 chọn cơ chế này; adapter và kiểm thử thiết bị vẫn cần riêng.
+5 Cách xử lý thay đổi
+Khi thay platform, mô hình thiết bị hoặc người nhận, quay lại T01–T04, cập nhật ma trận quyền, wireframe, contract và expected của case chịu ảnh hưởng. Ghi version thay đổi và liên kết quyết định; không để task đóng theo baseline cũ khi phạm vi đã đổi.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa trong tài liệu
+API
+Application Programming Interface
+Hợp đồng giao tiếp giữa app và dịch vụ.
+DST
+Daylight Saving Time
+Đổi giờ theo mùa; kiểm nếu timezone áp dụng.
+DND
+Do Not Disturb
+Chế độ không làm phiền của hệ điều hành.
+HM
+HealMata
+Tiền tố mã flow màn task và case.
+ID
+Identifier
+Định danh account occurrence thiết bị request.
+OS
+Operating System
+Hệ điều hành và cài đặt quyền ngoài app.
+POP
+Popup
+Mã hộp thoại trong Master Screen List.
+QA
+Quality Assurance
+Kiểm chất lượng theo build thiết bị và tiêu chí.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+SDK
+Software Development Kit
+Bộ công cụ nền tảng và phiên bản target.
+SLA
+Service Level Agreement
+Cam kết dịch vụ; tài liệu chưa đặt ngưỡng.
+TC
+Test Case
+Mã ca kiểm thử; hiện đều chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+UX
+User Experience
+Trải nghiệm và khả năng hiểu khôi phục luồng.
+1 Thuật ngữ dùng trong flow
+Occurrence là một lần dùng thuốc cụ thể. Preference là tùy chọn người dùng trong app. Plan là tập request nhắc dự kiến; scheduler là cơ chế nhận đặt lịch. Reconcile là đối chiếu nguồn hiện hành để thêm, cập nhật hoặc hủy request. Idempotency giúp retry không tạo tác động lặp ngoài thiết kế. Generation phân biệt phiên thiết bị/quyền để sự kiện cũ không tác động phiên mới. Horizon là cửa sổ tương lai được lập lịch. Deep link là đường mở vào đúng ngữ cảnh trong app sau kiểm quyền.
+Local là xử lý trên thiết bị; remote là xử lý từ dịch vụ; hybrid kết hợp hai nguồn theo ownership đã chốt. Accepted chỉ là kênh đã nhận request; displayed là có bằng chứng đã hiển thị; opened là đã mở. Không trạng thái nào trong ba trạng thái này tự chứng minh đã dùng thuốc. Oracle là quy tắc kết quả chuẩn dùng để đối chiếu kiểm thử.

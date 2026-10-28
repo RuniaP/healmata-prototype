@@ -1,0 +1,423 @@
+HM FLOW 05 Mời và kết nối người thân
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  23/10/2026
+Tài liệu mô tả cách chủ hồ sơ đề nghị chia sẻ dữ liệu với người thân, người nhận xem/nhận/từ chối, xác nhận đúng người khi cơ chế yêu cầu, rồi mở kết nối trong quyền. Cấu trúc kế thừa Flow 01–04: sơ đồ, layout, trạng thái, task và kế hoạch kiểm thử. Các lựa chọn còn mở được đặt ngay trong task ở phần VI.
+Quan hệ gia đình không tự cấp quyền sức khỏe. Lời mời, phản hồi chấp nhận, kết nối và grant đang hiệu lực là các khái niệm riêng. Sơ đồ dùng phương án hai bước từ nguồn đề xuất; một bước cần cơ chế ràng buộc người nhận được review. Không mặc định thời hạn 24 giờ, QR/link hoặc người thân có quyền đại diện là quyết định đã duyệt.
+I Phạm vi và kết quả cần đạt
+1 Vai trò và chiều chia sẻ
+A là chủ dữ liệu/người được quyền quyết định chia sẻ theo mô hình đã được duyệt; B là tài khoản được mời nhận quyền trên dữ liệu A. Hành trình A → B không tạo quyền B → A. B có thể vừa tự chăm sóc vừa hỗ trợ người khác nhưng góc nhìn không tự tạo quyền. Người không tự đăng ký/đồng ý và đại diện hợp lệ còn theo Master Q02, không tự loại hoặc tự cấp đại diện.
+2 Màn hình và hành động
+HM-SCR-06 danh sách kết nối/lời mời; 07 tạo, chọn quyền, xem lại và chia sẻ lời mời; 08 xem và phản hồi; 09 xác nhận người nhận nếu chọn hai bước. POP-05 xác nhận nhận/từ chối; POP-07/09/10/11/12 cho nháp, phiên/quyền, conflict và lỗi. Bước con giữ mã gốc. Flow 01 xử lý đăng nhập/đăng ký của người nhận.
+3 Thành công và giới hạn
+Thành công khi server đã commit quan hệ/grant đúng A/B, chiều chia sẻ, tập quyền và phiên bản được đồng ý; client nhận trạng thái hiệu lực thật. Link được tạo, được chia sẻ, được mở hay B bấm Chấp nhận chưa tự là active. Không có dữ liệu sức khỏe được mở trước gate quyền hợp lệ.
+4 Điểm bàn giao
+Sau active, 05 chọn người/16 Hôm nay nhận dữ liệu trong quyền qua Flow 06; 17 và Flow 07 quản lý quyền, thu hồi/rời quan hệ. Flow 05 bao gồm hủy lời mời pending, hết hạn và gửi lại; hủy pending không thay thu hồi grant đã active. Không thiết kế mời bác sĩ, mua Plus, phân công việc chăm sóc hay quản trị gia đình toàn quyền trong luồng này.
+
+II Sơ đồ luồng tổng thể
+
+1 Quy tắc đọc
+06/07/08/09/05/16/17 là mã HM-SCR. Hai bước là phương án để review ở T01/T02: B chấp nhận đúng lời mời, A đối chiếu B trước active. Nếu bỏ 09, phải chọn và kiểm cơ chế ràng buộc người nhận rõ; không chỉ xóa một màn khỏi sơ đồ. Các đường lỗi/unknown được mô tả ở phần III/V.
+
+III Flow chi tiết
+1 Mở Gia đình và chọn chia sẻ
+a Danh sách đúng tài khoản
+Từ điều hướng hoặc cài đặt mở 06, kiểm phiên và lấy kết nối/lời mời theo tài khoản hiện tại. Phân biệt đang chia sẻ dữ liệu của tôi, được người khác chia sẻ, lời mời gửi đi/nhận và trạng thái. Không đưa dữ liệu thuốc/số đo vào danh sách lời mời. Người không được quyền chia sẻ hồ sơ đang xem không thể mời thay bằng cách đổi subject_id trên client.
+b Chọn người và quyền tại 07
+A chọn Mời người thân, xác định dữ liệu của ai và B theo cơ chế được duyệt. Các nhóm ứng viên gồm lịch thuốc, ghi nhận thuốc, sức khỏe; quyền xem/ghi/sửa riêng. Đề xuất không bật mặc định mọi quyền; phụ thuộc giữa xem và ghi/sửa được chốt T02. Không mời theo nhãn “Đồng ý tất cả” mơ hồ, không tự chọn dữ liệu B chia sẻ ngược.
+2 Xem lại tạo và chia sẻ lời mời
+a Tạo trên server
+07 xem lại người cấp, người nhận dự kiến nếu ràng buộc, tập quyền và hiệu lực. Quay lại trước xác nhận không gửi. Khi xác nhận, tạo operation ổn định; Backend kiểm quyền A, phiên bản policy/scope và tạo invite với thời hạn server. Nếu timeout, tra operation trước tạo invite thứ hai. Token ngẫu nhiên/một lần, thời hạn, số lời mời và giới hạn thử được chốt T03, chưa tự đặt số.
+b Chia sẻ qua kênh được chọn
+Nếu dùng QR/link, UI cho người dùng chủ động chia sẻ/sao chép bằng cơ chế đã chọn. Chỉ cần token tham chiếu, không nhét tên thuốc/số đo hay grant đầy đủ trong URL. Màn hình public/link preview và nội dung trước login không lộ dữ liệu riêng tư. Việc tạo/link copied không đồng nghĩa đã gửi/đã đọc. Trong lần tạo tài liệu này không gửi lời mời cho bất kỳ ai.
+3 Người nhận mở và đăng nhập
+a Trước khi phản hồi
+Mở lời mời từ 06, link, QR hoặc thông báo: kiểm trạng thái server, yêu cầu đăng nhập Flow 01 nếu chưa có phiên. Sau đăng nhập quay về đúng invite còn hợp lệ rồi kiểm lại định danh. Link scanner, preview hoặc HTTP GET không được xem là Chấp nhận và không tự tiêu thụ lời mời/kích hoạt quyền. Nếu cần lookup, không tiết lộ account tồn tại cho người không có thẩm quyền.
+b Tài khoản không phù hợp
+08 hiện rõ tài khoản đang dùng và thông tin tối thiểu của A/scope theo policy. Nếu link ràng buộc một tài khoản/người nhận khác, chặn phản hồi và cho đổi tài khoản hoặc xin lời mời mới; không sửa ngầm recipient_id. Link không ràng buộc trước chỉ cho claim theo quy tắc T01/T03, chưa cấp quyền; A cần xác nhận đúng người. Tên hiển thị/email client gửi không tự là bằng chứng quan hệ hoặc định danh pháp lý.
+
+4 Chấp nhận hoặc từ chối
+a Phản hồi rõ quyền và chiều
+B xem dữ liệu của A được chia sẻ, quyền đề nghị và ý nghĩa không chia sẻ ngược. Chấp nhận là thao tác chủ động có xác nhận đúng invite/version/account; hủy popup không là từ chối. Từ chối chỉ thay lời mời thuộc quyền B, không tự hủy grant khác đang có hoặc xóa tài khoản A/B.
+b Kết quả server
+Hai bước: B accepted → Chờ A xác nhận, chưa active. Một bước: chỉ commit active khi recipient binding và mọi gate policy được chọn đạt. Client luôn đọc kết quả server, không mở hồ sơ từ nút bấm. Cùng operation trả cùng kết quả; phản hồi mới sau declined/expired/canceled phải theo lifecycle được duyệt, không tự làm sống lại invite.
+5 Xác nhận đúng người tại 09 nếu áp dụng
+A mở 09 từ 06/thông báo, xem tài khoản B đã nhận, định danh được phép hiển thị đã che và scope đúng bản B đã chấp nhận. A đối chiếu qua cách được chọn tại T01, rồi xác nhận hoặc hủy nhận nhầm. Tên giống nhau chưa đủ; cơ chế đối chiếu/khả năng phục hồi khi claim nhầm cần rõ. Server kiểm A còn quyền, B đúng account, invite chưa hết hạn/bị hủy và scope/version chưa đổi trước kích hoạt.
+Nếu A muốn thay scope sau B đã chấp nhận, phải xem lại và xin chấp nhận lại hoặc tạo lời mời thay thế theo T02; không âm thầm tăng quyền. Nhánh một bước cũng giữ cùng yêu cầu về scope B thực sự đồng ý. Hành động sau khi hết hạn tại thời điểm commit bị xử lý theo policy chốt ở T03, không theo đồng hồ máy.
+6 Hủy gửi lại hết hạn và trùng quan hệ
+A hủy invite chưa active theo quyền; B rút phản hồi nếu tính năng được chọn tại T01. Gửi lại phải xác định cùng invite hay thay bằng invite/token mới; đề xuất vô hiệu token pending cũ khi thay thế. Việc gửi lại không thu hồi grant khác đã active. Trùng quan hệ A→B không nhân đôi quyền; không cộng scope tự động từ hai invite trái phiên bản. Nếu cần bổ sung quyền cho quan hệ active, bàn giao 17/Flow 07 theo contract, không ngầm biến Accept thành nâng quyền.
+Hết hạn/đã dùng/bị hủy/không hợp lệ hiển thị thông tin tối thiểu, đường xin lời mời mới hoặc về 06. Token bị người khác claim không được lộ danh tính người đó cho tài khoản ngoài quyền. Link thất lạc/chuyển tiếp không được dùng như giấy phép đọc dữ liệu.
+7 Mất mạng và các thao tác đồng thời
+Đề xuất tạo/nhận/từ chối/xác nhận/hủy/gửi lại cần mạng. Có thể soạn nháp nếu T04 cho phép; nháp không là invite server. Timeout sau mutation cần tra operation; không tự báo đã hủy hoặc kết nối. Accept/Cancel/Expire/Confirm đồng thời phải có một thứ tự hợp lệ và kiểm quyền tại commit. Nếu Cancel thua vì grant đã active, hiển thị trạng thái thật và chuyển quản lý quyền, không báo đã thu hồi.
+
+IV Layout sơ bộ
+1 Danh sách và chọn quyền
+Wireframe đen trắng để review bố cục. Các nhóm quyền là ứng viên theo nguồn, phải chốt T02; không là checkbox mặc định đã duyệt. Nền tảng/ngôn ngữ/touch target kế thừa Flow 01.
+
+a Biến thể
+06 cần loading, chưa có kết nối, pending gửi/nhận, active một chiều/hai chiều độc lập, lỗi và hết phiên. 07 cần không có quyền mời thay, form quyền trống, nháp, validation và đang gửi. Tên/định danh dài hoặc chữ lớn phải đọc được, không chỉ màu để phân biệt chiều chia sẻ.
+
+2 Xem lại và chia sẻ lời mời
+
+a Link và nội dung
+Hai khung cùng mã 07; vùng QR chỉ là placeholder thiết kế, không có mã hoạt động thật. Chia sẻ do người dùng chủ động, không tự gửi tới danh bạ. Nếu chọn kênh khác QR/link thì đổi vùng này theo T03; không cần giả định xin quyền danh bạ/camera khi chưa chốt.
+
+3 Phản hồi và trạng thái chờ
+
+a Thông tin trước khi đồng ý
+08 nêu A chia sẻ dữ liệu A cho tài khoản B đang dùng và scope cụ thể. Thông tin nhận diện tối thiểu theo policy, không lộ thuốc/số đo. Chờ A xác nhận chỉ có trong phương án hai bước; sau Accept còn chờ thì không có hành động mở dữ liệu người thân.
+
+4 Xác nhận người nhận và kết nối hiệu lực
+
+a Điều kiện hiệu lực
+09 là màn điều kiện theo Master. Nếu bỏ bước này cần thay bằng cơ chế định danh đã chốt, không coi tên hiển thị trùng là đủ. Khung active minh họa 06, nhận trạng thái từ server. Quản lý/thu hồi quyền ở 17/Flow 07; đổi chiều chia sẻ cần quyết định mới của chủ dữ liệu chiều đó.
+
+V Trạng thái và quy tắc dữ liệu
+1 Lifecycle đề xuất
+Trạng thái
+Hiển thị và hành động
+Điều cần bảo toàn
+Nháp trên app
+Soạn quyền/người nhận nếu policy cho phép.
+Chưa có invite/token server; chưa có grant.
+Chờ người nhận
+Invite đã tạo, chưa nhận phản hồi.
+Created khác sent/opened/accepted.
+Chờ chủ hồ sơ xác nhận
+B đã accepted ở cơ chế hai bước.
+Chưa đọc sức khỏe, chưa active.
+Đang xác minh/kết quả chưa rõ
+Loading hoặc tra operation khi timeout.
+Không suy active/canceled từ client.
+Active
+Kết nối/grant hiệu lực do server xác nhận.
+Chỉ scope đúng chiều/version được đồng ý.
+Từ chối
+Phản hồi decline hợp lệ của đúng B.
+Không ảnh hưởng grant khác hoặc chia sẻ ngược.
+Bị hủy
+Invite pending đã bị vô hiệu theo quyền.
+Không đồng nghĩa đã revoke grant active.
+Hết hạn
+Thời hạn server đã đến theo policy.
+Retry không sống lại lời mời cũ.
+Đã dùng/được thay thế
+Token/phiên bản cũ không còn được phản hồi.
+Không tự nhân quan hệ hoặc nâng scope.
+Không hợp lệ/mất quyền
+Thông báo chung, đường quay lại/xin mới.
+Không lộ dữ liệu hoặc danh tính ngoài quyền.
+2 Bản ghi lời mời khác grant
+Đề xuất invite_id, inviter/subject_id, recipient binding hoặc claimed_by theo cơ chế, status, expires_at, scope_version, policy_version, token reference, operation_id và audit. Grant/relation có identity/chiều/scope/version/active từ nguồn server riêng theo contract. Token không chứa dữ liệu sức khỏe; không đưa token nguyên vào log/analytics. Lưu sự kiện A tạo, B phản hồi, A xác nhận và kết quả thực, không giả “đã đồng ý” từ việc mở trang.
+3 Default và phụ thuộc quyền
+Đề xuất không chọn mọi quyền sẵn. T02 quyết định có yêu cầu xem đi cùng ghi/sửa và các nhóm cụ thể. Quan hệ không quyền, chia sẻ hai chiều, quyền xuất hoặc sửa tài khoản không được suy ra từ lời mời. Quyền công việc V1.2, phiên tư vấn và tiền thuộc miền riêng.
+
+4 Ma trận tác nhân và xử lý ranh giới
+Tác nhân
+Hành động trong Flow 05
+Giới hạn
+A chủ dữ liệu/đại diện được duyệt
+Tạo lời mời, chọn scope, xác nhận B nếu hai bước, hủy pending.
+Chỉ dữ liệu có quyền quyết định; không tự cấp dữ liệu B.
+B đúng người nhận
+Xem tối thiểu, nhận/từ chối, xem pending/active trong quyền.
+Không tự tăng scope, claim thay hoặc xác nhận thay A.
+Người thứ ba C
+Chỉ thông tin public chung theo policy.
+Không được Accept invite đã ràng buộc B; link forward chưa là quyền.
+Người chỉ có quyền xem/ghi sức khỏe
+Dùng dữ liệu được cấp sau active ở Flow 06.
+Không tự tạo lời mời/cấp lại cho C.
+Support/vận hành
+Hỗ trợ theo quyền công cụ và audit khi được chọn.
+Không bypass consent hoặc tự active grant để giải quyết ticket.
+a Cơ chế người nhận
+Một invite ràng buộc tài khoản B chỉ B được phản hồi. Với link mở, claim đầu tiên nếu được chọn chỉ tạo trạng thái chờ xác nhận, chưa access; cần quy tắc nhận nhầm/claim cạnh tranh/resend tại T03. Nếu chọn một bước, yêu cầu binding đủ mạnh thay cho việc ai có link cũng được đọc. Không coi quan hệ gia đình hoặc danh tính pháp lý đã được chứng minh từ email/đăng nhập.
+b Đồng thời và scope
+Accept/confirm có expected_version và operation theo contract. Scope thay đổi trước commit buộc review lại, không áp quyền rộng hơn. Cancel/expire thắng thì không active; active thắng thì Cancel pending không được báo thành revoke. Hai invite cùng A/B không tự union mọi quyền; kết quả theo T06 có trace. Gửi lại token cũ bị vô hiệu theo policy, grant khác không bị xóa.
+c Nhắc quyền và phục hồi
+Chỉ gửi thông báo mời/đã nhận/cần xác nhận/kết nối theo lựa chọn kênh và quyền; không lộ sức khỏe ở màn khóa. Nhắc lời mời không phải nhắc thuốc. Đăng nhập lại trở về invite nhưng kiểm expiry/account/version mới; restore không hồi sinh token/quan hệ đã bị hủy hoặc quyền đã thu hồi. Offline không hứa cập nhật hay revoke tức thì.
+5 Truy cập sau hiệu lực
+Flow 06 đọc dữ liệu phải kiểm grant hiện tại riêng, không chỉ sự kiện invite completed. Khi active nhưng scope không có một nhóm, API/preview/count không trả nhóm đó. Bản đã xem/chụp ngoài app không thể được hứa thu hồi từ xa; giải thích giới hạn ở Flow 07 khi cần. Flow 05 không coi việc đóng popup hay notification delivered là bằng chứng consent.
+
+VI Task triển khai và điểm cần chốt
+HM-F05-T01–T10 là mã gói việc toàn luồng. Task HM-V1 gốc giữ ở mục h để tránh hai backlog trùng. Vai trò là đề xuất, chưa gán người/ngày. Câu hỏi nằm trong mục c; thời hạn/token/số lần chưa duyệt không được dùng làm pass/fail cuối cùng.
+1 HM F05 T01 Chốt mô hình kết nối và đúng người nhận
+a Mục tiêu  Chốt mô hình kết nối và đúng người nhận; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product cùng Privacy, Design và Backend. Master Q02/Q04; Flow 01 account; nguồn V1.0.
+c Cần xác nhận trong task  Chọn ai có quyền mời/share hồ sơ, cách phục vụ người cần hỗ trợ/đại diện, mời một chiều hay hai chiều riêng; một hay hai bước. Đề xuất B nhận rồi A xác nhận; nếu một bước cần recipient binding phù hợp. Chốt bằng chứng đối chiếu B, claim nhầm, self invite và rút phản hồi nếu có.
+d Công việc thực hiện  Lập actor/subject/recipient matrix và các nhánh A/B/C; không tự coi đăng nhập/email là chứng minh quan hệ pháp lý, không tự loại nhóm người cần đại diện.
+e Đầu ra  Policy mô hình/nhận diện và điều kiện active có version.
+f Nghiệm thu  Biết chính xác ai chia sẻ gì cho ai, điểm active và lý do chặn; chưa quyết định không biến thành default đã duyệt.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T01/T02/T04/T07; giao T02–T10.
+2 HM F05 T02 Chốt scope và nội dung đồng ý
+a Mục tiêu  Chốt scope và nội dung đồng ý; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Product và Privacy cùng Design, Backend. T01; quyền thuốc/sức khỏe Flow 02–04.
+c Cần xác nhận trong task  Chọn nhóm/hành động, default, phụ thuộc xem với ghi/sửa, scope trống, tăng/giảm quyền, thời hạn grant nếu có. Tách quyền tài khoản/xuất/công việc/tiền. Chốt wording A→B và việc B không tự chia sẻ ngược; scope đổi phải nhận lại theo policy.
+d Công việc thực hiện  Lập ma trận scope code/version và copy tương ứng; xem lại ở 07/08/09 cùng một bản. Không nút Đồng ý chung thiếu nghĩa.
+e Đầu ra  Scope registry, consent semantics và fixtures trước/sau thay quyền.
+f Nghiệm thu  Không active quyền rộng hơn bản B đã nhận; actor dữ liệu không được cấp lại cho người thứ ba.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T02/T07/T08/T09; giao T04–T10 và Flow 06/07.
+
+3 HM F05 T03 Chốt token thời hạn gửi lại và kênh
+a Mục tiêu  Chốt token thời hạn gửi lại và kênh; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Kỹ thuật cùng Product, Privacy và QA. T01/T02; kênh/deep link nền Flow 01.
+c Cần xác nhận trong task  Chọn QR/link/in app/kênh khác, recipient binding/claim, random token một lần nếu dùng, hạn ở mỗi bước, resend/cancel/decline/expiry, số lời mời/thử/rate limit. 24 giờ chỉ là đề xuất cũ, chưa duyệt. Chốt link preview trước login và token mất/forward/claim cạnh tranh.
+d Công việc thực hiện  Định nghĩa GET/preview không Accept/consume; action phản hồi cần chủ động và đúng phiên. Resend nêu token cũ/quan hệ hiện có xử lý ra sao. Không chứa sức khỏe/token thô trong log.
+e Đầu ra  Lifecycle token và delivery/deep link contract có config/reviewer.
+f Nghiệm thu  Người sai không có dữ liệu; link đã dùng/hết hạn/hủy không sống lại; tạo/copy khác đã gửi/đã đọc.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T07/T08/T09/T25; giao T05–T10.
+4 HM F05 T04 Hoàn thiện layout và câu chữ
+a Mục tiêu  Hoàn thiện layout và câu chữ; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Design cùng Product, Privacy và QA. Có thể review cấu trúc ngay; final theo T01–T03.
+c Cần xác nhận trong task  Chốt có 09 hay cơ chế thay, phần nhận diện được che, wording quyền/hủy pending, link hết hạn/sai account và active. Nền tảng/ngôn ngữ kế thừa Flow 01.
+d Công việc thực hiện  Hoàn thiện 06/07/08/09 và 8 wireframe với keyboard/chữ lớn/screen reader; nút chấp nhận/từ chối/cancel rõ; không dùng chỉ màu. Điều hướng 05/16/17 sau active trong quyền.
+e Đầu ra  Layout/copy/states versioned và mapping mã.
+f Nghiệm thu  Người dùng hiểu dữ liệu ai/cho ai/quyền gì/đang chờ bước nào; không có nút vào sức khỏe khi pending.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T07/T20/T24; giao T05/T09.
+
+5 HM F05 T05 Xây flow mời và phản hồi trên app
+a Mục tiêu  Xây flow mời và phản hồi trên app; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Dev App phối hợp Backend. T04; API T06; policy nhánh áp dụng đã chốt.
+c Cần xác nhận trong task  Chốt preserve invite khi login, đổi account, quay từ share sheet/link, phản hồi muộn và route sau active. Đề xuất các mutation cần mạng, nháp theo policy chưa tự tạo pending server.
+d Công việc thực hiện  Xây 06–09 và confirm/state/error, share do người dùng chủ động nếu được chọn. Tra operation sau timeout, bỏ response cũ; parse link an toàn; không tự Accept qua GET/mở màn.
+e Đầu ra  Build tích hợp và đường đăng nhập/tiếp tục lời mời.
+f Nghiệm thu  Không báo connected từ client flag; wrong account và link cũ xử lý đúng; cancel trước gửi không mutate.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T06/T09/T16/T22; giao T09/T10.
+6 HM F05 T06 Chốt API lifecycle và oracle đồng thời
+a Mục tiêu  Chốt API lifecycle và oracle đồng thời; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend Lead cùng App, QA và Privacy. T01–T03; registry scope.
+c Cần xác nhận trong task  Chốt create/read/accept/decline/confirm/cancel/resend/status/list, operation/version/identity, expiry authoritative, giao dịch active grant. Định nghĩa race và trùng A/B/invite/scope; không cộng quyền mặc định.
+d Công việc thực hiện  Lập bảng chuyển trạng thái, fixtures accepted pending/active, cancel versus confirm, accept versus expire, two recipients claim, two invites same direction. API/source errors tối thiểu tránh lộ dữ liệu.
+e Đầu ra  Contract versioned và oracle độc lập; không bịa endpoint production.
+f Nghiệm thu  Mọi transition có actor/gate/result hoặc blocker; cùng operation trả kết quả cũ, payload khác reject; một kết quả hợp lệ có trace.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T08/T13/T21; giao T05/T07–T10.
+
+7 HM F05 T07 Xây dịch vụ lời mời và kích hoạt quyền
+a Mục tiêu  Xây dịch vụ lời mời và kích hoạt quyền; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend cùng reviewer kỹ thuật và Privacy. T06; session/policy T01–T03.
+c Cần xác nhận trong task  Chốt storage token phù hợp, unique/dedupe scope, audit/retention và transactional boundary invite/grant. Thông số có người duyệt, không lấy con số trong mockup.
+d Công việc thực hiện  Kiểm quyền subject/actor/recipient và version tại commit, expiry từ server; cấp đúng chiều/scope; reject claim trái phép và token replay. Cancel pending không tự revoke active; restore không phục sinh grant/token bị vô hiệu.
+e Đầu ra  Service/migration khi cần, audit consent và kết quả kiểm nhất quán.
+f Nghiệm thu  Không orphan active grant từ một invite thất bại, không active ngoài gate hoặc nhân quan hệ; sự kiện truy nguyên được.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T08/T25; giao T08–T10.
+8 HM F05 T08 Tích hợp dữ liệu sau active và thông báo
+a Mục tiêu  Tích hợp dữ liệu sau active và thông báo; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  Backend và Dev App cùng đầu mối nhắc/Privacy. T06/T07; điểm giao Flow 06/07/08/09.
+c Cần xác nhận trong task  Chốt thông báo mời/nhận/cần xác nhận, kênh và nội dung lock screen tối thiểu; không tự gửi email/SMS khi chưa có kênh/cấu hình. Chốt cache/lists và quyền thay đổi.
+d Công việc thực hiện  Cập nhật 06/05/16/17 từ grant server; API sức khỏe lọc trước trả. Pending không tạo preview/count; notification/deep link đọc lại expiry/state/quyền. Handoff cancel active sang Flow 07.
+e Đầu ra  Contract quyền/thông báo/cache và impact map liên luồng.
+f Nghiệm thu  Không lộ dữ liệu trước active hoặc nhóm ngoài scope; delivered không là accepted; không cam kết hủy cache offline tức thì.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T08/T09/T13–T16/T21/T22; giao T09/T10.
+
+9 HM F05 T09 Kiểm chức năng và khả năng hiểu quyền
+a Mục tiêu  Kiểm chức năng và khả năng hiểu quyền; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  QA với Design, App và Product/Privacy. Lập case trước; chạy khi policy/build/API đủ.
+c Cần xác nhận trong task  Chốt matrix một/hai bước, kênh, thiết bị/ngôn ngữ và oracle T06. Chưa chốt ghi Blocked, chưa chạy Not run; không tự coi người dùng đã hiểu từ ảnh UI.
+d Công việc thực hiện  Chạy TC01–TC12 và TC19–TC22: actor/chiều/scope, reject/cancel/expiry/resend, link/login, keyboard/chữ lớn và timeout. Ghi build/config/expected/actual.
+e Đầu ra  Ma trận kết quả, lỗi tái hiện và bằng chứng review sử dụng.
+f Nghiệm thu  Không false connected, nút/nhánh không cụt; copy phân biệt pending/active và hủy/revoke; chưa test không báo đạt.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T23/T24; giao T10/reviewer.
+10 HM F05 T10 Kiểm bảo vệ dữ liệu race và bàn giao
+a Mục tiêu  Kiểm bảo vệ dữ liệu race và bàn giao; trạng thái Đề xuất, chưa có bằng chứng thực thi.
+b Trách nhiệm và đầu vào  QA cùng Backend, Privacy và vận hành. T05–T08 có build; lifecycle/scope cùng version.
+c Cần xác nhận trong task  Chốt tiêu chí chặn release, người xử lý invite/grant treo, quyền test và dữ liệu synthetic. Các nhánh chưa được duyệt giữ blocker.
+d Công việc thực hiện  Chạy TC13–TC18 và TC23–TC24: C dùng link, scope tampering, scanner, race, active data/API, account switch và log. Rà source/version/consent trace; đồng bộ contract Flow 06/07.
+e Đầu ra  Packet Flow 05 với evidence thực/known gaps và người nhận.
+f Nghiệm thu  Không access trước active hoặc mutation trái quyền; không false consent/nâng scope. Duyệt layout khác code/test/release; cập nhật Master theo review thực.
+g Khi thiếu đầu vào  Tiếp tục cấu trúc/layout/fixtures độc lập; ghi Chờ quyết định cho nhánh phụ thuộc, không tự xem proposal là approved.
+h Đối chiếu và bàn giao  HM-V1-T23/T25/T26/T28; bàn giao Flow 06 và 07.
+
+VII Ca kiểm thử đề xuất
+Mã HM-F05-TC01–TC24, trạng thái ban đầu Not run. Khi chạy lưu precondition, bước, expected/actual, build/API/config, account/role và thiết bị; policy còn mở ghi Blocked cùng task. Dùng ít nhất A/B/C synthetic để kiểm đúng người. Case race có lịch thực thi kiểm soát và oracle T06, không sửa expected để khớp code.
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+01
+A mở 06 rồi chọn share dữ liệu của A
+Đúng account/subject/chiều; không tự share hồ sơ B đang xem.
+T01/T09
+02
+Chọn nhóm quyền và xem lại
+Default/phụ thuộc theo T02, không bật mọi quyền hoặc quyền tài khoản ngầm.
+T02/T09
+03
+Tạo rồi hủy trước submit
+Không có invite server; không gửi thông báo hay cấp grant.
+T05/T09
+04
+Tạo invite, copy hoặc share link
+Trạng thái created/pending; không tự báo đã gửi/đọc/active.
+T03/T09
+05
+B mở link chưa login rồi đăng ký/đăng nhập
+Về đúng invite và account, kiểm lại expiry/scope; không auto Accept.
+T05/T09
+06
+B đọc 08 và từ chối
+Decline có trace, không active hoặc xóa grant khác đang có.
+T06/T09
+07
+B accept trong cơ chế hai bước
+Pending A, chưa có health access/preview/count.
+T01/T09
+08
+A xác nhận đúng B ở 09
+Active đúng scope/version/chiều đã được đồng ý.
+T07/T09
+09
+A phát hiện B nhận nhầm và hủy pending
+Không active; token/lifecycle theo T03; không lộ người nhận cho C.
+T03/T09
+10
+Một bước nếu policy được chọn
+Đạt recipient binding rồi mới active; không xóa 09 mà bỏ gate định danh.
+T01/T09
+11
+Hết hạn ở trước accept hoặc đang chờ confirm
+Kết quả theo server ở commit; không tự gia hạn/chuyển active.
+T03/T09
+12
+Resend rồi mở token/version cũ
+Không sống lại lời mời cũ; không revoke grant khác ngoài policy.
+T03/T09
+
+1 Ca kiểm thử tiếp theo
+Case
+Điều kiện và thao tác
+Kết quả cần kiểm
+Task
+13
+C forward/claim link ràng buộc B
+Không phản hồi/cấp quyền cho C; open link chưa đủ access.
+T03/T10
+14
+Link public preview/scanner/HTTP GET
+Không consume/Accept/activate; không lộ thuốc/số đo/token qua log.
+T03/T10
+15
+Client sửa recipient/subject/scope/version
+Server chặn vượt quyền; không active scope rộng hơn bản đồng ý.
+T06/T10
+16
+Accept/confirm/cancel/expire đồng thời
+Một lifecycle hợp lệ có trace; cancel thua active không báo đã revoke.
+T06/T10
+17
+Hai người claim hoặc hai invite A→B đồng thời
+Kết quả theo binding/dedupe policy; không nhân quan hệ hoặc union scope ngầm.
+T06/T10
+18
+Gửi lại cùng operation hoặc payload khác
+Replay đúng kết quả cũ, mismatch reject; không false consent/active thứ hai.
+T06/T10
+19
+Timeout sau create/accept/confirm/cancel
+Tra operation, không mutation mới tùy tiện hoặc báo active/canceled sai.
+T05/T09
+20
+Đổi A/B account, response callback cũ về
+Không lẫn invite/data; login resume kiểm lại đúng người.
+T05/T09
+21
+A đổi quyền sau B accept trước confirm
+Yêu cầu review/accept lại theo policy; không tự tăng scope.
+T02/T09
+22
+Chữ lớn, screen reader, tên dài, keyboard
+Đọc đủ người/chiều/scope, thao tác tới được; không chỉ màu.
+T04/T09
+23
+Active một nhóm, gọi API nhóm khác hoặc chiều ngược
+Đúng nhóm/chiều mới đọc; dữ liệu/preview/count còn lại không bị trả về.
+T08/T10
+24
+Restore/log/notification/deep link cũ
+Không hồi sinh token/grant, không lộ nội dung hoặc token thô; delivered không thành accepted.
+T07/T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Mã màn và trách nhiệm
+Mã hoặc thành phần
+Flow 05 chịu trách nhiệm
+Điểm giao
+HM-SCR-06
+Danh sách kết nối/lời mời và chiều share
+Đúng trạng thái server; mở 07/08/09/17.
+HM-SCR-07
+Chọn quyền, xem lại, tạo/chia sẻ invite
+Các bước con chung mã; không tự gửi hoặc xin quyền danh bạ.
+HM-SCR-08
+Xem tối thiểu và phản hồi đúng tài khoản
+Flow 01 login/resume; pending chưa mở sức khỏe.
+HM-SCR-09
+A xác nhận đúng B khi chọn hai bước
+Màn điều kiện; one step cần binding thay thế.
+HM-POP-05 và trạng thái chung
+Confirm/decline, nháp, lỗi, conflict, phiên/quyền
+Không cấp mã màn chính mới cho popup.
+HM-SCR-05/16 và Flow 06
+Chọn/người thân trong grant active
+Đọc/ghi vẫn kiểm quyền từng API.
+HM-SCR-17 và Flow 07
+Đổi/thu hồi grant, rời kết nối
+Hủy invite pending không thay revoke active.
+2 Điều kiện review và nghiệm thu
+Review tài liệu: chọn gate active và binding, scope/consent version, expiry/resend và nhánh lỗi, mỗi action có đích/case. Review triển khai: đúng source/API/build/config, thực thi kiểm A/B/C và race, trace đồng ý và quyền, không access trước gate. Known gaps có người xử lý và tác động. Chưa test thật không báo pass; duyệt thiết kế không thay code/test/release.
+3 Nguồn và trạng thái
+Master Screen List V1.0–V3.1 bản 0.1 ngày 23/10/2026 cung cấp FLOW-05 và SCR-06–09/05/16/17. HealMata_V1_0_30_Tasks_Detailed.docx đặc biệt HM-V1-T02/T07/T08/T09/T23/T25 cung cấp nhóm công việc. Bản Clarifications and Recommendations V1.0 mục 3/4 cung cấp phương án token hai bước và ma trận quyền; thời hạn 24 giờ và cơ chế QR/link chưa được nâng thành quyết định đã duyệt.
+Flow 01 cung cấp account/session/login resume; Flow 02–04 cung cấp sự phân biệt quyền lịch/ghi nhận/sức khỏe. Flow 04 bản 0.1 giữ quy tắc actor/subject và dữ liệu sức khỏe, không dùng lời mời để vượt các quyền đó. Tài liệu này là nháp mới, chưa có kết quả app hoặc người phê duyệt được xác nhận. Không thay các file trước trong lần tạo; khi chốt policy mới cần impact map sang Flow 06/07/08/09 và Master.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng trao đổi giữa app và dịch vụ.
+HM
+HealMata
+Tiền tố mã flow, màn, task và case.
+HTTP
+Hypertext Transfer Protocol
+Giao thức request; GET mở link không tự là phản hồi đồng ý.
+ID
+Identifier
+Định danh account, subject, invite, relation hoặc operation.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng với build và tiêu chí cụ thể.
+QR
+Quick Response
+Mã dạng hình có thể chứa tham chiếu lời mời nếu được chọn.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+SMS
+Short Message Service
+Kênh tin nhắn nếu được chọn, chưa mặc định tích hợp.
+TC
+Test Case
+Mã ca kiểm thử của Flow 05.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+URL
+Uniform Resource Locator
+Địa chỉ link; không chứa dữ liệu sức khỏe trong phương án đề xuất.
+UX
+User Experience
+Trải nghiệm và khả năng hiểu/khôi phục luồng.
+1 Thuật ngữ cần thống nhất
+Invite: lời mời chưa tự là quyền. Recipient binding: ràng buộc đúng người nhận. Claim: tài khoản nhận liên kết theo cơ chế được chọn, chưa tự active. Consent: sự đồng ý rõ cho bản scope cụ thể. Grant: quyền truy cập có chiều/phiên bản. Scope: nhóm dữ liệu và hành động được cấp. Relation: quan hệ giữa hai tài khoản theo mô hình. Revoke: thu hồi grant active; cancel: hủy invite pending. Operation: thao tác có khóa để tra kết quả/retry. Synthetic: dữ liệu giả lập cho thiết kế/QA.

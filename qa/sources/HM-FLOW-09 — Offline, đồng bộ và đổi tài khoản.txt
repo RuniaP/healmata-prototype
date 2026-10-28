@@ -1,0 +1,405 @@
+HM FLOW 09 Offline đồng bộ và đổi tài khoản
+HealMata V1.0  |  Flow và layout sơ bộ cùng task triển khai  |  Bản nháp 0.1  |  24/10/2026
+Tài liệu dành cho Product, Design, App, Backend và QA để triển khai thống nhất khi mất mạng, lưu trên máy, gửi lại, xử lý xung đột và đổi tài khoản. Kết quả cần đạt là người dùng biết dữ liệu đang ở đâu, việc nào chưa hoàn tất và cách tiếp tục mà không mất ngữ cảnh hoặc gửi dữ liệu sang sai người.
+Lưu trên máy, gửi request và server chấp nhận là các kết quả khác nhau. Mất kết nối không chứng minh phiên đã hết hạn hoặc server chưa nhận lệnh. Các phương án mới về phạm vi offline, giữ dữ liệu và đăng xuất được gắn vào task để chốt; tài liệu chưa xác nhận app đã triển khai hoặc kiểm thử.
+I Phạm vi và kết quả cần đạt
+1 Màn hình và trạng thái
+HM-STA-03 trên màn gốc cho mất mạng/chờ đồng bộ; HM-SCR-38 cho danh sách thao tác nếu cần tách; HM-STA-04 cho thiếu quyền/phiên hết hạn; HM-STA-05 cho xung đột/dữ liệu cũ. HM-POP-08 xử lý đăng xuất khi còn dữ liệu chưa gửi. Không cấp mã mới cho từng trạng thái; 38 có thể gộp trong 19 hoặc vùng trạng thái của màn gốc.
+2 Phạm vi offline đề xuất
+Xem dữ liệu của mình đã tải; xác nhận lần dùng đã tồn tại và ghi sức khỏe của mình khi được duyệt. Tạo/sửa/dừng lịch, nhập hộ, mời, đổi quyền, đổi múi giờ và xuất dữ liệu cần online trong phương án đề xuất. Chưa duyệt thì khóa phần phụ thuộc, không coi mọi nút đều có thể queue. T01 chốt ma trận hành động.
+3 Quy tắc không được làm mất nghĩa dữ liệu
+Chưa tải khác không có dữ liệu. Chưa gửi khác server từ chối. Chưa có kết quả khác thất bại chắc chắn. Chưa xác nhận thuốc không có nghĩa chưa uống. Dữ liệu cũ có thời điểm; tác giả thao tác, người được ghi, thời điểm sự việc và thời điểm server nhận được giữ riêng.
+4 Ranh giới với các flow khác
+Flow 01 xử lý xác thực; Flow 02–04 sở hữu quy tắc lịch/ghi nhận; Flow 06–07 sở hữu ngữ cảnh và quyền; Flow 08 nhận cập nhật nhắc sau đối chiếu nguồn. Flow 09 không tự đổi lịch thuốc, tạo hồ sơ hộ, cấp lại grant hay xóa dữ liệu server. Xuất/xóa tài khoản thuộc Flow 10.
+
+II Sơ đồ luồng tổng thể
+
+1 Cách đọc
+Các nhánh thể hiện trạng thái và trách nhiệm, không đảm bảo tác vụ nền luôn chạy. Trước gửi lại cần đúng danh tính, quyền và version. Xử lý kết quả từng operation, không đánh toàn bộ hàng đợi thành công chỉ vì có mạng.
+
+III Flow chi tiết
+1 Mất kết nối khi đang xem
+a Dữ liệu của mình đã tải
+Giữ nhãn đúng hồ sơ và thời điểm dữ liệu. STA03 nêu đang dùng dữ liệu đã tải, có thể chưa cập nhật. Chỉ đọc phần được phép theo T01/T02. Nếu chưa có snapshot, hiển thị chưa tải; không dùng màn rỗng để kết luận hôm nay không có thuốc hoặc sức khỏe bình thường.
+b Người thân và yêu cầu cần online
+Đề xuất không lưu bền dữ liệu người thân và chỉ mở trong phiên online có kiểm quyền. Khi mất kết nối, che dữ liệu/ngừng thao tác theo policy T02; đổi về Tôi là hành động rõ, không âm thầm gắn nội dung B vào A. Quyền cache cũ không được xem là cấp quyền mới.
+2 Ghi khi offline nếu được duyệt
+a Kiểm điều kiện trước lưu
+Đúng account, subject và loại thao tác cho phép; lần dùng đã tồn tại với định danh/version đã tải; dữ liệu nhập hợp lệ theo Flow 03/04. Múi giờ và thời điểm tự báo theo contract nguồn. Không tự dựng occurrence từ một alarm cũ. Chưa xác minh điều kiện thì nêu lý do và không báo đã lưu.
+b Lưu bền và phản hồi
+Tạo operation ổn định, lưu nội dung cùng trạng thái vào kho tách account theo thiết kế T03. Chỉ báo Đã lưu trên máy sau khi ghi bền thành công. Nếu lỗi dung lượng/kho/khóa, giữ nội dung nhập trong phạm vi có thể và báo chưa lưu; không hứa khôi phục khi chưa có chứng cứ. UI đánh dấu bản local chưa được server xác nhận.
+3 Mở trạng thái đồng bộ
+Từ banner hoặc 19 mở 38 nếu được chọn. Danh sách chỉ thuộc account hiện tại, tách chờ gửi, đang xử lý, kết quả chưa rõ, đã nhận, bị từ chối và cần xem lại. Hiện thông tin đủ nhận biết thao tác nhưng tránh dữ liệu nhạy cảm không cần. Mở nguồn vẫn kiểm quyền/ngữ cảnh hiện hành; badge không thay bản ghi.
+
+4 Kết nối lại và xử lý từng lệnh
+a Xác thực và đối chiếu kết quả
+Kết nối mạng là tín hiệu thử, chưa chứng minh API khả dụng. Kiểm phiên đúng account; đối chiếu operation có kết quả chưa rõ trước hoặc trong cơ chế retry an toàn đã chốt. Server kiểm actor/subject/quyền/version, không tin quyền do client tự khai. Lỗi tạm thời, lỗi dữ liệu, xung đột và thiếu quyền có cách xử lý riêng.
+b Nhận kết quả một phần
+Receipt trả đúng operation/version; cập nhật kết quả và dữ liệu nguồn trước khi gỡ trạng thái chờ. Nếu app bị tắt giữa nhận và lưu, lần phục hồi vẫn tra/retry cùng định danh. Một lệnh thành công không đánh các lệnh khác đã nhận. Lệnh phụ thuộc không vượt lệnh cha; các lệnh độc lập không nhất thiết bị khóa bởi một lỗi vĩnh viễn.
+5 Xung đột và từ chối
+Không ghi đè sau cùng một cách im lặng. STA05 mở bản hiện tại trong quyền và nháp chưa gửi nếu policy cho giữ. Người dùng xem lại rồi tạo thay đổi có chủ ý theo Flow 03/04; nội dung thay đổi dùng operation mới, liên kết lệnh cũ theo contract. Lần dùng đã đổi/dừng cần oracle Flow 02/03, không suy thành liều mới. Thiếu quyền thì che dữ liệu và dừng tự retry; không tự cấp lại quyền sau đăng nhập.
+6 Hết phiên đăng xuất và đổi tài khoản
+Hết phiên tạm thời: khóa queue của A, chuyển Flow 01 và chỉ tiếp tục khi đúng A trở lại. B đăng nhập không đọc/gửi queue A; callback cũ không được ghi vào view hoặc kho B. Nếu muốn quay lại A phải xác thực đúng danh tính, không dựa email hiển thị trùng.
+Đăng xuất chủ động với phần chưa xử lý: POP08 giải thích phần sẽ mất. Đề xuất Đồng bộ trước, Ở lại hoặc Đăng xuất và bỏ phần chưa gửi cần T05 duyệt. Đồng bộ không xong thì quay về trạng thái thật. Lệnh đang gửi/chưa rõ có thể đã commit; bỏ local không xóa server, không hứa hủy. Chốt xử lý in flight, cache, token và nhắc trước khi kết thúc phiên.
+7 Khôi phục app và cập nhật nhắc
+Mở lại app, upgrade hoặc khôi phục bản sao phải kiểm account và trạng thái queue trước resume. Đối chiếu receipt để không hồi sinh lệnh đã bỏ/đã nhận. Dữ liệu server được chấp nhận hoặc thay đổi cập nhật mô hình hiển thị và nhắc theo Flow 08; thao tác local chưa nhận không được biến thành lịch server mới. Không đảm bảo đổi máy giữ queue nếu chưa có thiết kế và kiểm chứng.
+
+IV Layout sơ bộ
+1 Cách xem dữ liệu khi mất kết nối
+
+a Biến thể và giới hạn
+Đủ biến thể dữ liệu đã tải, dữ liệu cũ và chưa tải. Snapshot rỗng có chứng cứ khác chưa tải được. Điểm vào ở màn gốc không tự tạo một route mới.
+
+2 Lưu trên máy và danh sách chờ gửi
+
+a Biến thể và giới hạn
+Nút lưu offline chỉ hiện khi T01 cho phép; ghi bền thất bại phải có trạng thái khác. SCR38 có thể là vùng gộp. Nhãn chưa gửi phải giữ khi quay lại hoặc mở app lần sau.
+
+3 Kết quả chưa rõ và xung đột
+
+a Biến thể và giới hạn
+Kết quả chưa rõ khác bị từ chối. Việc tải bản hiện tại không tự làm mất nháp; cách giữ/bỏ nháp do T02/T04 chốt. Không đưa nút ghi đè mặc định.
+
+4 Hết phiên và đăng xuất khi có phần chưa gửi
+
+a Biến thể và giới hạn
+POP08 là phương án cần duyệt cùng T05. Nếu lệnh đang gửi hoặc chưa rõ kết quả, nội dung cần nói rõ server có thể đã nhận; bỏ trên máy không phải thu hồi server.
+
+V Trạng thái và hợp đồng dữ liệu
+1 Trạng thái mỗi thao tác
+Trạng thái
+Ý nghĩa
+Hành động tiếp
+Chưa lưu
+Chưa ghi bền local hoặc lỗi ghi
+Giữ phần nhập nếu được; thử lưu có kiểm soát
+Đã lưu trên máy
+Có bản bền theo account; server chưa xác nhận
+Chờ gửi khi đủ điều kiện
+Đang xử lý
+Có request đang chạy
+Không tạo thao tác trùng khi bấm lại
+Kết quả chưa rõ
+Mất phản hồi; có thể đã commit
+Tra/retry cùng operation theo contract
+Server đã nhận
+Receipt hợp lệ xác nhận kết quả
+Cập nhật nguồn và nhãn local
+Cần xem lại
+Version hoặc nghiệp vụ xung đột
+Xem hiện tại và nháp trong quyền
+Bị từ chối
+Lỗi quyền/dữ liệu dứt khoát theo contract
+Dừng tự retry; nêu bước tiếp
+Khóa theo tài khoản
+Phiên chưa hợp lệ hoặc account khác
+Đúng account xác thực lại
+Đã bỏ trên máy
+Ý định gửi local đã bỏ theo policy
+Không coi server đã bị xóa
+2 Các lớp trạng thái độc lập
+Mạng, phiên, quyền, độ mới snapshot, kết quả từng lệnh và nhắc là các lớp riêng. Có mạng nhưng API lỗi; phiên hợp lệ nhưng grant đã bị thu hồi; đã nhận bản ghi nhưng nhắc chưa reconcile. T06 định nghĩa bằng chứng từng lớp; UI không dùng một dấu xanh thay toàn bộ.
+3 Thứ tự và lệnh phụ thuộc
+T03 chốt giới hạn hàng đợi, thứ tự và quan hệ phụ thuộc. Không tự gom hai bản ghi sức khỏe có vẻ giống nhau thành một; operation khác có thể là hai lần nhập thật. Hai xác nhận cùng occurrence cần quy tắc nghiệp vụ từ Flow 03, ngoài chống trùng truyền tải.
+
+4 Hợp đồng lưu gửi và đối chiếu
+a Định danh đề xuất
+operation_id ổn định cho một ý định gửi, account_id, actor_id do server xác định, subject_id, loại entity/action, entity_id hoặc occurrence_id, payload, expected_version nếu áp dụng, thời điểm tự báo/timezone, thời điểm local ghi, trạng thái và số lần thử. Không dùng giờ máy làm chứng cứ quyền hoặc thứ tự commit.
+b Kết quả và retry
+Server xác thực, kiểm quyền/version và ghi cùng receipt/dedupe trong ranh giới nhất quán được thiết kế. Cùng khóa cùng nội dung trả cùng kết quả; cùng khóa khác nội dung là lỗi, không sửa dữ liệu cũ. T06 chốt phạm vi/retention khóa, tra kết quả và trường hợp hết retention; không tự cấp khóa mới cho thao tác unknown để tránh nhân bản.
+Retry có giới hạn/backoff theo T03/T06; mạng đổi, mở app hoặc người dùng thử lại không được mở nhiều worker cạnh tranh cùng lệnh. Phân biệt lỗi tạm thời với lỗi quyền/validation. Không đặt số lần thử hoặc SLA khi chưa có dữ liệu và quyết định.
+c Snapshot và cursor
+Tải lại hoặc delta phải có hợp đồng consistency, cursor và dấu xóa nếu dùng. Lỗi giữa trang không biến thành snapshot mới đầy đủ. Đồng bộ xóa/dừng/quyền tránh hồi sinh dữ liệu cũ sau restore. Merge view phải phân biệt bản local pending và bản server; nguồn mới không tự xóa nháp chưa xử lý.
+5 Kho cục bộ và vòng đời tài khoản
+T02/T03 chốt mã hóa, quản lý khóa, backup/restore, retention và purge theo nền tảng đã chọn. Queue/cache/worker/callback tách account và phiên; sign out dừng hoặc cô lập tác vụ đúng ranh giới. Có lệnh in flight phải phân biệt đã commit hay chưa rõ; không coi hủy request mạng là rollback server. Không hứa xóa mọi bản sao hoặc nhắc local trên máy không liên lạc.
+6 Đo lường và hỗ trợ
+Đếm queued, accepted, conflict, rejected và unknown theo định nghĩa riêng; không lấy tỷ lệ gửi làm tỷ lệ dùng thuốc. Log cần mã lỗi và tương quan operation được bảo vệ, không payload sức khỏe/token thô. Hỗ trợ xem thông tin tối thiểu trong quyền; không cho nhân viên tự sửa dữ liệu hoặc cấp lại grant qua lỗi đồng bộ.
+
+VI Task triển khai
+1 T01 Chốt ma trận thao tác offline
+a Mục tiêu  Mỗi hành động có điều kiện offline thống nhất để đội triển khai không tự diễn giải.
+b Phụ trách và đầu vào  Product với Privacy và chuyên môn; nhận Flow 02–04 06–08.
+c Điểm cần xác nhận trong task  Chốt loại dữ liệu được xem/ghi offline, self hay nhập hộ; không coi phương án trước đã duyệt.
+d Công việc  Lập action × actor × online/offline × điều kiện snapshot; ghi giới hạn và owner.
+e Đầu ra  Ma trận scope có version và quyết định.
+f Tiêu chí nghiệm thu  Mỗi nút offline có điều kiện và expected; thao tác ngoài scope báo cần mạng.
+g Khi thiếu đầu vào  Có thể làm state layout trước; không bật queue cho mọi API.
+h Liên kết  HM-V1-T13 T16 T11 T18
+2 T02 Chốt cache quyền và bảo vệ dữ liệu
+a Mục tiêu  Dữ liệu cục bộ được bảo vệ và xử lý đúng khi quyền hoặc phiên thay đổi.
+b Phụ trách và đầu vào  Privacy/Security cùng App; cần T01 và mô hình account.
+c Điểm cần xác nhận trong task  Chốt dữ liệu người thân có được lưu không, thời hạn, che khi mất mạng/phiên/quyền, mã hóa và backup.
+d Công việc  Thiết kế tách account, kho/khóa, retention/purge và tác động restore; phân biệt cache với bản sao ngoài app.
+e Đầu ra  Data lifecycle matrix và tiêu chí kiểm.
+f Tiêu chí nghiệm thu  Không mở dữ liệu B từ cache A; revoke không tự được phục hồi khi login lại.
+g Khi thiếu đầu vào  Chưa chốt thì dùng dữ liệu mock và khóa phần đọc offline phụ thuộc.
+h Liên kết  HM-V1-T16 T25; nối Flow 06 07
+
+VI Task triển khai tiếp theo
+3 T03 Thiết kế hàng đợi bền và worker
+a Mục tiêu  Thao tác đã báo lưu trên máy có thể phục hồi sau khi app bị đóng.
+b Phụ trách và đầu vào  App lead với Backend; cần T01 T02.
+c Điểm cần xác nhận trong task  Chốt dung lượng, thứ tự, phụ thuộc, retry/backoff, crash recovery và schema migration.
+d Công việc  Lưu bền trước success UI; khóa xử lý cùng lệnh; phục hồi unknown; kiểm disk full và lỗi khóa.
+e Đầu ra  Queue state machine và local storage contract.
+f Tiêu chí nghiệm thu  Kill app từng điểm không nhân lệnh hoặc mất lệnh đã báo lưu bền; lỗi lưu báo thật.
+g Khi thiếu đầu vào  Dựng adapter và fault injection trước backend thật; không gọi mock là pass.
+h Liên kết  HM-V1-T16; nhận contract T06
+4 T04 Chốt xung đột và dữ liệu đã đổi
+a Mục tiêu  Xung đột được xử lý có chủ ý mà không thay đổi ý nghĩa ghi nhận.
+b Phụ trách và đầu vào  Product/chuyên môn với Backend; nhận oracle Flow 02–04.
+c Điểm cần xác nhận trong task  Chốt expected khi lịch sửa/dừng, version cũ, hai xác nhận cùng occurrence và số đo giống nhau.
+d Công việc  Lập bảng event → kết quả; phân biệt transport duplicate và nghiệp vụ; thiết kế xem lại nháp trong quyền.
+e Đầu ra  Conflict matrix và dữ liệu kiểm có oracle.
+f Tiêu chí nghiệm thu  Không last write wins im lặng; sửa nội dung cần ý định mới; không tự suy liều/ghi nhận.
+g Khi thiếu đầu vào  Chưa rõ nghiệp vụ thì giữ cần xem lại; không auto merge để đóng task.
+h Liên kết  HM-V1-T11 T16 T18
+
+VI Task triển khai tiếp theo
+5 T05 Chốt hết phiên đăng xuất và đổi account
+a Mục tiêu  Dữ liệu chưa gửi luôn gắn đúng tài khoản trong mọi bước chuyển phiên.
+b Phụ trách và đầu vào  Product/Privacy cùng App/Auth; cần T02 T03.
+c Điểm cần xác nhận trong task  Duyệt POP08, giữ hay bỏ queue, cách xử lý unknown/in flight, reauth đúng A và điều kiện chuyển B.
+d Công việc  Mô tả cleanup cache/queue/token/nhắc; phân biệt hết phiên với logout chủ động; chặn callback A vào B.
+e Đầu ra  Account transition matrix và copy xác nhận.
+f Tiêu chí nghiệm thu  B không đọc/gửi queue A; bỏ local không hứa xóa server; logout chưa xong không báo đã xong.
+g Khi thiếu đầu vào  Làm cơ chế cô lập trước; hành vi giữ/bỏ phụ thuộc quyết định.
+h Liên kết  HM-V1-T04 T16 T25; nối Flow 01 08
+6 T06 Thiết kế API và receipt chống trùng
+a Mục tiêu  Retry có kết quả kiểm chứng được và không tạo bản ghi trùng do truyền lại.
+b Phụ trách và đầu vào  Backend lead với App; cần T03 T04 T05.
+c Điểm cần xác nhận trong task  Chốt khóa/dedupe retention, expected version, receipt lookup, lỗi cùng khóa khác payload và batch partial.
+d Công việc  Xác thực/kiểm quyền lúc xử lý; ghi kết quả nhất quán; định nghĩa retry sau timeout/cursor hết hạn.
+e Đầu ra  Contract schema và ví dụ thành công/xung đột/từ chối/unknown.
+f Tiêu chí nghiệm thu  Retry cùng ý định không nhân bản; caller khác không tra được receipt ngoài quyền.
+g Khi thiếu đầu vào  Làm contract độc lập nền tảng; chưa đặt retention/SLA số cụ thể khi thiếu căn cứ.
+h Liên kết  HM-V1-T16 T25
+
+VI Task triển khai tiếp theo
+7 T07 Thiết kế UI và copy trạng thái
+a Mục tiêu  Người dùng hiểu trạng thái lưu và biết bước tiếp theo.
+b Phụ trách và đầu vào  Designer với Product/App; nhận T01–T06.
+c Điểm cần xác nhận trong task  Chốt 38 tách hay gộp, hiển thị số đếm/thời điểm, nháp và nội dung nhạy cảm.
+d Công việc  Hoàn thiện STA03 04 05, POP08, loading/empty/error; chữ lớn, đọc màn hình, quay lại đúng nguồn.
+e Đầu ra  Layout và nội dung đã review; mapping state → CTA.
+f Tiêu chí nghiệm thu  Chưa tải không hiển thị như không có dữ liệu; đã lưu máy không nói server nhận; không ép đăng xuất.
+g Khi thiếu đầu vào  Dùng 8 khung ở IV để review; chưa xem là UI cuối cùng.
+h Liên kết  HM-V1-T16 T24
+8 T08 Triển khai đồng bộ và bàn giao nhắc
+a Mục tiêu  Đối chiếu từng lệnh với nguồn hiện hành rồi cập nhật hiển thị và nhắc.
+b Phụ trách và đầu vào  App/Backend; cần T03 T06 T07.
+c Điểm cần xác nhận trong task  Chốt ranh giới commit, cursor snapshot, event nhắc và kiểm quyền khi mở lại nguồn.
+d Công việc  Làm worker/receipt/pull reconciliation, invalidate cache, operation status và cập nhật Flow 08.
+e Đầu ra  Build tích hợp cùng logs tối thiểu và hướng phục hồi.
+f Tiêu chí nghiệm thu  Partial result đúng từng lệnh; không hồi sinh lịch dừng; record accepted khác nhắc đã đặt.
+g Khi thiếu đầu vào  Có thể tích hợp trên staging; không tuyên bố delivery dựa kết quả API.
+h Liên kết  HM-V1-T13 T16 T25 T27
+
+VI Task triển khai tiếp theo
+9 T09 Kiểm luồng và khả năng sử dụng
+a Mục tiêu  Có bằng chứng cho các nhánh chức năng và trạng thái giao diện.
+b Phụ trách và đầu vào  QA với Design QA; cần quyết định T01–T07 và build T08.
+c Điểm cần xác nhận trong task  Chốt expected cụ thể theo policy, account/grant/occurrence và dữ liệu chuẩn.
+d Công việc  Chạy TC01–TC12; kiểm banner, state, mở nguồn, quay lại, chữ lớn và lỗi nhập/lưu.
+e Đầu ra  Báo cáo theo build, dữ liệu, kết quả và defect.
+f Tiêu chí nghiệm thu  Mỗi lớp trạng thái có bằng chứng; chưa chạy ghi Not run; blocker có owner.
+g Khi thiếu đầu vào  Review contract/layout trước được; end to end cần build thật.
+h Liên kết  HM-V1-T23 T24
+10 T10 Kiểm lỗi khôi phục và chuẩn bị phát hành
+a Mục tiêu  Có bằng chứng khôi phục và giới hạn rõ trước khi phát hành.
+b Phụ trách và đầu vào  QA/Security với App/Backend; cần T08 T09.
+c Điểm cần xác nhận trong task  Chốt device/OS, fault matrix, giới hạn restore, ngưỡng chấp nhận và hỗ trợ.
+d Công việc  Chạy TC13–TC24, crash/race/timeout/đổi account; rà log, purge và nhắc.
+e Đầu ra  Bằng chứng thực, known limitations, runbook và release packet.
+f Tiêu chí nghiệm thu  Không rò account hoặc duplicate commit; lỗi nghiêm trọng chưa xử lý không đóng flow.
+g Khi thiếu đầu vào  Thiếu thiết bị/contract đánh blocked rõ; không coi chưa tái hiện là pass.
+h Liên kết  HM-V1-T23 T25 T26 T27 T28
+
+VII Ca kiểm thử đề xuất
+Tất cả ca hiện ở trạng thái Not run. QA cần build, account/subject, dữ liệu, phiên bản policy, thiết bị/OS và bằng chứng. Expected theo quyết định được duyệt; thiếu đầu vào ghi Blocked cùng owner, không tự đánh Pass.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+09-01
+Mất mạng trên hồ sơ mình có snapshot
+Hiện thời điểm dữ liệu và nhãn cũ; chỉ mở phần đã tải/được phép.
+T01 T07
+09-02
+Mất mạng khi chưa tải dữ liệu
+Chưa có dữ liệu đã tải; không suy thành không có lịch hoặc số đo 0.
+T01 T07
+09-03
+Đang xem B rồi mất mạng
+Che/ngừng thao tác theo T02; không tự gắn dữ liệu B vào Tôi.
+T02 T07
+09-04
+Ghi nhận self offline đúng điều kiện
+Lưu bền trước báo đã lưu máy; trạng thái chưa được server nhận.
+T01 T03
+09-05
+Tạo sửa dừng lịch hoặc nhập hộ offline
+Theo ma trận T01; trong phương án đề xuất cần mạng, không queue ngầm.
+T01 T04
+09-06
+Lưu local bị lỗi dung lượng hoặc khóa
+Không báo lưu thành công; giữ phần nhập nếu có thể và nêu cách xử lý.
+T02 T03
+09-07
+Mở 38 và quay lại nguồn
+Chỉ queue account hiện hành; trạng thái từng lệnh, nguồn mở trong quyền.
+T05 T07
+09-08
+Kết nối có mạng nhưng API chưa tới được
+Giữ lỗi kết nối thật; không coi đã đồng bộ hoặc đã hết phiên.
+T03 T08
+09-09
+Lưu offline rồi server chấp nhận
+Receipt đúng operation; cập nhật bản ghi và nhãn, không thêm bản trùng.
+T06 T08
+09-10
+Batch một lệnh nhận một lệnh từ chối
+Kết quả từng lệnh đúng; lệnh thất bại không bị đánh đã nhận.
+T06 T08
+09-11
+Version xung đột khi gửi lại
+Mở hiện tại và nháp trong quyền; không tự ghi đè hoặc làm mất nháp.
+T04 T07
+09-12
+Lịch dừng hoặc occurrence đã đổi trước sync
+Theo oracle Flow 02/03; không sinh lần dùng mới hoặc tự hẹn uống bù.
+T04 T08
+
+VII Ca kiểm thử lỗi và khôi phục
+Tất cả ca hiện ở trạng thái Not run. QA cần build, account/subject, dữ liệu, phiên bản policy, thiết bị/OS và bằng chứng. Expected theo quyết định được duyệt; thiếu đầu vào ghi Blocked cùng owner, không tự đánh Pass.
+Mã TC
+Điều kiện và thao tác
+Kết quả cần đối chiếu
+Task
+09-13
+Server commit rồi mất phản hồi
+Unknown; tra/retry cùng operation trả cùng kết quả, không nhân commit.
+T03 T06
+09-14
+Kill app sau lưu local trước gửi
+Mở lại đúng account phục hồi lệnh đã báo lưu bền và trạng thái đúng.
+T03 T10
+09-15
+Kill app sau nhận receipt trước lưu local
+Phục hồi/tra lại cùng operation; không tạo ý định mới.
+T03 T06
+09-16
+Hai worker retry cùng lệnh
+Chống xử lý lặp theo contract; không nhiều bản ghi do cạnh tranh.
+T03 T06
+09-17
+Cùng khóa khác payload và hai khóa payload giống
+Khác payload cùng khóa bị từ chối; hai ý định thật xử lý theo nghiệp vụ.
+T04 T06
+09-18
+Hết phiên với queue A rồi login A
+Khóa trước reauth; đúng A mới tiếp tục, grant vẫn kiểm hiện hành.
+T05 T06
+09-19
+Hết phiên A rồi login B có callback A tới trễ
+Không gửi queue A bằng B, không lộ dữ liệu/receipt A trên B.
+T02 T05
+09-20
+POP08 đồng bộ trước nhưng mạng lỗi
+Ở lại luồng xử lý với kết quả thật; không báo đã đồng bộ/đăng xuất xong.
+T05 T07
+09-21
+Bỏ local khi lệnh đang gửi hoặc unknown
+Nêu server có thể đã nhận; không hứa rollback; cleanup theo policy.
+T05 T06
+09-22
+Thu hồi grant trong lúc gửi hoặc mở conflict
+Server kiểm tại gate; UI che dữ liệu mất quyền, không auto retry vô hạn.
+T02 T06
+09-23
+Upgrade restore hoặc cursor hết hạn
+Không hồi sinh lệnh đã bỏ/đã nhận; tải lại nhất quán theo T03/T06.
+T03 T08
+09-24
+Sync làm lịch/record đổi rồi xem nhắc và log
+Flow08 reconcile đúng version; log không payload sức khỏe/token; không giả delivery.
+T02 T08 T10
+
+VIII Bàn giao và nguồn đối chiếu
+1 Bản đồ bề mặt và flow
+Mã hoặc flow
+Trách nhiệm
+Bàn giao
+STA03
+Mất mạng và chờ đồng bộ trên nguồn
+T07 đủ loading/stale/chưa tải/lỗi
+SCR38
+Thao tác chờ từ chối xung đột
+Có thể gộp; không hoãn state V1.0
+STA04 STA05
+Thiếu quyền hoặc phiên; dữ liệu cũ
+Nối Flow01 và conflict T04
+POP08
+Đăng xuất khi còn phần chưa xử lý
+T05 chốt phương án cùng giới hạn in flight
+Flow02–04
+Nguồn lịch và quy tắc ghi nhận
+Oracle chung cho version và kết quả
+Flow06 07
+Ngữ cảnh và quyền hiện hành
+Cache không tự cấp lại grant
+Flow08
+Nhắc theo nguồn hiện hành
+Accepted record khác request nhắc
+Flow10
+Xuất hoặc xóa dữ liệu
+Bỏ local không phải xóa dữ liệu server
+2 Điều kiện đóng flow
+T01–T06 có quyết định/contract và người chịu trách nhiệm; T07 đủ state; T08 có build tích hợp; T09–T10 có bằng chứng và giới hạn được duyệt. Mỗi nhánh flow nối tới layout, task và case. Retry, account switch, mất phản hồi và xung đột phải có expected chung trước nghiệm thu.
+3 Nguồn sử dụng
+Master Screen List V1.0 đến V3.1 bản 0.1 ngày 23/10/2026, trang 10, 24–27: FLOW09 Offline đồng bộ đổi tài khoản; SCR38; STA03–05; POP08 và cách gộp màn. Clarifications and Recommendations V1.0 ngày 21/10/2026 mục III10, trang 13: phương án offline self, queue tách account, chống trùng, xung đột và logout; các lựa chọn mới vẫn cần duyệt. HM Flow08 bản 0.1 ngày 24/10/2026: tách trạng thái sync và trạng thái nhắc, không tự coi delivery đã xảy ra.
+Task HM-V1 được tham chiếu theo các nhóm đồng bộ, xác nhận thuốc, sức khỏe, QA, bảo vệ dữ liệu và vận hành trong bộ nguồn. Flow09 là bản nháp thiết kế mới; không xác nhận engine hoặc app đã đạt các tiêu chí này. Thay policy cần cập nhật contract, layout và expected liên quan trước bàn giao.
+
+IX Danh sách từ viết tắt
+Từ hoặc mã
+Tên đầy đủ
+Ý nghĩa
+API
+Application Programming Interface
+Hợp đồng giao tiếp app và dịch vụ.
+CTA
+Call To Action
+Nút hoặc hành động tiếp theo.
+HM
+HealMata
+Tiền tố flow màn task và case.
+ID
+Identifier
+Định danh account subject operation.
+OS
+Operating System
+Hệ điều hành dùng trong ma trận kiểm.
+POP
+Popup
+Mã hộp thoại dùng chung.
+QA
+Quality Assurance
+Kiểm chất lượng theo build và tiêu chí.
+SCR
+Screen
+Mã màn hình trong Master Screen List.
+SLA
+Service Level Agreement
+Cam kết dịch vụ; chưa đặt ngưỡng ở đây.
+STA
+State
+Mã trạng thái trên màn hoặc toàn app.
+TC
+Test Case
+Mã ca kiểm thử; toàn bộ chưa chạy.
+UI
+User Interface
+Giao diện hiển thị và thao tác.
+1 Thuật ngữ đồng bộ
+Snapshot là dữ liệu đã tải tại một thời điểm. Queue là hàng đợi thao tác; operation là một ý định gửi có định danh ổn định. Pending là chưa hoàn tất; in flight là request đang chạy; unknown là chưa biết kết quả. Receipt là kết quả thao tác do nguồn xác nhận. Commit là điểm thay đổi được ghi nhận ở nguồn theo contract. Retry là thử lại; idempotency giúp retry cùng ý định không tạo tác động lặp ngoài thiết kế.
+Reconcile là đối chiếu nguồn để xử lý sai lệch. Expected version là phiên bản kỳ vọng khi sửa; conflict là không khớp điều kiện/version. Cursor là mốc tải tiếp nếu cơ chế delta được chọn. Purge là làm sạch theo phạm vi kiểm soát; restore là khôi phục bản lưu. Actor là người thao tác, subject là người được ghi. Oracle là quy tắc kết quả chuẩn để kiểm thử. Scope là phạm vi đã duyệt; baseline là bộ quyết định hiện hành.
