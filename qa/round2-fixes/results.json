@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "id": "R2-01",
+      "name": "Shared validation rejects invalid amendment without changing version",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-02",
+      "name": "Exports/reports include both schedules and dated events; snapshot stays immutable",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-03",
+      "name": "Invitation and handoff show actual Lan/Minh identities",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-04",
+      "name": "Both handoff directions work, no self transfer, assignee changes only on acceptance",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-05",
+      "name": "Reassign after revoke requires fresh consent then a new acceptance",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-06",
+      "name": "Handoff draft survives tab navigation and reload, clears after sending",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-07",
+      "name": "Same review reuses a receipt; intentional identical new entry is allowed",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-08",
+      "name": "Recovery errors persist beside the right field and preserve form data",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-09",
+      "name": "Day chart positions measurements by time and keeps source links",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-10",
+      "name": "Reminder wording is plain and preserves state distinctions",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-11",
+      "name": "Microphone and camera states are visible text and update with controls",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-12",
+      "name": "Text size applies to content/new popup, survives reload and preserves 393x852 layout",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-13",
+      "name": "Persistent profile switch restores the right subject draft",
+      "result": "PASS"
+    },
+    {
+      "id": "R2-14",
+      "name": "Reconnect offers explicit sync continuation before logout",
+      "result": "PASS"
+    }
+  ],
+  "passed": 14,
+  "total": 14,
+  "pageErrors": []
+}

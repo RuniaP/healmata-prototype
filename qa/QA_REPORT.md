@@ -1,5 +1,13 @@
 # Kiểm tra prototype HealMata 18 flow
 
+## Cải thiện vòng review 2 · 28/10/2026
+
+Kết quả hiện tại: [14 mục](round2-fixes/results.json) đạt, [7 nhóm bổ sung](round2-fixes/edge-results.json) đạt, 103 route và 28 popup; 18/18 hành trình qua UI ở mỗi ngôn ngữ. Cỡ chữ 200% đã kiểm 206 lượt màn + 56 lượt popup VI/EN. 1.679 key Excel/JSON/bundle khớp. [Nhật ký](../ROUND2_FIX_LOG_2026-10-28.md) và [ảnh kiểm lại](round2-fixes/index.html). Các phần bên dưới mô tả những lượt kiểm trước.
+
+## Lượt sửa lỗi 28/10/2026
+
+Kết quả mới nhất: [nhật ký sửa lỗi](../FIX_LOG_2026-10-28.md), [22 tình huống tái hiện](persona-fixes/results.json), [4 tình huống bổ sung](persona-fixes/edge-results.json) và [ảnh kiểm lại](persona-fixes/index.html). Đã kiểm 18/18 flow qua UI bằng VI/EN; 102 route, 27 popup. Bảng dịch hiện có 1615 key. Các con số 25 popup / 1543 key ở các lượt bên dưới thuộc bản kiểm ban đầu.
+
 Ngày kiểm: 2026-10-27T16:25:37.947Z (UTC).
 
 - 102 route màn/trạng thái và 25 popup render được.

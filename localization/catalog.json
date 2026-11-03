@@ -11358,6 +11358,1094 @@
     ]
   },
   {
+    "Key": "review_fix.a_refund_request_already_exists",
+    "Vietnamese": "Yêu cầu hoàn tiền đã tồn tại",
+    "English": "A refund request already exists",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.accepted_by",
+    "Vietnamese": "Người đã nhận lời",
+    "English": "Accepted by",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.back_to_payable",
+    "Vietnamese": "Về khoản phải trả",
+    "English": "Back to payable",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.back_to_the_case_queue",
+    "Vietnamese": "Về hàng đợi phản ánh",
+    "English": "Back to the case queue",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.case_list",
+    "Vietnamese": "Danh sách phản ánh",
+    "English": "Case list",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.chart_based_on_recorded_measurements",
+    "Vietnamese": "Biểu đồ từ các số đo đã ghi",
+    "English": "Chart based on recorded measurements",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.check_the_source_schedule_for_the_start_date_end",
+    "Vietnamese": "Xem lịch nguồn để kiểm tra ngày bắt đầu, ngày kết thúc và các thứ đã chọn.",
+    "English": "Check the source schedule for the start date, end date and selected weekdays.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.checking_the_result",
+    "Vietnamese": "Đang kiểm tra kết quả",
+    "English": "Checking the result",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.choose_a_time_slot_before_paying",
+    "Vietnamese": "Hãy chọn khung giờ trước khi thanh toán.",
+    "English": "Choose a time slot before paying.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.choose_weekdays",
+    "Vietnamese": "Chọn ngày trong tuần",
+    "English": "Choose weekdays",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.confirm_invitation_acceptance",
+    "Vietnamese": "Xác nhận nhận lời mời",
+    "English": "Confirm invitation acceptance",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.date_time",
+    "Vietnamese": "Ngày / Giờ",
+    "English": "Date / Time",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.decision",
+    "Vietnamese": "Quyết định",
+    "English": "Decision",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.done_reading_return_to_form",
+    "Vietnamese": "Đã đọc, quay lại form",
+    "English": "Done reading, return to form",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.enter_a_reason_so_the_preparer_knows_what_to",
+    "Vietnamese": "Hãy nhập lý do để người chuẩn bị biết cần xử lý gì.",
+    "English": "Enter a reason so the preparer knows what to address.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.finance_role_required",
+    "Vietnamese": "Cần đúng vai Finance",
+    "English": "Finance role required",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.find_cases",
+    "Vietnamese": "Tìm ca",
+    "English": "Find cases",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.friday",
+    "Vietnamese": "Thứ 6",
+    "English": "Friday",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.green_dots_first_component_brown_dots_second_component_dates",
+    "Vietnamese": "Dấu xanh: thành phần thứ nhất. Dấu nâu: thành phần thứ hai. Ngày không có bản ghi được giữ trống; không bù bằng 0.",
+    "English": "Green dots: first component. Brown dots: second component. Dates without records remain empty; missing values are not replaced with zero.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.hello_value0",
+    "Vietnamese": "Chào {value0}!",
+    "English": "Hello {value0}!",
+    "sources": [
+      "js/screens-core.js"
+    ]
+  },
+  {
+    "Key": "review_fix.invitation",
+    "Vietnamese": "Lời mời",
+    "English": "Invitation",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.measurements_in_this_period",
+    "Vietnamese": "Số đo trong kỳ",
+    "English": "Measurements in this period",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.monday",
+    "Vietnamese": "Thứ 2",
+    "English": "Monday",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.no_data_selected",
+    "Vietnamese": "Không chọn dữ liệu",
+    "English": "No data selected",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.no_matching_results",
+    "Vietnamese": "Không có kết quả phù hợp.",
+    "English": "No matching results.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.no_medication_in_this_snapshot",
+    "Vietnamese": "Không có thuốc trong snapshot",
+    "English": "No medication in this snapshot",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.no_scheduled_occurrence_on_this_day",
+    "Vietnamese": "Không có lần dùng trong ngày này",
+    "English": "No scheduled occurrence on this day",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.no_scheduled_occurrence_on_this_day_466400",
+    "Vietnamese": "Không có lần dùng trong ngày này.",
+    "English": "No scheduled occurrence on this day.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.number_of_records",
+    "Vietnamese": "Số bản ghi",
+    "English": "Number of records",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.older_fixture_share_a_new_packet_to_test_its",
+    "Vietnamese": "Bản mẫu cũ · tạo lại packet để kiểm tra snapshot",
+    "English": "Older fixture · Share a new packet to test its snapshot",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.payment_has_been_recorded",
+    "Vietnamese": "Thanh toán đã được ghi nhận",
+    "English": "Payment has been recorded",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.prototype_privacy_information",
+    "Vietnamese": "Thông tin riêng tư bản mẫu",
+    "English": "Prototype privacy information",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.prototype_terms_of_use",
+    "Vietnamese": "Điều khoản sử dụng bản mẫu",
+    "English": "Prototype terms of use",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.read_before_confirming",
+    "Vietnamese": "Đọc trước khi xác nhận",
+    "English": "Read before confirming",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.recipient_accepts_profile_owner_confirms",
+    "Vietnamese": "Người nhận đồng ý → chủ hồ sơ xác nhận",
+    "English": "Recipient accepts → profile owner confirms",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.reject_proposal",
+    "Vietnamese": "Từ chối đề nghị",
+    "English": "Reject proposal",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.request_changes_or_reject",
+    "Vietnamese": "Yêu cầu bổ sung hoặc từ chối",
+    "English": "Request changes or reject",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.return_for_changes",
+    "Vietnamese": "Trả về bổ sung",
+    "English": "Return for changes",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.review_result",
+    "Vietnamese": "Kết quả review",
+    "English": "Review result",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.saturday",
+    "Vietnamese": "Thứ 7",
+    "English": "Saturday",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.saved_on_this_device_waiting_to_send",
+    "Vietnamese": "Đã lưu trên máy · Chờ gửi",
+    "English": "Saved on this device · Waiting to send",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.saved_on_this_device_waiting_to_sync",
+    "Vietnamese": "Đã lưu trên máy · Chờ đồng bộ",
+    "English": "Saved on this device · Waiting to sync",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.search_by_case_id_or_reference",
+    "Vietnamese": "Tìm theo mã ca hoặc tham chiếu",
+    "English": "Search by case ID or reference",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.select_at_least_one_data_category",
+    "Vietnamese": "Hãy chọn ít nhất một nhóm dữ liệu.",
+    "English": "Select at least one data category.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.select_at_least_one_weekday",
+    "Vietnamese": "Hãy chọn ít nhất một ngày trong tuần.",
+    "English": "Select at least one weekday.",
+    "sources": [
+      "js/screens-core.js"
+    ]
+  },
+  {
+    "Key": "review_fix.select_the_finance_role_for_preparation_approval_or_payout",
+    "Vietnamese": "Chọn đúng vai Finance cho bước chuẩn bị, phê duyệt hoặc thực hiện chi.",
+    "English": "Select the Finance role for preparation, approval or payout execution.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.shared_at",
+    "Vietnamese": "Mốc chia sẻ:",
+    "English": "Shared at:",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.shared_by",
+    "Vietnamese": "Người chia sẻ",
+    "English": "Shared by",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.submit_decision",
+    "Vietnamese": "Gửi quyết định",
+    "English": "Submit decision",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.sunday",
+    "Vietnamese": "Chủ nhật",
+    "English": "Sunday",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.test_progress_is_saved_in_this_browser_s_localstorage",
+    "Vietnamese": "Trạng thái thử được lưu trong localStorage của trình duyệt trên máy này. Bản mẫu không gửi dữ liệu đến backend và không mở camera hoặc micro thật.",
+    "English": "Test progress is saved in this browser's localStorage on this device. The prototype does not send data to a backend or activate a real camera or microphone.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.the_destination_and_amount_are_preserved_from_the_submitted",
+    "Vietnamese": "Thông tin đích nhận và số tiền được giữ theo lệnh đã gửi.",
+    "English": "The destination and amount are preserved from the submitted payout.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.the_displayed_data_is_sample_data_enter_fictional_information",
+    "Vietnamese": "Dữ liệu hiển thị là dữ liệu mẫu. Chỉ nhập thông tin giả để thử. Nội dung này giải thích bản prototype; điều khoản dịch vụ chính thức sẽ được cung cấp khi triển khai sản phẩm.",
+    "English": "The displayed data is sample data. Enter fictional information only. This content explains the prototype; official service terms will be provided when the product is launched.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.the_request_may_already_have_been_received",
+    "Vietnamese": "Yêu cầu có thể đã được nhận",
+    "English": "The request may already have been received",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.this_prototype_is_for_testing_the_interface_and_workflows",
+    "Vietnamese": "Bản mẫu dành cho thử giao diện và luồng thao tác. Tài khoản, lịch tư vấn, thanh toán và cuộc gọi đều được mô phỏng; không tạo dịch vụ hoặc giao dịch tiền thật.",
+    "English": "This prototype is for testing the interface and workflows. Accounts, appointments, payments and calls are simulated; no real service or money transaction is created.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.this_step_requires_finance_approver_the_preparer_cannot_approve",
+    "Vietnamese": "Bước này dành cho Finance · Phê duyệt. Người chuẩn bị không tự duyệt đề nghị của mình.",
+    "English": "This step requires Finance · Approver. The preparer cannot approve their own proposal.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.thursday",
+    "Vietnamese": "Thứ 5",
+    "English": "Thursday",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.to_test_this_invitation_select_the_lan_role_in",
+    "Vietnamese": "Để thử nhận lời mời này, chọn vai Lan ở thanh ngoài.",
+    "English": "To test this invitation, select the Lan role in the outer toolbar.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.to_test_this_invitation_select_the_minh_role_in",
+    "Vietnamese": "Để thử nhận lời mời này, chọn vai Minh ở thanh ngoài.",
+    "English": "To test this invitation, select the Minh role in the outer toolbar.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.tuesday",
+    "Vietnamese": "Thứ 3",
+    "English": "Tuesday",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.use_minh_example_com_or_lan_example_com_to",
+    "Vietnamese": "Bộ mẫu có tài khoản minh@example.com và lan@example.com để thử bước người nhận.",
+    "English": "Use minh@example.com or lan@example.com to test the recipient step in this fixture.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.use_reset_all_outside_the_app_to_reset_the",
+    "Vietnamese": "Bạn có thể đặt lại dữ liệu mẫu bằng nút Đặt lại toàn bộ ở ngoài app. Tệp đã tải do bạn quản lý. Chính sách riêng tư chính thức và quy tắc lưu giữ cần được hoàn thiện trước khi vận hành.",
+    "English": "Use Reset all outside the app to reset the sample data. You manage downloaded files. The official privacy policy and retention rules must be completed before launch.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.value2_saved_on_this_device",
+    "Vietnamese": "{value2} · Đã lưu trên máy",
+    "English": "{value2} · Saved on this device",
+    "sources": [
+      "js/screens-family.js"
+    ]
+  },
+  {
+    "Key": "review_fix.value2_version_value3",
+    "Vietnamese": "{value2} · phiên bản {value3}",
+    "English": "{value2} · version {value3}",
+    "sources": [
+      "js/screens-core.js"
+    ]
+  },
+  {
+    "Key": "review_fix.value5_by_continuing_you_confirm_that_you_have_read",
+    "Vietnamese": "{value5}Bằng việc tiếp tục, bạn đã đọc các điều khoản.",
+    "English": "{value5}By continuing, you confirm that you have read the terms.",
+    "sources": [
+      "js/screens-core.js"
+    ]
+  },
+  {
+    "Key": "review_fix.view_payment_result",
+    "Vietnamese": "Xem kết quả thanh toán",
+    "English": "View payment result",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.view_pending_operations",
+    "Vietnamese": "Xem thao tác chờ gửi",
+    "English": "View pending operations",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.waiting_for_the_recipient_to_respond",
+    "Vietnamese": "Chờ người nhận phản hồi",
+    "English": "Waiting for the recipient to respond",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.wednesday",
+    "Vietnamese": "Thứ 4",
+    "English": "Wednesday",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.you_can_view_this_data_but_do_not_have",
+    "Vietnamese": "Bạn có quyền xem; chưa được cấp quyền nhập hộ.",
+    "English": "You can view this data but do not have permission to enter records.",
+    "sources": [
+      "js/screens-family.js"
+    ]
+  },
+  {
+    "Key": "review_fix.you_have_accepted_waiting_for_the_profile_owner_to",
+    "Vietnamese": "Bạn đã nhận lời. Đang chờ chủ hồ sơ xác nhận.",
+    "English": "You have accepted. Waiting for the profile owner to confirm.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "review_fix.your_draft_has_been_preserved",
+    "Vietnamese": "Bản nháp đã được giữ lại.",
+    "English": "Your draft has been preserved.",
+    "sources": [
+      "js/refinements.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.accepted_the_handoff_from",
+    "Vietnamese": "chấp nhận bàn giao từ",
+    "English": "accepted the handoff from",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.allow_notifications",
+    "Vietnamese": "Cho phép thông báo",
+    "English": "Allow notifications",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.allowed",
+    "Vietnamese": "Đã cho phép",
+    "English": "Allowed",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.app_text_size",
+    "Vietnamese": "Cỡ chữ trong ứng dụng",
+    "English": "App text size",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.app_text_size_updated",
+    "Vietnamese": "Đã cập nhật cỡ chữ trong ứng dụng.",
+    "English": "App text size updated.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.apply_text_size",
+    "Vietnamese": "Áp dụng cỡ chữ",
+    "English": "Apply text size",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.back_to_the_care_task",
+    "Vietnamese": "Về việc chăm sóc",
+    "English": "Back to the care task",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.camera_is_off",
+    "Vietnamese": "Camera đang tắt",
+    "English": "Camera is off",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.camera_is_on",
+    "Vietnamese": "Camera đang bật",
+    "English": "Camera is on",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.choose_a_different_person_who_still_has_permission_to",
+    "Vietnamese": "Chọn người khác còn đủ quyền nhận việc.",
+    "English": "Choose a different person who still has permission to accept the task.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.choose_an_eligible_person_again",
+    "Vietnamese": "Cần chọn lại người đủ quyền",
+    "English": "Choose an eligible person again",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.choose_text_size",
+    "Vietnamese": "Chọn cỡ chữ",
+    "English": "Choose text size",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.connection_restored",
+    "Vietnamese": "Đã có kết nối",
+    "English": "Connection restored",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.continue_syncing_and_sign_out",
+    "Vietnamese": "Tiếp tục đồng bộ và đăng xuất",
+    "English": "Continue syncing and sign out",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.continue_syncing_to_finish_signing_out",
+    "Vietnamese": "Tiếp tục đồng bộ để hoàn tất đăng xuất.",
+    "English": "Continue syncing to finish signing out.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.create_a_report_to_view_the_selected_data",
+    "Vietnamese": "Tạo báo cáo để xem dữ liệu đã chọn.",
+    "English": "Create a report to view the selected data.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.created_the_task_and_invited",
+    "Vietnamese": "tạo việc và mời",
+    "English": "created the task and invited",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.data_and_drafts_are_kept_separately_for_each_profile",
+    "Vietnamese": "Dữ liệu và bản nháp được giữ riêng theo từng hồ sơ.",
+    "English": "Data and drafts are kept separately for each profile.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.declined_the_handoff",
+    "Vietnamese": "từ chối bàn giao;",
+    "English": "declined the handoff;",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.going_back_does_not_create_another_entry",
+    "Vietnamese": "Quay lại không tạo thêm một lượt ghi nhận.",
+    "English": "Going back does not create another entry.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.health_records",
+    "Vietnamese": "Số bản ghi sức khỏe",
+    "English": "Health records",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.invite_or_restore_permission",
+    "Vietnamese": "Mời hoặc cấp lại quyền",
+    "English": "Invite or restore permission",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.invited",
+    "Vietnamese": "Đã mời",
+    "English": "Invited",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.invited_person",
+    "Vietnamese": "Người được mời",
+    "English": "Invited person",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.invites",
+    "Vietnamese": "mời",
+    "English": "invites",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.is_still_responsible",
+    "Vietnamese": "vẫn hiện hành",
+    "English": "is still responsible",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.medication_events",
+    "Vietnamese": "Số sự kiện thuốc",
+    "English": "Medication events",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.medication_reminders_in_the_app",
+    "Vietnamese": "Nhắc thuốc trong ứng dụng",
+    "English": "Medication reminders in the app",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.medication_schedules",
+    "Vietnamese": "Số lịch thuốc",
+    "English": "Medication schedules",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.microphone_is_off",
+    "Vietnamese": "Micro đang tắt",
+    "English": "Microphone is off",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.microphone_is_on",
+    "Vietnamese": "Micro đang bật",
+    "English": "Microphone is on",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.no_eligible_person_is_available_connect_or_restore_permission",
+    "Vietnamese": "Chưa có người đủ quyền. Hãy kết nối hoặc cấp lại quyền có sự đồng ý trước khi phân công.",
+    "English": "No eligible person is available. Connect or restore permission with consent before assigning the task.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.no_other_eligible_person_can_receive_this_handoff_yet",
+    "Vietnamese": "Chưa có người khác đủ quyền nhận bàn giao.",
+    "English": "No other eligible person can receive this handoff yet.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.not_prepared_yet",
+    "Vietnamese": "Chưa chuẩn bị",
+    "English": "Not prepared yet",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.not_yet_accepted",
+    "Vietnamese": "· Chưa nhận",
+    "English": "· Not yet accepted",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.notifications_on_the_sample_device",
+    "Vietnamese": "Thông báo trên thiết bị mẫu",
+    "English": "Notifications on the sample device",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.pending_action",
+    "Vietnamese": "Thao tác đang chờ",
+    "English": "Pending action",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.pending_data_is_still_preserved_continue_syncing_before_signing",
+    "Vietnamese": "Dữ liệu đang chờ vẫn được giữ. Tiếp tục đồng bộ trước khi đăng xuất.",
+    "English": "Pending data is still preserved. Continue syncing before signing out.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.prepared",
+    "Vietnamese": "Đã chuẩn bị",
+    "English": "Prepared",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.prepared_on_the_sample_device",
+    "Vietnamese": "Đã chuẩn bị trên thiết bị mẫu",
+    "English": "Prepared on the sample device",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.reassign_after_permission_changes",
+    "Vietnamese": "Phân công lại sau thay đổi quyền",
+    "English": "Reassign after permission changes",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.reassign_the_task",
+    "Vietnamese": "Phân công lại việc",
+    "English": "Reassign the task",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.reassigned_the_task_and_invited",
+    "Vietnamese": "phân công lại, mời",
+    "English": "reassigned the task and invited",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.receiving_device",
+    "Vietnamese": "Thiết bị nhận",
+    "English": "Receiving device",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.reminder_at",
+    "Vietnamese": "Lời nhắc lúc",
+    "English": "Reminder at",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.reminder_preparation",
+    "Vietnamese": "Chuẩn bị lời nhắc",
+    "English": "Reminder preparation",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.send_a_new_task_invitation",
+    "Vietnamese": "Gửi lời mời nhận lại việc",
+    "English": "Send a new task invitation",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.skipped_entry_completed",
+    "Vietnamese": "Đã kết thúc lượt bỏ qua",
+    "English": "Skipped entry completed",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.some_older_records_have_no_confirmed_date_they_are",
+    "Vietnamese": "Có ghi nhận cũ chưa xác định được ngày; được liệt kê riêng trong tệp xuất gốc.",
+    "English": "Some older records have no confirmed date; they are listed separately in the raw export.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.switch_profile_value1",
+    "Vietnamese": "Đổi hồ sơ · {value1}",
+    "English": "Switch profile · {value1}",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.the_prototype_cannot_verify_whether_the_notification_actually_appeared",
+    "Vietnamese": "Bản mẫu chưa kiểm tra được thông báo có thực sự hiện trên thiết bị.",
+    "English": "The prototype cannot verify whether the notification actually appeared on the device.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.there_is_no_handoff_request_yet",
+    "Vietnamese": "Chưa có yêu cầu bàn giao.",
+    "English": "There is no handoff request yet.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.this_entry_has_already_been_saved",
+    "Vietnamese": "Lượt ghi này đã được lưu",
+    "English": "This entry has already been saved",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.this_report_preserves_the_data_at_creation_source_changes",
+    "Vietnamese": "Báo cáo giữ dữ liệu tại thời điểm tạo; thay đổi nguồn không sửa bản này.",
+    "English": "This report preserves the data at creation; source changes do not alter it.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.to_accept_the_handoff",
+    "Vietnamese": "nhận bàn giao",
+    "English": "to accept the handoff",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.to_respond",
+    "Vietnamese": "phản hồi",
+    "English": "to respond",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.update_needed",
+    "Vietnamese": "Cần cập nhật",
+    "English": "Update needed",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.update_reminders",
+    "Vietnamese": "Cập nhật lời nhắc",
+    "English": "Update reminders",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.view_reminder_status",
+    "Vietnamese": "Xem trạng thái lời nhắc",
+    "English": "View reminder status",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.view_the_saved_entry",
+    "Vietnamese": "Xem bản ghi vừa lưu",
+    "English": "View the saved entry",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.waiting_for",
+    "Vietnamese": "Chờ",
+    "English": "Waiting for",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.waiting_for_reassignment",
+    "Vietnamese": "Chờ phân công lại",
+    "English": "Waiting for reassignment",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.you_can_still_view_schedules_and_record_medication_without",
+    "Vietnamese": "Bạn vẫn có thể xem lịch và ghi nhận thuốc khi không bật lời nhắc.",
+    "English": "You can still view schedules and record medication without enabling reminders.",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
+    "Key": "round2_fix.your_reminders",
+    "Vietnamese": "Lời nhắc của bạn",
+    "English": "Your reminders",
+    "sources": [
+      "js/round2.js"
+    ]
+  },
+  {
     "Key": "screen.08_00_today",
     "Vietnamese": "08:00 hôm nay",
     "English": "08:00 today",

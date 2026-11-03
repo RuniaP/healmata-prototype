@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-28T01:44:59.311Z",
+  "testedAt": "2026-10-28T04:04:25.225Z",
   "checks": [
     {
       "name": "One dropdown applies immediately and uses the workbook key set",
@@ -47,5 +47,5 @@
     }
   ],
   "errors": [],
-  "keys": 1543
+  "keys": 1679
 }

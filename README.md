@@ -1,6 +1,6 @@
 # HealMata — Prototype 18 flow · v1.0
 
-Mở START_HERE.html để xem hướng dẫn, hoặc mở index.html để test ngay. Giải nén toàn bộ folder trước khi mở. Dùng Edge/Chrome trên máy tính; không cần cài Node, Python hoặc chạy server. Giữ nguyên các folder assets, css, js.
+Mở START_HERE.html để xem hướng dẫn, hoặc mở index.html để test ngay. Giữ nguyên cấu trúc folder khi sao chép cho team. Dùng Edge/Chrome trên máy tính; không cần cài Node, Python hoặc chạy server. Giữ nguyên các folder assets, css, js.
 
 ## Cách test
 
@@ -47,4 +47,16 @@ Nguồn kích thước: https://developer.apple.com/design/human-interface-guide
 
 ## Hai ngôn ngữ Việt / Anh
 
-Nút quả địa cầu VI / EN nằm bên trong app, ở góc phải phía trên màn hình iPhone, xuất hiện trên mọi màn và khi mở popup. Bấm nút để chọn Tiếng Việt / English; màn hiện tại và sơ đồ đổi theo. Lựa chọn được giữ khi chuyển màn, reset flow và mở lại; nội dung đang nhập được giữ nguyên. Workbook `localization/HealMata_Translations_VI_EN.xlsx` có 1543 key và đúng ba cột Key / Vietnamese / English, khớp với JSON và bundle đang chạy. Xem `localization/README.md` để dùng key và cập nhật nội dung từ Excel.
+Nút quả địa cầu VI / EN nằm bên trong app, ở góc phải phía trên màn hình iPhone, xuất hiện trên mọi màn và khi mở popup. Bấm nút để chọn Tiếng Việt / English; màn hiện tại và sơ đồ đổi theo. Lựa chọn được giữ khi chuyển màn, reset flow và mở lại; nội dung đang nhập được giữ nguyên. Workbook `localization/HealMata_Translations_VI_EN.xlsx` có 1679 key và đúng ba cột Key / Vietnamese / English, khớp với JSON và bundle đang chạy. Xem `localization/README.md` để dùng key và cập nhật nội dung từ Excel.
+
+## Cập nhật sửa lỗi 28/10/2026
+
+Đã xử lý các mục F01–F20 từ vòng review mô phỏng, đồng thời nối biểu đồ theo ngày fixture và làm cho trạng thái xóa khớp dữ liệu mẫu. Xem [nhật ký thay đổi](FIX_LOG_2026-10-28.md) hoặc [ảnh và kết quả kiểm lại](qa/persona-fixes/index.html).
+
+Bản nháp không chứa mật khẩu được giữ theo tài khoản/hồ sơ. Giờ và ngày trong các bài test dùng mốc giả lập 28/10/2026. Các dịch vụ bên ngoài tiếp tục được mô phỏng. Refresh trang để nạp bản code mới; có thể Đặt lại flow khi cần thử từ fixture ban đầu. Không tạo ZIP.
+
+## Cải thiện vòng 2 · 28/10/2026
+
+Đã xử lý R2-01–R2-14: kiểm số đo khi sửa, gom đủ lịch thuốc khi xuất/báo cáo, bàn giao hai chiều, phân công lại theo quyền, giữ draft bàn giao, receipt của từng lượt ghi, lỗi khôi phục tại trường, biểu đồ theo giờ, câu chữ nhắc/gọi, cỡ chữ, đổi hồ sơ và tiếp tục đồng bộ. Xem [nhật ký vòng 2](ROUND2_FIX_LOG_2026-10-28.md) và [ảnh/kết quả kiểm](qa/round2-fixes/index.html).
+
+Trong app: bấm tên hồ sơ để đổi; Cá nhân → Cỡ chữ trong ứng dụng để chọn tới 200%. Lựa chọn ngôn ngữ/cỡ chữ lưu riêng và giữ khi reset flow. Khung app vẫn 393×852 CSS px; nội dung dài cuộn trong màn hoặc popup. Không tạo ZIP.

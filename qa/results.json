@@ -1,7 +1,7 @@
 {
-  "testedAt": "2026-10-27T16:25:37.947Z",
-  "screens": 102,
-  "popups": 25,
+  "testedAt": "2026-10-28T04:01:19.956Z",
+  "screens": 103,
+  "popups": 28,
   "checks": [
     {
       "name": "01 Đăng ký → xác minh → hồ sơ → Hôm nay",

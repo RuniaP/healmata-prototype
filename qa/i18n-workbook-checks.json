@@ -1,5 +1,5 @@
 {
-  "rows": 1543,
+  "rows": 1679,
   "headers": [
     "Key",
     "Vietnamese",
@@ -11,5 +11,5 @@
   "placeholdersMatch": true,
   "tableFilter": true,
   "frozenHeaderAndKeyColumn": true,
-  "sha256": "b8564bb196b587e04d8b6a8d3780b4b12c8f0ce921da710554fd3d329772f655"
+  "sha256": "3cc85734446e85604df7f63043e37f17f16cbf93b259c6c275d27049a46e90f8"
 }

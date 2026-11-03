@@ -129,6 +129,7 @@ Mỗi dòng gồm route màn, tên bước, vai và popup. Biến thể dùng l�
 | s44 | Bảng gia đình | owner | — |
 | s47 | Timeline | owner | — |
 | s48 | Nhắc phối hợp | owner | — |
+| s42-assign | Phân công lại sau thay đổi quyền | owner | — |
 
 ## 12 · Phân tích và tạo báo cáo
 

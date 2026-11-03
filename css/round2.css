@@ -1,0 +1,29 @@
+.iphone{--app-text-scale:1}
+.iphone #app-content .card h3{font-size:calc(18px * var(--app-text-scale));line-height:1.4}
+.iphone #app-content .card p,.iphone #modal-layer .dialog p{font-size:calc(16px * var(--app-text-scale));line-height:1.6;overflow-wrap:anywhere}
+.iphone #app-content p.small,.iphone #app-content .card p.small,.iphone #modal-layer p.small,.iphone #modal-layer .dialog p.small{font-size:calc(14px * var(--app-text-scale));line-height:1.6;color:#526d63}
+.iphone #app-content .summary dt,.iphone #app-content .summary dd,.iphone #modal-layer .summary dt,.iphone #modal-layer .summary dd{font-size:calc(14px * var(--app-text-scale));line-height:1.5;overflow-wrap:anywhere;min-width:0}
+.iphone #app-content .btn,.iphone #modal-layer .btn{font-size:calc(16px * var(--app-text-scale));min-height:48px;line-height:1.45}
+.iphone #app-content .field>span,.iphone #modal-layer .field>span,.iphone #app-content .check,.iphone #modal-layer .check,.iphone #app-content .split-label,.iphone #app-content .data-table,.iphone #app-content .weekday-fields legend{font-size:calc(14px * var(--app-text-scale));line-height:1.5;overflow-wrap:anywhere}
+.iphone #app-content .field input,.iphone #app-content .field textarea,.iphone #app-content .field select,.iphone #modal-layer .field input,.iphone #modal-layer .field textarea,.iphone #modal-layer .field select{font-size:calc(16px * var(--app-text-scale));width:100%;min-width:0;box-sizing:border-box}
+.iphone #app-content .row-content strong{font-size:calc(16px * var(--app-text-scale));line-height:1.5;overflow-wrap:anywhere}.iphone #app-content .row-content small{font-size:calc(14px * var(--app-text-scale));line-height:1.5;overflow-wrap:anywhere}
+.iphone #app-content .pill{font-size:calc(12px * var(--app-text-scale));line-height:1.5;white-space:normal;overflow-wrap:anywhere}
+.iphone #app-content .section-heading,.iphone #app-content .auth-subtitle{font-size:calc(16px * var(--app-text-scale));line-height:1.5}
+.iphone #app-content .banner,.iphone #modal-layer .banner{font-size:calc(14px * var(--app-text-scale));line-height:1.5;overflow-wrap:anywhere}
+.iphone #app-content .auth-heading{font-size:calc(24px * var(--app-text-scale));line-height:1.3}.iphone #app-content .card h2{font-size:calc(22px * var(--app-text-scale));line-height:1.4}
+.iphone .translated-file-upload .file-upload-name,.iphone .translated-file-upload .file-upload-choose{font-size:calc(14px * var(--app-text-scale))}
+.iphone #app-content .weekday-grid label{font-size:calc(13px * var(--app-text-scale));line-height:1.4;min-width:0;overflow-wrap:anywhere;padding:5px}
+.iphone #app-content .field-error,.iphone #modal-layer .field-error{font-size:calc(14px * var(--app-text-scale))!important;line-height:1.6}
+.iphone #modal-layer h3{font-size:calc(20px * var(--app-text-scale));line-height:1.4}.iphone #modal-layer .dialog-tag{font-size:calc(12px * var(--app-text-scale));line-height:1.5}
+.iphone #app-header h2,html[lang=en] .iphone #app-header h2{font-size:calc(18px * var(--app-text-scale));line-height:1.3;overflow-wrap:anywhere}
+.iphone #tab-bar{height:auto;min-height:68px;flex-shrink:0}.iphone #tab-bar button,.iphone #tab-bar button span,html[lang=en] .iphone #tab-bar button{font-size:calc(11px * var(--app-text-scale));line-height:1.2;overflow-wrap:anywhere;min-width:0}
+.iphone #context-strip{height:auto;min-height:23px;flex-shrink:0;padding:0 19px}.iphone #context-strip:has(.profile-switch){min-height:44px}
+.iphone .profile-switch{width:100%;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;background:transparent;color:#34584a;text-align:left;padding:5px 0;min-width:0}
+.iphone .profile-switch strong{font-size:calc(14px * var(--app-text-scale));font-weight:700;display:block;line-height:1.4;overflow-wrap:anywhere}.iphone .profile-switch small{font-size:calc(12px * var(--app-text-scale));display:block;line-height:1.4;color:#526d63}
+.iphone .profile-switch>span{min-width:0;flex:1}.iphone .profile-switch svg{flex-shrink:0}
+.iphone #app-content .call-device-state{position:absolute;left:12px;right:12px;bottom:88px;display:flex;gap:7px;flex-wrap:wrap;z-index:2}
+.iphone #app-content .call-device-state span{font-size:calc(14px * var(--app-text-scale));line-height:1.45;padding:6px 9px;border-radius:8px;background:#183f35f2;color:white}
+.iphone #app-content .data-table td{overflow-wrap:anywhere}.iphone #app-content .report-preview{min-width:0}.iphone #app-content .report-preview .card{padding:12px;margin:12px 0;box-shadow:none}
+.iphone #app-content .chart text{font-size:12px;fill:#405d4e}.iphone #app-content .summary{max-width:100%}
+
+.iphone #modal-layer .dialog{max-height:calc(100% - 150px)}

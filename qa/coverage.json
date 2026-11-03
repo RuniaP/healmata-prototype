@@ -573,6 +573,13 @@
         "role": "owner",
         "popup": null,
         "exists": true
+      },
+      {
+        "route": "s42-assign",
+        "label": "Phân công lại sau thay đổi quyền",
+        "role": "owner",
+        "popup": null,
+        "exists": true
       }
     ]
   },

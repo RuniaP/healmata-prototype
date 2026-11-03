@@ -29,3 +29,7 @@ python import_excel.py HealMata_Translations_VI_EN.xlsx
 3. Mở lại hoặc refresh `index.html`. Script kiểm key trùng/thiếu, ô dịch trống và tham số trước khi cập nhật JSON cùng bundle. Script chỉ dùng thư viện chuẩn của Python, không cần cài package.
 
 Key có thể giống nhau về nội dung hiển thị nhưng khác ngữ cảnh, ví dụ enum và tiêu đề. Tên người, mã lịch, email, đơn vị đo và dữ liệu y tế/người dùng không được biến thành trạng thái nghiệp vụ bằng bản dịch. Giá trị demo chưa sửa có thể được hiển thị theo ngôn ngữ; khi người dùng nhập, nội dung được giữ nguyên.
+
+## Cập nhật vòng 2 · 28/10/2026
+
+Workbook hiện có 1.679 key, thêm 64 key cho 14 cải thiện; 1.615 key trước được giữ nguyên. Nội dung mới gồm trạng thái bản ghi đã lưu, bàn giao/phân công lại, lời nhắc, trạng thái thiết bị gọi, cỡ chữ và tiếp tục đồng bộ. Excel có cùng key và giá trị với vi.json, en.json và bundle runtime.

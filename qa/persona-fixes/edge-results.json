@@ -1,0 +1,10 @@
+{
+  "passed": 4,
+  "checks": [
+    "A separate booking can create a new payment intent",
+    "Offline intents stay independent across two schedules",
+    "Unknown result is queried for the selected occurrence",
+    "Changing report period preserves custom dates"
+  ],
+  "errors": []
+}

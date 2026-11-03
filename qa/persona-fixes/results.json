@@ -1,0 +1,117 @@
+{
+  "checks": [
+    {
+      "id": "F01",
+      "name": "Invitation identity and recipient gates",
+      "result": "PASS"
+    },
+    {
+      "id": "F02",
+      "name": "Actor follows account display profile and is saved in history",
+      "result": "PASS"
+    },
+    {
+      "id": "F03",
+      "name": "Schedule time consistent across home and occurrence",
+      "result": "PASS"
+    },
+    {
+      "id": "F04",
+      "name": "All four report scope combinations and snapshot immutability",
+      "result": "PASS"
+    },
+    {
+      "id": "F05",
+      "name": "Back and repeated payment keep one payment intent",
+      "result": "PASS"
+    },
+    {
+      "id": "F06",
+      "name": "Repeated cancellation keeps one refund reference",
+      "result": "PASS"
+    },
+    {
+      "id": "F07",
+      "name": "Packet medicine and report data remain immutable",
+      "result": "PASS"
+    },
+    {
+      "id": "F08",
+      "name": "Payout receipt keeps submitted destination after payee changes",
+      "result": "PASS"
+    },
+    {
+      "id": "F09",
+      "name": "Select older case and mutate only that case",
+      "result": "PASS"
+    },
+    {
+      "id": "F10",
+      "name": "Weekday choice persists and generates only selected days",
+      "result": "PASS"
+    },
+    {
+      "id": "F11",
+      "name": "Password mismatch remains beside field",
+      "result": "PASS"
+    },
+    {
+      "id": "F12",
+      "name": "Legal sheets preserve registration form and language",
+      "result": "PASS"
+    },
+    {
+      "id": "F13",
+      "name": "Metric selects compatible unit automatically",
+      "result": "PASS"
+    },
+    {
+      "id": "F14",
+      "name": "Draft survives Back, reload and stays scoped to account",
+      "result": "PASS"
+    },
+    {
+      "id": "F15",
+      "name": "Offline repeat has one queued intent and one history",
+      "result": "PASS"
+    },
+    {
+      "id": "F16",
+      "name": "Unknown status remains visible after popup closes",
+      "result": "PASS"
+    },
+    {
+      "id": "F17",
+      "name": "Read-only caregiver sees permission before opening input",
+      "result": "PASS"
+    },
+    {
+      "id": "F18",
+      "name": "Primary CTA and essential labels meet 4.5 contrast; 200 percent text fits",
+      "result": "PASS"
+    },
+    {
+      "id": "F19",
+      "name": "Finance denial names the required Finance role",
+      "result": "PASS"
+    },
+    {
+      "id": "F20",
+      "name": "Return or reject blocks execution; resubmission requires new approval",
+      "result": "PASS"
+    },
+    {
+      "id": "L01",
+      "name": "Charts use recorded dated values and period filters",
+      "result": "PASS"
+    },
+    {
+      "id": "L02",
+      "name": "Deletion completion clears fixture stores",
+      "result": "PASS"
+    }
+  ],
+  "passed": 22,
+  "total": 22,
+  "pageErrors": []
+}
